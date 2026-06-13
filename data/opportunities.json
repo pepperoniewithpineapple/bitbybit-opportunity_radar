@@ -1,0 +1,396 @@
+[
+  {
+    "id": "opp-001",
+    "title": "DSTA BrainHack Cyber Defenders Discovery Camp",
+    "type": "workshop",
+    "interests": [
+      "cybersecurity",
+      "coding",
+      "defence tech"
+    ],
+    "eligible_levels": [
+      "JC",
+      "Poly",
+      "University"
+    ],
+    "cost": "free",
+    "beginner_friendly": true,
+    "deadline": "2026-06-18",
+    "url": "https://www.dsta.gov.sg/brainhack",
+    "organizer": "DSTA"
+  },
+  {
+    "id": "opp-002",
+    "title": "IMDA Youth Tech Hackathon",
+    "type": "hackathon",
+    "interests": [
+      "AI",
+      "coding",
+      "public good"
+    ],
+    "eligible_levels": [
+      "Secondary",
+      "JC",
+      "Poly"
+    ],
+    "cost": "free",
+    "beginner_friendly": true,
+    "deadline": "2026-06-22",
+    "url": "https://www.imda.gov.sg/",
+    "organizer": "IMDA"
+  },
+  {
+    "id": "opp-003",
+    "title": "NUS Computing Summer AI Challenge",
+    "type": "competition",
+    "interests": [
+      "AI",
+      "coding",
+      "data science"
+    ],
+    "eligible_levels": [
+      "JC",
+      "Poly",
+      "University"
+    ],
+    "cost": "free",
+    "beginner_friendly": false,
+    "deadline": "2026-06-29",
+    "url": "https://www.comp.nus.edu.sg/",
+    "organizer": "NUS"
+  },
+  {
+    "id": "opp-004",
+    "title": "A*STAR Science Award Briefing and Application",
+    "type": "scholarship",
+    "interests": [
+      "research",
+      "science",
+      "biotech"
+    ],
+    "eligible_levels": [
+      "JC",
+      "Poly"
+    ],
+    "cost": "free",
+    "beginner_friendly": true,
+    "deadline": "2026-07-02",
+    "url": "https://www.a-star.edu.sg/Scholarships",
+    "organizer": "A*STAR"
+  },
+  {
+    "id": "opp-005",
+    "title": "NTU Sustainability Innovation Challenge",
+    "type": "competition",
+    "interests": [
+      "sustainability",
+      "engineering",
+      "entrepreneurship"
+    ],
+    "eligible_levels": [
+      "JC",
+      "Poly",
+      "University"
+    ],
+    "cost": "free",
+    "beginner_friendly": true,
+    "deadline": "2026-07-08",
+    "url": "https://www.ntu.edu.sg/",
+    "organizer": "NTU"
+  },
+  {
+    "id": "opp-006",
+    "title": "SMU Youth Social Impact Case Competition",
+    "type": "competition",
+    "interests": [
+      "business",
+      "public good",
+      "entrepreneurship"
+    ],
+    "eligible_levels": [
+      "JC",
+      "Poly",
+      "University"
+    ],
+    "cost": "paid",
+    "beginner_friendly": true,
+    "deadline": "2026-07-12",
+    "url": "https://www.smu.edu.sg/",
+    "organizer": "SMU"
+  },
+  {
+    "id": "opp-007",
+    "title": "SUTD Design Thinking and Robotics Bootcamp",
+    "type": "workshop",
+    "interests": [
+      "robotics",
+      "design",
+      "engineering"
+    ],
+    "eligible_levels": [
+      "Secondary",
+      "JC",
+      "Poly"
+    ],
+    "cost": "free",
+    "beginner_friendly": true,
+    "deadline": "2026-07-18",
+    "url": "https://www.sutd.edu.sg/",
+    "organizer": "SUTD"
+  },
+  {
+    "id": "opp-008",
+    "title": "Singapore Mathematical Olympiad Training Clinic",
+    "type": "olympiad",
+    "interests": [
+      "math",
+      "problem solving",
+      "olympiad"
+    ],
+    "eligible_levels": [
+      "Secondary",
+      "JC"
+    ],
+    "cost": "paid",
+    "beginner_friendly": false,
+    "deadline": "2026-07-21",
+    "url": "https://sms.math.nus.edu.sg/",
+    "organizer": "Singapore Mathematical Society"
+  },
+  {
+    "id": "opp-009",
+    "title": "National Olympiad in Informatics Selection Workshop",
+    "type": "olympiad",
+    "interests": [
+      "coding",
+      "algorithms",
+      "problem solving"
+    ],
+    "eligible_levels": [
+      "Secondary",
+      "JC"
+    ],
+    "cost": "free",
+    "beginner_friendly": false,
+    "deadline": "2026-07-24",
+    "url": "https://noisg.comp.nus.edu.sg/",
+    "organizer": "NUS"
+  },
+  {
+    "id": "opp-010",
+    "title": "Science Centre Singapore Youth STEM Fair",
+    "type": "competition",
+    "interests": [
+      "science",
+      "research",
+      "presentation"
+    ],
+    "eligible_levels": [
+      "Secondary",
+      "JC",
+      "Poly"
+    ],
+    "cost": "free",
+    "beginner_friendly": true,
+    "deadline": "2026-07-29",
+    "url": "https://www.science.edu.sg/",
+    "organizer": "Science Centre Singapore"
+  },
+  {
+    "id": "opp-011",
+    "title": "PolyFinTech 100 API Hackathon",
+    "type": "hackathon",
+    "interests": [
+      "fintech",
+      "coding",
+      "business"
+    ],
+    "eligible_levels": [
+      "Poly",
+      "University"
+    ],
+    "cost": "free",
+    "beginner_friendly": true,
+    "deadline": "2026-08-03",
+    "url": "https://www.polyfintech100hackathon.sg/",
+    "organizer": "Singapore FinTech Association"
+  },
+  {
+    "id": "opp-012",
+    "title": "NTU CN Yang Scholars Programme Outreach",
+    "type": "scholarship",
+    "interests": [
+      "science",
+      "engineering",
+      "research"
+    ],
+    "eligible_levels": [
+      "JC",
+      "Poly"
+    ],
+    "cost": "free",
+    "beginner_friendly": false,
+    "deadline": "2026-08-06",
+    "url": "https://www.ntu.edu.sg/cnyang-scholars",
+    "organizer": "NTU"
+  },
+  {
+    "id": "opp-013",
+    "title": "SMU Data Analytics for Good Workshop",
+    "type": "workshop",
+    "interests": [
+      "data science",
+      "public good",
+      "business"
+    ],
+    "eligible_levels": [
+      "JC",
+      "Poly",
+      "University"
+    ],
+    "cost": "free",
+    "beginner_friendly": true,
+    "deadline": "2026-08-10",
+    "url": "https://scis.smu.edu.sg/",
+    "organizer": "SMU"
+  },
+  {
+    "id": "opp-014",
+    "title": "A*STAR Research Attachment Programme Preview",
+    "type": "workshop",
+    "interests": [
+      "research",
+      "science",
+      "AI"
+    ],
+    "eligible_levels": [
+      "JC",
+      "Poly",
+      "University"
+    ],
+    "cost": "free",
+    "beginner_friendly": false,
+    "deadline": "2026-08-12",
+    "url": "https://www.a-star.edu.sg/",
+    "organizer": "A*STAR"
+  },
+  {
+    "id": "opp-015",
+    "title": "SUTD What The Hack Design Sprint",
+    "type": "hackathon",
+    "interests": [
+      "design",
+      "coding",
+      "entrepreneurship"
+    ],
+    "eligible_levels": [
+      "Secondary",
+      "JC",
+      "Poly",
+      "University"
+    ],
+    "cost": "paid",
+    "beginner_friendly": true,
+    "deadline": "2026-06-01",
+    "url": "https://www.sutd.edu.sg/",
+    "organizer": "SUTD"
+  },
+  {
+    "id": "opp-016",
+    "title": "IMDA Digital for Life Student Challenge",
+    "type": "competition",
+    "interests": [
+      "public good",
+      "coding",
+      "media"
+    ],
+    "eligible_levels": [
+      "Secondary",
+      "JC",
+      "Poly"
+    ],
+    "cost": "free",
+    "beginner_friendly": true,
+    "deadline": "2026-05-25",
+    "url": "https://www.imda.gov.sg/digitalforlife",
+    "organizer": "IMDA"
+  },
+  {
+    "id": "opp-017",
+    "title": "National Cybersecurity Olympiad (NCO)",
+    "type": "competition",
+    "interests": [
+      "cybersecurity",
+      "coding",
+      "problem solving"
+    ],
+    "eligible_levels": [
+      "Secondary",
+      "JC"
+    ],
+    "cost": "free",
+    "beginner_friendly": true,
+    "deadline": "2026-07-15",
+    "url": "https://www.comp.nus.edu.sg/programmes/cence/nco/",
+    "organizer": "NUS Computing / CeNCE"
+  },
+  {
+    "id": "opp-018",
+    "title": "Hult Prize On-Campus Programme \u2014 Social Enterprise Challenge",
+    "type": "competition",
+    "interests": [
+      "entrepreneurship",
+      "social impact",
+      "public good"
+    ],
+    "eligible_levels": [
+      "JC",
+      "Poly",
+      "University"
+    ],
+    "cost": "free",
+    "beginner_friendly": true,
+    "deadline": "2026-07-31",
+    "url": "https://www.hultprize.org/",
+    "organizer": "Hult Prize Foundation"
+  },
+  {
+    "id": "opp-019",
+    "title": "IMDA TechSkills Accelerator (TeSA) Student Internship Track",
+    "type": "workshop",
+    "interests": [
+      "coding",
+      "AI",
+      "data science"
+    ],
+    "eligible_levels": [
+      "Poly",
+      "University"
+    ],
+    "cost": "free",
+    "beginner_friendly": false,
+    "deadline": "2026-08-15",
+    "url": "https://www.imda.gov.sg/imtalent/tesa",
+    "organizer": "IMDA"
+  },
+  {
+    "id": "opp-020",
+    "title": "NUS School of Computing Open House Research Showcase",
+    "type": "workshop",
+    "interests": [
+      "coding",
+      "research",
+      "AI"
+    ],
+    "eligible_levels": [
+      "Secondary",
+      "JC",
+      "Poly"
+    ],
+    "cost": "free",
+    "beginner_friendly": true,
+    "deadline": "2026-07-05",
+    "url": "https://www.comp.nus.edu.sg/",
+    "organizer": "NUS Computing"
+  }
+]

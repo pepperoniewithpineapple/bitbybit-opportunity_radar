@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+weekly_digest.txt
+calendar_export.ics
+*.ics
+data/applications.json
+data/searches.json
+data/student.json
+
+.planning/
+run_out.txt
+run_err.txt
