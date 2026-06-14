@@ -14,7 +14,7 @@ Then:
 
 > In Singapore, opportunities exist: hackathons, olympiads, scholarships, research attachments, workshops. But information about them travels through uneven networks: connected parents, plugged-in teachers, school chats, seniors, enrichment circles.
 >
-> Opportunity Radar has two modes. Students use Finder mode to discover and understand opportunities. Organizers use Sender mode to see demand gaps, submit opportunities, and review them before they become live. Same data store. Same scoring engine, plus a trainable spam-risk model. No external libraries.
+> Opportunity Radar has two modes. Students use Finder mode to discover and understand opportunities. Organizers use Sender mode to see demand gaps, submit opportunities, and review them before they become live. Same data store. Same scoring engine, plus adaptive ML, graph discovery, and a career pathway planner. No external libraries.
 
 Close:
 
@@ -39,7 +39,7 @@ Point at the top-level menu:
 
 Say:
 
-> This is not just a recommendation list. It is a tiny two-sided opportunity system with an ML spam scan and a review gate before new supply reaches students.
+> This is not just a recommendation list. It is a tiny two-sided opportunity system with an adaptive spam model, graph discovery, and a review gate before new supply reaches students.
 
 ### Beat 2 - Student creates demand, 70 sec
 
@@ -152,7 +152,27 @@ Point at the before/after score and delta.
 
 > The model uses weighted skill vectors, a sigmoid readiness curve, event-type multipliers, and an opportunity-cost penalty. The math is still explainable.
 
-### Beat 7 - Bias self-audit, 30 sec
+### Beat 7 - Hidden graph discovery, 45 sec
+
+Choose `14`.
+
+When asked whether to add a career goal, choose `yes`, then pick `cybersecurity analyst`.
+
+Say:
+
+> This is the graph layer. It connects student interests, career skills, organizers, and opportunities, then runs a PageRank-style algorithm to find bridge opportunities that exact keyword matching might miss.
+
+Point at the bridge path column.
+
+### Beat 8 - Career pathway planner, 45 sec
+
+Choose `15`, then pick a career goal.
+
+Say:
+
+> Instead of recommending one event in isolation, this builds a pathway: foundation, practice, proof, and launch. The order is validated with Python's graphlib prerequisite sorting.
+
+### Beat 9 - Bias self-audit, 30 sec
 
 Choose `10`.
 
@@ -160,7 +180,7 @@ Say:
 
 > We compare our access-weighted ranking against a neutral baseline. We do not just say the design widens access. We measure it.
 
-### Beat 8 - Error handling, 25 sec
+### Beat 10 - Error handling, 25 sec
 
 At any prompt, type bad input.
 
@@ -174,13 +194,15 @@ Show:
 
 1. `main.py`: two modes, one shared store.
 2. `career_model.py`: ML-style career-readiness impact model.
-3. `spam_model.py`: trainable Naive Bayes spam-risk classifier.
-4. `matcher.py`: hard filters and transparent scoring.
-5. `access.py`: starting-line simulation.
-6. `demand.py`: anonymous demand records.
-7. `sender.py`: demand radar, submission drafting, impact preview, announcement generation.
-8. `review_queue.py`: approval gate, ML spam score, quality flags, audit trail.
-9. `interests.py`: recursive taxonomy expansion.
+3. `spam_model.py`: adaptive Naive Bayes spam-risk classifier.
+4. `graph_rank.py`: PageRank-style hidden opportunity discovery.
+5. `pathway.py`: prerequisite-aware career pathway planning.
+6. `matcher.py`: hard filters and transparent scoring.
+7. `access.py`: starting-line simulation.
+8. `demand.py`: anonymous demand records.
+9. `sender.py`: demand radar, submission drafting, impact preview, announcement generation.
+10. `review_queue.py`: approval gate, ML spam score, quality flags, audit trail.
+11. `interests.py`: recursive taxonomy expansion.
 
 Closing line:
 
@@ -206,7 +228,11 @@ No. It estimates readiness alignment, not actual hiring probability. That is int
 
 **Is the spam model real machine learning?**
 
-Yes. It is a supervised Naive Bayes classifier trained from labeled examples. It produces a probability and learned signal words, then a human still makes the final decision.
+Yes. It is a supervised Naive Bayes classifier trained from labeled examples and reviewer history. It produces a probability and learned signal words, then a human still makes the final decision.
+
+**Is the graph discovery just keyword matching?**
+
+No. It builds a typed graph and runs personalized graph ranking, so a student can discover bridge opportunities through related career skills and organizers even when the exact keyword match is weak.
 
 **Did you write this yourselves?**
 
@@ -219,5 +245,6 @@ Every module is readable and explainable. Ask us about any file.
 - Rehearse both modes: student search, starting-line simulation, sender demand radar.
 - Rehearse submitting and approving one demo opportunity.
 - Optional: submit a spammy title like `Guaranteed Scholarship Prize Click Now` to show the ML spam blocker.
+- Rehearse options `14` and `15` in Student mode.
 - Prepare a backup screenshot or recording.
 - Submit the public GitHub link by Thursday 19 June 2026, 23:59.

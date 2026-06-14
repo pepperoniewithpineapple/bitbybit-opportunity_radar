@@ -166,9 +166,13 @@ def status_counts(submissions):
     return counts
 
 
-def spam_assessment(submission):
+def spam_assessment(submission, submissions=None):
     """Return the ML spam-risk assessment for one submission."""
-    return spam_model.assess_opportunity(submission["opportunity"])
+    if submissions is None:
+        model = spam_model.train_default_model()
+    else:
+        model = spam_model.train_adaptive_model(submissions)
+    return spam_model.assess_opportunity(submission["opportunity"], model)
 
 
 def spam_flag_detail(assessment):
@@ -186,11 +190,11 @@ def spam_flag_detail(assessment):
     return detail
 
 
-def review_flags(submission, opportunities, searches_path):
+def review_flags(submission, opportunities, searches_path, submissions=None):
     """Return quality flags a reviewer should consider before approval."""
     opportunity = submission["opportunity"]
     preview = sender.build_sender_preview(opportunity, opportunities, searches_path)
-    spam = spam_assessment(submission)
+    spam = spam_assessment(submission, submissions)
     days_left = matcher.days_until(opportunity.deadline)
     flags = []
 

@@ -87,6 +87,53 @@ class TestSpamModel(unittest.TestCase):
 
         self.assertGreaterEqual(accuracy, 0.85)
 
+    def test_review_history_adds_approved_and_spam_rejected_examples(self):
+        approved = {
+            "status": "approved",
+            "review_note": "Looks good",
+            "opportunity": make_opportunity("Official Robotics Workshop"),
+        }
+        rejected = {
+            "status": "rejected",
+            "review_note": "spam crypto prize link",
+            "opportunity": make_opportunity(
+                "Prize Click Now",
+                "Crypto Club",
+                ["crypto"],
+            ),
+        }
+        neutral_rejected = {
+            "status": "rejected",
+            "review_note": "Please add official link",
+            "opportunity": make_opportunity("Incomplete Science Talk"),
+        }
+
+        examples = spam_model.review_history_examples(
+            [approved, rejected, neutral_rejected]
+        )
+
+        labels = [example["label"] for example in examples]
+        self.assertEqual(labels.count(spam_model.LEGIT), 1)
+        self.assertEqual(labels.count(spam_model.SPAM), 1)
+
+    def test_model_health_reports_reviewer_history(self):
+        submissions = [
+            {
+                "status": "approved",
+                "review_note": "Approved",
+                "opportunity": make_opportunity("Official AI Workshop"),
+            }
+        ]
+
+        health = spam_model.model_health(submissions)
+
+        self.assertEqual(health["history_examples"], 1)
+        self.assertEqual(
+            health["total_examples"],
+            len(spam_model.DEFAULT_TRAINING_EXAMPLES) + 1,
+        )
+        self.assertGreater(len(health["top_spam_tokens"]), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

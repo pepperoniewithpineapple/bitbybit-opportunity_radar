@@ -14,12 +14,15 @@ import digest
 import fairness
 import filters
 import firsttimer
+import graph_rank
 import ics_export
 import interests as interests_module
 import matcher
+import pathway
 import recommend
 import review_queue
 import sender
+import spam_model
 import stats as stats_module
 import storage
 import tracker
@@ -406,6 +409,8 @@ def show_menu(student):
     print("11. Closing this week (urgent deadlines)")
     print("12. Invisible starting-line simulation")
     print("13. Career impact simulator")
+    print("14. Hidden opportunity graph discovery")
+    print("15. Build my career pathway")
     print("0.  Back to mode selection")
 
 
@@ -527,6 +532,94 @@ def run_career_impact_flow(student, results):
 
     impact = career_model.evaluate_opportunity(career_name, student, opportunity)
     print_career_impact(impact)
+
+
+def run_graph_discovery_flow(opportunities, student):
+    """Run hidden opportunity discovery using graph ranking."""
+    print("")
+    ui.header("Hidden Opportunity Graph Discovery")
+    print("")
+    print("This uses a personalized PageRank-style graph over interests,")
+    print("careers, organizers, and opportunities.")
+    print("")
+
+    use_career = validation.get_valid_choice(
+        "Add a career goal to personalize the graph? (yes/no): ",
+        ["yes", "no"],
+    )
+    career_name = None
+    if use_career == "yes":
+        career_name = ask_career_goal()
+
+    rows = graph_rank.rank_hidden_opportunities(
+        opportunities,
+        student,
+        career_name,
+        limit=5,
+    )
+
+    if len(rows) == 0:
+        print("No eligible graph discoveries found yet.")
+        return
+
+    table_rows = []
+    for index, row in enumerate(rows):
+        opportunity = row["opportunity"]
+        table_rows.append([
+            str(index + 1),
+            short_text(opportunity.title, 36),
+            format(row["graph_score"], ".4f"),
+            str(len(row["shared_interests"])),
+            short_text(row["path_text"], 58),
+        ])
+
+    ui.print_table(["#", "Opportunity", "GraphRank", "Direct", "Bridge path"], table_rows)
+    print("")
+    print("Direct = exact interest matches. Low direct match + good graph path")
+    print("means the opportunity may be a hidden bridge.")
+
+
+def run_pathway_flow(opportunities, student):
+    """Run the career pathway planner."""
+    print("")
+    ui.header("Career Pathway Planner")
+    print("")
+    career_name = ask_career_goal()
+    plan = pathway.build_pathway(career_name, student, opportunities)
+
+    print("")
+    print("Career goal: " + career_name)
+    print("Starting readiness: " + format(plan["starting_score"], ".1f") + "/100")
+
+    missing = []
+    for item in plan["missing_skills"][:5]:
+        missing.append(item["skill"])
+
+    if len(missing) > 0:
+        print("Top missing skills: " + ", ".join(missing))
+    else:
+        print("Top missing skills: none detected")
+
+    rows = []
+    for step in plan["steps"]:
+        opportunity = step["opportunity"]
+        if opportunity is None:
+            title = "No live fit yet"
+            deadline = "-"
+        else:
+            title = short_text(opportunity.title, 38)
+            deadline = opportunity.deadline
+
+        rows.append([
+            step["stage_label"],
+            ", ".join(step["target_types"]),
+            title,
+            deadline,
+            short_text(step["reason"], 50),
+        ])
+
+    print("")
+    ui.print_table(["Stage", "Types", "Suggested step", "Deadline", "Why"], rows)
 
 
 def show_tracker_menu():
@@ -841,12 +934,17 @@ def print_review_flags(flags):
     ui.print_table(["Severity", "Check", "Detail"], rows)
 
 
-def print_submission_detail(submission, opportunities, searches_path):
+def print_submission_detail(submission, submissions, opportunities, searches_path):
     """Print one pending submission with reviewer-focused context."""
     opportunity = submission["opportunity"]
     preview = sender.build_sender_preview(opportunity, opportunities, searches_path)
-    spam = review_queue.spam_assessment(submission)
-    flags = review_queue.review_flags(submission, opportunities, searches_path)
+    spam = review_queue.spam_assessment(submission, submissions)
+    flags = review_queue.review_flags(
+        submission,
+        opportunities,
+        searches_path,
+        submissions,
+    )
 
     print("")
     ui.header("Submission Review")
@@ -921,7 +1019,12 @@ def review_pending_submissions(submissions, submissions_path, opportunities,
         return
 
     submission = pending[choice - 1]
-    flags = print_submission_detail(submission, opportunities, searches_path)
+    flags = print_submission_detail(
+        submission,
+        submissions,
+        opportunities,
+        searches_path,
+    )
 
     decision = validation.get_valid_choice(
         "Decision (approve/reject/skip): ",
@@ -1023,6 +1126,37 @@ def generate_sender_packet(opportunity):
     print("Paste it into a school chat, CCA chat, or teacher announcement.")
 
 
+def print_spam_model_audit(submissions):
+    """Print training health for the adaptive spam-risk model."""
+    health = spam_model.model_health(submissions)
+
+    print("")
+    ui.header("ML Spam Model Audit")
+    print("")
+    print("Model: Multinomial Naive Bayes, standard-library Python")
+    print("Seed examples: " + str(health["seed_examples"]))
+    print("Reviewer-history examples: " + str(health["history_examples"]))
+    print("Total training examples: " + str(health["total_examples"]))
+    print("Spam examples: " + str(health["spam_examples"]))
+    print("Legit examples: " + str(health["legit_examples"]))
+    print(
+        "Leave-one-out accuracy: "
+        + format(health["leave_one_out_accuracy"] * 100, ".1f")
+        + "%"
+    )
+
+    rows = []
+    for signal in health["top_spam_tokens"]:
+        rows.append([
+            signal["token"],
+            format(signal["weight"], ".2f"),
+        ])
+
+    if len(rows) > 0:
+        print("")
+        ui.print_table(["Learned spam token", "Weight"], rows)
+
+
 def show_sender_menu(submissions):
     """Print the Opportunity Sender mode menu."""
     counts = review_queue.status_counts(submissions)
@@ -1038,6 +1172,7 @@ def show_sender_menu(submissions):
     print("3. Review pending submissions")
     print("4. List live opportunities")
     print("5. Generate announcement for an opportunity")
+    print("6. Model health and training audit")
     print("0. Back to mode selection")
 
 
@@ -1048,7 +1183,7 @@ def run_sender_mode(opportunities, opportunities_path, searches_path,
 
     while True:
         show_sender_menu(submissions)
-        choice = validation.get_valid_int("Choose sender option: ", 0, 5)
+        choice = validation.get_valid_int("Choose sender option: ", 0, 6)
 
         if choice == 0:
             return
@@ -1100,6 +1235,10 @@ def run_sender_mode(opportunities, opportunities_path, searches_path,
             generate_sender_packet(opportunity)
             continue
 
+        if choice == 6:
+            print_spam_model_audit(submissions)
+            continue
+
 
 def run_student_finder_mode(student, opportunities, applications, interest_tree,
                             applications_path, student_path, searches_path):
@@ -1109,7 +1248,7 @@ def run_student_finder_mode(student, opportunities, applications, interest_tree,
 
     while True:
         show_menu(student)
-        choice = validation.get_valid_int("Choose an option: ", 0, 13)
+        choice = validation.get_valid_int("Choose an option: ", 0, 15)
 
         if choice == 0:
             return student
@@ -1220,6 +1359,18 @@ def run_student_finder_mode(student, opportunities, applications, interest_tree,
                     )
                 impact_student = build_career_student(student, interest_tree)
                 run_career_impact_flow(impact_student, last_results)
+            continue
+
+        if choice == 14:
+            if ensure_profile(student):
+                graph_student = build_career_student(student, interest_tree)
+                run_graph_discovery_flow(opportunities, graph_student)
+            continue
+
+        if choice == 15:
+            if ensure_profile(student):
+                pathway_student = build_career_student(student, interest_tree)
+                run_pathway_flow(opportunities, pathway_student)
             continue
 
 

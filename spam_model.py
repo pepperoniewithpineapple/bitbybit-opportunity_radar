@@ -17,6 +17,7 @@ HIGH_RISK_THRESHOLD = 0.78
 MEDIUM_RISK_THRESHOLD = 0.55
 
 TOKEN_PATTERN = re.compile(r"[a-z0-9]+")
+REJECTION_SPAM_TERMS = ["spam", "scam", "prize", "click", "crypto"]
 
 DEFAULT_TRAINING_EXAMPLES = [
     {
@@ -152,6 +153,51 @@ def train_default_model():
     return train(DEFAULT_TRAINING_EXAMPLES)
 
 
+def review_history_examples(submissions):
+    """Return labeled examples learned from reviewer decisions."""
+    examples = []
+
+    for submission in submissions:
+        status = submission.get("status", "")
+        opportunity = submission.get("opportunity")
+        if opportunity is None:
+            continue
+
+        if status == "approved":
+            examples.append({
+                "label": LEGIT,
+                "text": opportunity_text(opportunity),
+            })
+            continue
+
+        if status == "rejected":
+            note = submission.get("review_note", "")
+            note_tokens = set(tokenize(note))
+            should_learn_spam = False
+            for term in REJECTION_SPAM_TERMS:
+                if term in note_tokens:
+                    should_learn_spam = True
+                    break
+
+            if should_learn_spam:
+                examples.append({
+                    "label": SPAM,
+                    "text": opportunity_text(opportunity) + " " + note,
+                })
+
+    return examples
+
+
+def combined_training_examples(submissions):
+    """Return seed examples plus reviewer-history examples."""
+    return list(DEFAULT_TRAINING_EXAMPLES) + review_history_examples(submissions)
+
+
+def train_adaptive_model(submissions):
+    """Train a spam model from seed examples and reviewer history."""
+    return train(combined_training_examples(submissions))
+
+
 def token_log_probability(model, label, token):
     """Return smoothed log P(token | label)."""
     vocabulary_size = max(1, len(model["vocabulary"]))
@@ -255,6 +301,50 @@ def assess_opportunity(opportunity, model=None):
         "risk_level": prediction["risk_level"],
         "signals": signals,
         "training_examples": model["example_count"],
+    }
+
+
+def top_spam_tokens(model, limit=8):
+    """Return tokens with the strongest learned spam-vs-legit weight."""
+    signals = []
+
+    for token in model["vocabulary"]:
+        spam_log = token_log_probability(model, SPAM, token)
+        legit_log = token_log_probability(model, LEGIT, token)
+        weight = spam_log - legit_log
+        if weight > 0:
+            signals.append({
+                "token": token,
+                "weight": weight,
+            })
+
+    signals.sort(key=lambda signal: signal["weight"], reverse=True)
+    return signals[:limit]
+
+
+def model_health(submissions):
+    """Return a training audit for the adaptive spam model."""
+    history_examples = review_history_examples(submissions)
+    examples = combined_training_examples(submissions)
+    model = train(examples)
+
+    spam_count = 0
+    legit_count = 0
+    for example in examples:
+        if example["label"] == SPAM:
+            spam_count = spam_count + 1
+        if example["label"] == LEGIT:
+            legit_count = legit_count + 1
+
+    return {
+        "model": model,
+        "seed_examples": len(DEFAULT_TRAINING_EXAMPLES),
+        "history_examples": len(history_examples),
+        "total_examples": len(examples),
+        "spam_examples": spam_count,
+        "legit_examples": legit_count,
+        "leave_one_out_accuracy": leave_one_out_accuracy(examples),
+        "top_spam_tokens": top_spam_tokens(model),
     }
 
 
