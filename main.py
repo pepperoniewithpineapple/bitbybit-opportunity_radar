@@ -1,1634 +1,619 @@
-"""Command-line interface for Opportunity Radar."""
+"""NiceGUI app for Opportunity Radar."""
 
-import os
-import sys
+from __future__ import annotations
 
-# Reconfigure stdout to UTF-8 for Windows terminals.
-if hasattr(sys.stdout, 'reconfigure'):
-    sys.stdout.reconfigure(encoding='utf-8')
+from dataclasses import dataclass, field
 
-import access
-import career_model
-import demand
-import digest
-import fairness
-import filters
-import firsttimer
-import graph_rank
-import ics_export
-import interests as interests_module
-import matcher
-import pathway
-import recommend
-import review_queue
-import sender
-import spam_model
-import stats as stats_module
-import storage
-import tracker
-import ui
-import validation
-from models import Student
+from nicegui import ui
 
+import core
+import intelligence
 
-LEVELS = ["Secondary", "JC", "Poly", "University"]
 
-DEMO_STUDENT_NAME = "Wei Ming"
-DEMO_STUDENT_LEVEL = "JC"
-DEMO_STUDENT_INTERESTS = ["coding", "AI", "cybersecurity"]
+@dataclass
+class RadarState:
+    """Runtime state shared by the NiceGUI page."""
 
+    opportunities: list[core.Opportunity] = field(default_factory=list)
+    applications: list[core.Application] = field(default_factory=list)
+    submissions: list[dict] = field(default_factory=list)
+    student: core.Student | None = None
+    last_results: list[dict] = field(default_factory=list)
 
-def build_opportunities_path():
-    """Return the path to the curated opportunities JSON file."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_dir, "data", "opportunities.json")
+    def reload(self) -> None:
+        self.opportunities = core.load_opportunities()
+        self.applications = core.load_applications()
+        self.submissions = core.load_submissions()
+        self.student = core.load_student()
 
 
-def build_applications_path():
-    """Return the path to the persisted applications JSON file."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_dir, "data", "applications.json")
+STATE = RadarState()
+STATE.reload()
 
 
-def build_student_path():
-    """Return the path to the persisted student profile JSON file."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_dir, "data", "student.json")
+def refresh_all() -> None:
+    """Reload persisted state and refresh visible sections."""
+    STATE.reload()
+    metrics.refresh()
+    profile_panel.refresh()
+    applications_panel.refresh()
+    equity_panel.refresh()
+    career_panel.refresh()
+    sender_panel.refresh()
 
 
-def build_searches_path():
-    """Return the path to anonymous student search demand signals."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_dir, "data", "searches.json")
+def short(text: str, limit: int = 70) -> str:
+    return text if len(text) <= limit else text[: limit - 3] + "..."
 
 
-def build_interests_path():
-    """Return the path to the interest taxonomy JSON file."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_dir, "data", "interests.json")
-
-
-def build_calendar_export_path():
-    """Return the path to the generated calendar export file."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_dir, "calendar_export.ics")
-
-
-def build_digest_path():
-    """Return the path to the generated weekly digest text file."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_dir, "weekly_digest.txt")
-
-
-def build_sender_packet_path():
-    """Return the path to the generated sender announcement text file."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_dir, "opportunity_sender_packet.txt")
-
-
-def build_submissions_path():
-    """Return the path to the pending sender submissions JSON file."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_dir, "data", "submissions.json")
-
-
-def parse_interests(raw_text):
-    """Split a comma-separated interest string into a clean list."""
-    pieces = raw_text.split(",")
-    interests = []
-
-    for piece in pieces:
-        interest = piece.strip()
-        if interest != "":
-            interests.append(interest)
-
-    return interests
-
-
-def ask_student_profile():
-    """Ask the user for a student profile using the validation gateway."""
-    print("")
-    name = validation.nonempty("Name: ")
-
-    print("")
-    print("Levels:")
-    index = 1
-    for level in LEVELS:
-        print(str(index) + ". " + level)
-        index = index + 1
-
-    level_number = validation.get_valid_int("Choose level number: ", 1, len(LEVELS))
-    level = LEVELS[level_number - 1]
-
-    raw_interests = validation.nonempty(
-        "Interests, separated by commas (example: AI, coding, public good): "
-    )
-    interests = parse_interests(raw_interests)
-
-    while len(interests) == 0:
-        print("Please include at least one usable interest.")
-        raw_interests = validation.nonempty(
-            "Interests, separated by commas (example: AI, coding, public good): "
-        )
-        interests = parse_interests(raw_interests)
-
-    return Student(name, level, interests)
-
-
-def print_profile(student):
-    """Print the current student profile in one compact block."""
-    if student is None:
-        print("No profile set yet.")
-        return
-
-    print("Profile: " + student.name + " | " + student.level)
-    print("Interests: " + ", ".join(student.interests))
-
-
-def get_ranked_results(opportunities, student, interest_tree, cost_filter="all"):
-    """Rank opportunities for a student with optional interest expansion and cost filter.
-
-    Uses the interest taxonomy tree to recursively expand broad interests like
-    'Technology' into their leaf interests before matching.
-    """
-    expanded = interests_module.get_expanded_interests(interest_tree, student.interests)
-    matching_student = Student(student.name, student.level, expanded)
-
-    results = matcher.rank_opportunities(opportunities, matching_student)
-
-    if cost_filter == "free":
-        results = [r for r in results if r["opportunity"].cost == "free"]
-
-    return results
-
-
-def apply_cost_filter(results, cost_filter):
-    """Return ranked results after applying the selected cost filter."""
-    if cost_filter == "free":
-        return [result for result in results if result["opportunity"].cost == "free"]
-    return list(results)
-
-
-def get_available_types(results):
-    """Return opportunity types present in ranked results, sorted A-Z."""
-    seen = set()
-
-    for result in results:
-        seen.add(result["opportunity"].type)
-
-    return sorted(seen)
-
-
-def ask_type_filter(results):
-    """Ask the user which opportunity type filter to apply."""
-    types = get_available_types(results)
-
-    if len(types) == 0:
-        print("No opportunity types available to filter.")
-        return "all"
-
-    print("")
-    print("Filter by type:")
-    print("1. All types")
-    number = 2
-    for opp_type in types:
-        print(str(number) + ". " + opp_type)
-        number = number + 1
-
-    choice = validation.get_valid_int("Choose type filter: ", 1, len(types) + 1)
-    if choice == 1:
-        return "all"
-    return types[choice - 2]
-
-
-def ask_keyword_filter():
-    """Ask the user whether to filter feed results by title keyword."""
-    print("")
-    print("Filter by keyword:")
-    print("1. No keyword filter")
-    print("2. Enter a title keyword")
-    choice = validation.get_valid_int("Choose keyword filter: ", 1, 2)
-
-    if choice == 1:
-        return ""
-    return validation.nonempty("Keyword in title: ")
-
-
-def ask_deadline_filter():
-    """Ask the user whether to keep only results closing within N days."""
-    print("")
-    print("Filter by deadline window:")
-    print("1. No deadline filter")
-    print("2. Closing within N days")
-    choice = validation.get_valid_int("Choose deadline filter: ", 1, 2)
-
-    if choice == 1:
-        return None
-    return validation.get_valid_int("Maximum days left: ", 0, 3650)
-
-
-def ask_sort_key():
-    """Ask the user which sort order to use for feed results."""
-    print("")
-    print("Sort feed:")
-    print("1. Highest score")
-    print("2. Soonest deadline")
-    print("3. Title A-Z")
-    choice = validation.get_valid_int("Choose sort order: ", 1, 3)
-
-    if choice == 2:
-        return "deadline"
-    if choice == 3:
-        return "title"
-    return "score"
-
-
-def apply_feed_options(results, cost_filter, type_filter, keyword, max_days, sort_key):
-    """Apply selected cost, type, keyword, deadline, and sort options."""
-    filtered = apply_cost_filter(results, cost_filter)
-
-    if type_filter != "all":
-        filtered = filters.filter_by_type(filtered, type_filter)
-
-    if keyword != "":
-        filtered = filters.filter_by_keyword(filtered, keyword)
-
-    if max_days is not None:
-        filtered = filters.filter_by_deadline_window(filtered, max_days)
-
-    return filters.sort_results(filtered, sort_key)
-
-
-def run_feed_options(results):
-    """Run the option 2 filter and sorting submenu, then return final results."""
-    cost_filter = "all"
-    type_filter = "all"
-    keyword = ""
-    max_days = None
-    sort_key = "score"
-
-    while True:
-        print("")
-        print("Feed filters and sorting")
-        print("1. Cost filter: " + cost_filter)
-        print("2. Type filter: " + type_filter)
-        print("3. Keyword filter: " + (keyword if keyword != "" else "none"))
-        if max_days is None:
-            print("4. Deadline filter: none")
-        else:
-            print("4. Deadline filter: within " + str(max_days) + " days")
-        print("5. Sort order: " + sort_key)
-        print("0. Show results")
-
-        choice = validation.get_valid_int("Choose feed option: ", 0, 5)
-
-        if choice == 0:
-            return apply_feed_options(
-                results,
-                cost_filter,
-                type_filter,
-                keyword,
-                max_days,
-                sort_key,
-            )
-
-        if choice == 1:
-            cost_filter = ask_cost_filter()
-            continue
-
-        if choice == 2:
-            type_filter = ask_type_filter(results)
-            continue
-
-        if choice == 3:
-            keyword = ask_keyword_filter()
-            continue
-
-        if choice == 4:
-            max_days = ask_deadline_filter()
-            continue
-
-        if choice == 5:
-            sort_key = ask_sort_key()
-            continue
-
-
-def print_match_tips(opportunities, student, interest_tree):
-    """Print interest suggestions that could unlock more eligible opportunities."""
-    suggestions = recommend.suggest_interests(opportunities, student, interest_tree)
-
-    for interest, count in suggestions:
-        print(
-            "Tip: add '"
-            + interest
-            + "' to your interests to unlock "
-            + str(count)
-            + " more opportunities."
-        )
-
-
-def show_closing_this_week(opportunities, student):
-    """Print eligible opportunities closing within the next 7 days."""
-    urgent = matcher.closing_this_week(opportunities, student)
-
-    if len(urgent) == 0:
-        print("No eligible opportunities are closing this week.")
-        return
-
-    print("")
-    ui.header("Closing This Week")
-    print("")
-
-    headers = ["#", "Title", "Organizer", "Type", "Deadline", "Days Left"]
-    rows = []
-
-    for index, opportunity in enumerate(urgent):
-        days_left = matcher.days_until(opportunity.deadline)
-        rows.append([
-            str(index + 1),
-            opportunity.title[:45] + ("..." if len(opportunity.title) > 45 else ""),
-            opportunity.organizer,
-            opportunity.type,
-            opportunity.deadline,
-            ui.countdown_badge(days_left),
-        ])
-
-    ui.print_table(headers, rows)
-
-
-def show_feed(results):
-    """Print the ranked For You feed using aligned tables and countdown badges."""
-    if len(results) == 0:
-        print("No open opportunities match your level and filters yet.")
-        print("(Tip: try the empty-radar view in Stats to see where the gap is.)")
-        return
-
-    print("")
-    ui.header("For You - Ranked Opportunities")
-    print("")
-
-    headers = ["#", "Title", "Organizer", "Deadline", "Days Left", "Score"]
-    rows = []
-
-    for rank_number, result in enumerate(results):
-        opp = result["opportunity"]
-        breakdown = result["breakdown"]
-        days_left = breakdown["days_left"]
-
-        rows.append([
-            str(rank_number + 1),
-            opp.title[:45] + ("..." if len(opp.title) > 45 else ""),
-            opp.organizer,
-            opp.deadline,
-            ui.countdown_badge(days_left),
-            format(result["score"], ".3f"),
-        ])
-
-    ui.print_table(headers, rows)
-
-    print("")
-    print("Tip: use the scoring breakdown view to inspect any result.")
-
-
-def show_menu(student):
-    """Print the main menu and current profile status."""
-    print("")
-    ui.header("Student / Opportunity Finder")
-    print_profile(student)
-    print("")
-    print("1. Profile")
-    print("2. Discover opportunities")
-    print("3. My applications and sharing")
-    print("4. Equity and transparency lab")
-    print("5. Career intelligence lab")
-    print("6. Help and demo tools")
-    print("0. Back to mode selection")
-
-
-def show_discover_menu():
-    """Print the grouped discovery submenu."""
-    print("")
-    ui.header("Discover Opportunities")
-    print("1. View ranked + explained For You feed")
-    print("2. Show full scoring breakdown")
-    print("3. Closing this week")
-    print("0. Back")
-
-
-def show_applications_menu():
-    """Print the grouped applications and sharing submenu."""
-    print("")
-    ui.header("My Applications And Sharing")
-    print("1. Application tracker")
-    print("2. Export tracker deadlines to .ics calendar")
-    print("3. Generate shareable weekly digest")
-    print("0. Back")
-
-
-def show_equity_menu():
-    """Print the grouped equity and transparency submenu."""
-    print("")
-    ui.header("Equity And Transparency Lab")
-    print("1. Invisible starting-line simulation")
-    print("2. Bias self-audit")
-    print("3. Opportunity-gap statistics")
-    print("0. Back")
-
-
-def show_career_lab_menu():
-    """Print the grouped career intelligence submenu."""
-    print("")
-    ui.header("Career Intelligence Lab")
-    print("1. Career impact simulator")
-    print("2. Hidden opportunity graph discovery")
-    print("3. Build my career pathway")
-    print("0. Back")
-
-
-def show_help_menu():
-    """Print the help and demo submenu."""
-    print("")
-    ui.header("Help And Demo Tools")
-    print("1. Load demo student")
-    print("2. First-timer guide")
-    print("0. Back")
-
-
-def ensure_profile(student):
-    """Return True when a profile exists, otherwise explain the missing step."""
-    if student is None:
-        print("Set your student profile first (option 1 or 9 for demo student).")
-        return False
-    return True
-
-
-def choose_breakdown_result(results):
-    """Ask the user which result should be opened in the transparency screen."""
-    if len(results) == 0:
-        print("No ranked results available. View the feed first (option 2).")
-        return
-
-    choice = validation.get_valid_int(
-        "Choose a result number from 1 to " + str(len(results)) + ": ",
-        1,
-        len(results),
-    )
-    matcher.print_scoring_breakdown(results[choice - 1])
-
-
-def ask_career_goal():
-    """Ask the student which career direction to simulate."""
-    careers = career_model.career_names()
-
-    print("")
-    print("Career goals:")
-    for index, career in enumerate(careers):
-        print(str(index + 1) + ". " + career)
-
-    choice = validation.get_valid_int("Choose career goal: ", 1, len(careers))
-    return careers[choice - 1]
-
-
-def choose_impact_opportunity(results):
-    """Ask the user to choose a ranked opportunity for career impact."""
-    if len(results) == 0:
-        print("No ranked opportunities available. View the feed first.")
-        return None
-
-    print("")
-    print("Choose an opportunity to simulate:")
-    for index, result in enumerate(results):
-        opportunity = result["opportunity"]
-        print(str(index + 1) + ". " + opportunity.title)
-
-    choice = validation.get_valid_int(
-        "Choose opportunity number: ",
-        1,
-        len(results),
-    )
-    return results[choice - 1]["opportunity"]
-
-
-def print_career_impact(impact):
-    """Print one career impact result in a transparent, judge-friendly format."""
-    opportunity = impact["opportunity"]
-
-    print("")
-    ui.header("Career Impact Simulator")
-    print("")
-    print("Career goal: " + impact["career"])
-    print("Opportunity: " + opportunity.title)
-    print("")
-    print("This is NOT a real hiring-probability prediction.")
-    print("It estimates career-readiness alignment if you join and complete it.")
-    print("The model uses weighted skill vectors, not real hiring probability.")
-    print("")
-    print("Before joining: " + format(impact["before"], ".1f") + "/100")
-    print("After joining:  " + format(impact["after"], ".1f") + "/100")
-
-    delta_text = format(impact["delta"], "+.1f")
-    print("Impact: " + impact["classification"] + " (" + delta_text + " points)")
-    print("")
-    print("Why:")
-    for reason in impact["reasons"]:
-        print("- " + reason)
-
-
-def show_best_career_boosters(career_name, student, results):
-    """Print the strongest positive career boosters from current feed results."""
-    opportunities = []
-    for result in results:
-        opportunities.append(result["opportunity"])
-
-    impacts = career_model.rank_impacts(career_name, student, opportunities, limit=5)
-
-    print("")
-    print("Strongest career boosters in your current feed:")
-    rows = []
-    for impact in impacts:
-        opportunity = impact["opportunity"]
-        rows.append([
-            opportunity.title[:42] + ("..." if len(opportunity.title) > 42 else ""),
-            impact["classification"],
-            format(impact["delta"], "+.1f"),
-            format(impact["after"], ".1f") + "/100",
-        ])
-
-    ui.print_table(["Opportunity", "Impact", "Delta", "After"], rows)
-
-
-def run_career_impact_flow(student, results):
-    """Run the career impact simulator."""
-    if len(results) == 0:
-        print("View the For You feed first so there are opportunities to simulate.")
-        return
-
-    career_name = ask_career_goal()
-    show_best_career_boosters(career_name, student, results)
-    opportunity = choose_impact_opportunity(results)
-
-    if opportunity is None:
-        return
-
-    impact = career_model.evaluate_opportunity(career_name, student, opportunity)
-    print_career_impact(impact)
-
-
-def run_graph_discovery_flow(opportunities, student):
-    """Run hidden opportunity discovery using graph ranking."""
-    print("")
-    ui.header("Hidden Opportunity Graph Discovery")
-    print("")
-    print("This uses a personalized PageRank-style graph over interests,")
-    print("careers, organizers, and opportunities.")
-    print("")
-
-    use_career = validation.get_valid_choice(
-        "Add a career goal to personalize the graph? (yes/no): ",
-        ["yes", "no"],
-    )
-    career_name = None
-    if use_career == "yes":
-        career_name = ask_career_goal()
-
-    rows = graph_rank.rank_hidden_opportunities(
-        opportunities,
-        student,
-        career_name,
-        limit=5,
+def badge(text: str, tone: str = "neutral"):
+    colors = {
+        "neutral": "bg-slate-100 text-slate-700",
+        "good": "bg-emerald-100 text-emerald-700",
+        "warn": "bg-amber-100 text-amber-800",
+        "bad": "bg-rose-100 text-rose-700",
+        "info": "bg-sky-100 text-sky-700",
+    }
+    return ui.label(text).classes(
+        "px-2.5 py-1 rounded-full text-xs font-medium " + colors[tone]
     )
 
-    if len(rows) == 0:
-        print("No eligible graph discoveries found yet.")
-        return
 
-    table_rows = []
-    for index, row in enumerate(rows):
-        opportunity = row["opportunity"]
-        table_rows.append([
-            str(index + 1),
-            short_text(opportunity.title, 36),
-            format(row["graph_score"], ".4f"),
-            str(len(row["shared_interests"])),
-            short_text(row["path_text"], 58),
-        ])
-
-    ui.print_table(["#", "Opportunity", "GraphRank", "Direct", "Bridge path"], table_rows)
-    print("")
-    print("Direct = exact interest matches. Low direct match + good graph path")
-    print("means the opportunity may be a hidden bridge.")
+def stat_card(label: str, value: str, hint: str):
+    with ui.card().classes("metric-card"):
+        ui.label(value).classes("text-3xl font-semibold text-slate-950")
+        ui.label(label).classes("text-sm font-medium text-slate-700")
+        ui.label(hint).classes("text-xs text-slate-500")
 
 
-def run_pathway_flow(opportunities, student):
-    """Run the career pathway planner."""
-    print("")
-    ui.header("Career Pathway Planner")
-    print("")
-    career_name = ask_career_goal()
-    plan = pathway.build_pathway(career_name, student, opportunities)
+def opportunity_card(result: dict, show_track: bool = True):
+    opportunity = result["opportunity"]
+    breakdown = result["breakdown"]
+    days_left = result["days_left"]
+    with ui.card().classes("opp-card"):
+        with ui.row().classes("items-start justify-between gap-4 w-full"):
+            with ui.column().classes("gap-1"):
+                ui.label(opportunity.title).classes("text-lg font-semibold text-slate-950")
+                ui.label(opportunity.organizer + " | " + opportunity.type).classes(
+                    "text-sm text-slate-500"
+                )
+            with ui.row().classes("gap-2"):
+                badge("score " + format(result["score"], ".3f"), "info")
+                badge(str(days_left) + "d", "warn" if days_left < 7 else "good")
+        ui.label(", ".join(opportunity.interests)).classes("text-sm text-slate-600")
+        with ui.row().classes("gap-2"):
+            badge(opportunity.cost, "good" if opportunity.cost == "free" else "warn")
+            badge("beginner" if opportunity.beginner_friendly else "advanced", "good" if opportunity.beginner_friendly else "neutral")
+            badge("open to " + ", ".join(opportunity.eligible_levels), "neutral")
+        with ui.expansion("Transparent scoring").classes("w-full"):
+            ui.markdown(
+                f"""
+                - Shared interests: **{', '.join(result['shared']) or 'none'}**
+                - Interest score: **{breakdown['interest_score']:.3f}**
+                - Urgency score: **{breakdown['urgency_score']:.3f}**
+                - Access boost: **{breakdown['access_score']:.3f}**
+                - Total: **{breakdown['total']:.3f}**
+                """
+            ).classes("text-sm")
+        with ui.row().classes("gap-2"):
+            ui.link("Open link", opportunity.url, new_tab=True).classes("soft-button")
+            if show_track:
+                ui.button("Track", icon="bookmark_add", on_click=lambda opp=opportunity: track_opportunity(opp)).classes("primary-button")
 
-    print("")
-    print("Career goal: " + career_name)
-    print("Starting readiness: " + format(plan["starting_score"], ".1f") + "/100")
 
-    missing = []
-    for item in plan["missing_skills"][:5]:
-        missing.append(item["skill"])
-
-    if len(missing) > 0:
-        print("Top missing skills: " + ", ".join(missing))
+def track_opportunity(opportunity: core.Opportunity) -> None:
+    if core.add_application(STATE.applications, opportunity):
+        ui.notify("Added to tracker", type="positive")
     else:
-        print("Top missing skills: none detected")
-
-    rows = []
-    for step in plan["steps"]:
-        opportunity = step["opportunity"]
-        if opportunity is None:
-            title = "No live fit yet"
-            deadline = "-"
-        else:
-            title = short_text(opportunity.title, 38)
-            deadline = opportunity.deadline
-
-        rows.append([
-            step["stage_label"],
-            ", ".join(step["target_types"]),
-            title,
-            deadline,
-            short_text(step["reason"], 50),
-        ])
-
-    print("")
-    ui.print_table(["Stage", "Types", "Suggested step", "Deadline", "Why"], rows)
+        ui.notify("Already tracked", type="warning")
+    refresh_all()
 
 
-def show_tracker_menu():
-    """Print the application tracker submenu."""
-    print("")
-    print("Application tracker")
-    print("1. Add a For You feed result")
-    print("2. List tracked applications")
-    print("3. Update a status")
-    print("4. Add or edit a note")
-    print("5. Remove an item")
-    print("0. Back")
+@ui.refreshable
+def metrics():
+    stats = core.opportunity_stats(STATE.opportunities, STATE.student)
+    pending = len(core.pending_submissions(STATE.submissions))
+    demand = sum(core.demand_counts().values())
+    with ui.row().classes("grid grid-cols-1 md:grid-cols-4 gap-4 w-full"):
+        stat_card("Open opportunities", str(stats["open"]), "curated and approved")
+        stat_card("Free access", str(stats["free"]), "no-cost opportunities")
+        stat_card("Demand signals", str(demand), "anonymous student searches")
+        stat_card("Pending review", str(pending), "sender submissions")
 
 
-def run_tracker_menu(applications, opportunities, last_results, applications_path):
-    """Run the application tracker submenu."""
-    while True:
-        show_tracker_menu()
-        choice = validation.get_valid_int("Choose a tracker option: ", 0, 5)
+@ui.refreshable
+def profile_panel():
+    with ui.card().classes("section-card"):
+        ui.label("Student profile").classes("section-title")
+        student = STATE.student or core.demo_student()
+        name = ui.input("Name", value=student.name).classes("w-full")
+        level = ui.select(core.LEVELS, label="Level", value=student.level).classes("w-full")
+        interests = ui.input(
+            "Interests",
+            value=", ".join(student.interests),
+            placeholder="AI, coding, public good",
+        ).classes("w-full")
 
-        if choice == 0:
+        def save_profile() -> None:
+            parsed = core.parse_interests(interests.value or "")
+            if not name.value or not parsed:
+                ui.notify("Please add a name and at least one interest.", type="warning")
+                return
+            core.save_student(core.Student(name.value.strip(), level.value, parsed))
+            STATE.last_results = []
+            ui.notify("Profile saved", type="positive")
+            refresh_all()
+
+        with ui.row().classes("gap-2"):
+            ui.button("Save profile", icon="save", on_click=save_profile).classes("primary-button")
+            ui.button(
+                "Load demo",
+                icon="auto_awesome",
+                on_click=lambda: (core.save_student(core.demo_student()), ui.notify("Demo student loaded", type="positive"), refresh_all()),
+            ).classes("soft-button")
+
+
+def render_results(container, results: list[dict]) -> None:
+    container.clear()
+    with container:
+        if not results:
+            ui.label("No matching open opportunities yet. Try broader filters.").classes("empty-state")
             return
-
-        if choice == 1:
-            changed = tracker.add_from_feed(applications, last_results)
-            if changed:
-                storage.save_applications(applications_path, applications)
-            continue
-
-        if choice == 2:
-            tracker.list_applications(applications, opportunities)
-            continue
-
-        if choice == 3:
-            changed = tracker.update_status_flow(applications, opportunities)
-            if changed:
-                storage.save_applications(applications_path, applications)
-            continue
-
-        if choice == 4:
-            changed = tracker.update_notes_flow(applications, opportunities)
-            if changed:
-                storage.save_applications(applications_path, applications)
-            continue
-
-        if choice == 5:
-            changed = tracker.remove_application_flow(applications, opportunities)
-            if changed:
-                storage.save_applications(applications_path, applications)
-            continue
+        tips = core.suggest_interests(STATE.opportunities, STATE.student) if STATE.student else []
+        if tips:
+            ui.label("Try adding: " + ", ".join([tip[0] for tip in tips])).classes("text-sm text-slate-500")
+        for result in results[:10]:
+            opportunity_card(result)
 
 
-def export_calendar(applications, opportunities):
-    """Export tracked application deadlines to an ICS calendar file."""
-    if len(applications) == 0:
-        print("No tracked applications yet. Exporting an empty calendar file.")
+def build_discover_tab():
+    with ui.row().classes("items-stretch gap-5 w-full"):
+        with ui.column().classes("side-panel"):
+            profile_panel()
+            with ui.card().classes("section-card"):
+                ui.label("Filters").classes("section-title")
+                cost = ui.select(["all", "free", "paid"], value="all", label="Cost").classes("w-full")
+                opp_type = ui.select(["all"] + core.OPPORTUNITY_TYPES, value="all", label="Type").classes("w-full")
+                keyword = ui.input("Keyword").classes("w-full")
+                max_days = ui.number("Deadline within days", value=None, min=0).classes("w-full")
+                sort = ui.select(["score", "deadline", "title"], value="score", label="Sort").classes("w-full")
+                ui.button("Run discovery", icon="radar", on_click=lambda: run_search()).classes("primary-button w-full")
+                ui.button("Closing this week", icon="timer", on_click=lambda: show_closing()).classes("soft-button w-full")
 
-    calendar_path = build_calendar_export_path()
-    written_path = ics_export.export_applications_to_ics(
-        applications,
-        opportunities,
-        calendar_path,
-    )
-    print("Calendar exported to: " + written_path)
-    print("Import this into Google Calendar with Settings > Import & export > Import.")
+        results_area = ui.column().classes("content-panel")
 
-
-def load_demo_student(student_path):
-    """Load and persist the built-in demo student."""
-    student = Student(
-        DEMO_STUDENT_NAME,
-        DEMO_STUDENT_LEVEL,
-        DEMO_STUDENT_INTERESTS,
-    )
-    storage.save_student(student_path, student)
-    print("")
-    print("Demo student loaded: " + student.name
-          + " | " + student.level
-          + " | " + ", ".join(student.interests))
-    return student
-
-
-def ensure_last_results(opportunities, student, interest_tree, last_results):
-    """Return existing feed results or compute them when missing."""
-    if len(last_results) > 0:
-        return last_results
-    return get_ranked_results(opportunities, student, interest_tree)
-
-
-def generate_weekly_digest(opportunities, student, interest_tree, last_results):
-    """Generate the weekly digest and return the results used."""
-    last_results = ensure_last_results(
-        opportunities,
-        student,
-        interest_tree,
-        last_results,
-    )
-    digest_path = build_digest_path()
-    written = digest.generate_digest(last_results, student, digest_path)
-    print("")
-    print("Weekly digest written to: " + written)
-    print("Paste this into your class group chat to share opportunities.")
-    return last_results
-
-
-def run_discover_menu(student, opportunities, interest_tree, searches_path,
-                      last_results):
-    """Run grouped discovery features."""
-    while True:
-        show_discover_menu()
-        choice = validation.get_valid_int("Choose discovery option: ", 0, 3)
-
-        if choice == 0:
-            return last_results
-
-        if choice == 1:
-            if ensure_profile(student):
-                demand.log_search(searches_path, student.level, student.interests)
-                print("Anonymous demand signal saved.")
-                ranked = get_ranked_results(opportunities, student, interest_tree)
-                last_results = run_feed_options(ranked)
-                show_feed(last_results)
-                print_match_tips(opportunities, student, interest_tree)
-            continue
-
-        if choice == 2:
-            if ensure_profile(student):
-                last_results = ensure_last_results(
-                    opportunities,
-                    student,
-                    interest_tree,
-                    last_results,
-                )
-                choose_breakdown_result(last_results)
-            continue
-
-        if choice == 3:
-            if ensure_profile(student):
-                show_closing_this_week(opportunities, student)
-            continue
-
-
-def run_applications_menu(student, opportunities, applications, interest_tree,
-                          applications_path, last_results):
-    """Run grouped application and sharing features."""
-    while True:
-        show_applications_menu()
-        choice = validation.get_valid_int("Choose applications option: ", 0, 3)
-
-        if choice == 0:
-            return last_results
-
-        if choice == 1:
-            run_tracker_menu(
-                applications,
-                opportunities,
-                last_results,
-                applications_path,
-            )
-            continue
-
-        if choice == 2:
-            export_calendar(applications, opportunities)
-            continue
-
-        if choice == 3:
-            if ensure_profile(student):
-                last_results = generate_weekly_digest(
-                    opportunities,
-                    student,
-                    interest_tree,
-                    last_results,
-                )
-            continue
-
-
-def run_equity_menu(student, opportunities, interest_tree):
-    """Run grouped equity and transparency features."""
-    while True:
-        show_equity_menu()
-        choice = validation.get_valid_int("Choose equity option: ", 0, 3)
-
-        if choice == 0:
+    def run_search() -> None:
+        if not STATE.student:
+            ui.notify("Save or load a student profile first.", type="warning")
             return
-
-        if choice == 1:
-            if ensure_profile(student):
-                expanded = interests_module.get_expanded_interests(
-                    interest_tree,
-                    student.interests,
-                )
-                simulation_student = Student(student.name, student.level, expanded)
-                access.print_starting_line_simulation(
-                    opportunities,
-                    simulation_student,
-                )
-            continue
-
-        if choice == 2:
-            fairness.print_audit(opportunities, Student)
-            continue
-
-        if choice == 3:
-            stats_module.print_stats(opportunities, student)
-            continue
-
-
-def run_career_lab_menu(student, opportunities, interest_tree, last_results):
-    """Run grouped career intelligence features."""
-    while True:
-        show_career_lab_menu()
-        choice = validation.get_valid_int("Choose career option: ", 0, 3)
-
-        if choice == 0:
-            return last_results
-
-        if choice == 1:
-            if ensure_profile(student):
-                last_results = ensure_last_results(
-                    opportunities,
-                    student,
-                    interest_tree,
-                    last_results,
-                )
-                impact_student = build_career_student(student, interest_tree)
-                run_career_impact_flow(impact_student, last_results)
-            continue
-
-        if choice == 2:
-            if ensure_profile(student):
-                graph_student = build_career_student(student, interest_tree)
-                run_graph_discovery_flow(opportunities, graph_student)
-            continue
-
-        if choice == 3:
-            if ensure_profile(student):
-                pathway_student = build_career_student(student, interest_tree)
-                run_pathway_flow(opportunities, pathway_student)
-            continue
-
-
-def run_help_menu(student_path):
-    """Run grouped help and demo features. Return a demo student when loaded."""
-    while True:
-        show_help_menu()
-        choice = validation.get_valid_int("Choose help option: ", 0, 2)
-
-        if choice == 0:
-            return None
-
-        if choice == 1:
-            return load_demo_student(student_path)
-
-        if choice == 2:
-            firsttimer.run_first_timer_menu()
-            continue
-
-
-def ask_cost_filter():
-    """Ask whether to show all opportunities or free-only, via validation gateway."""
-    print("")
-    print("Filter by cost:")
-    print("1. All opportunities")
-    print("2. Free only")
-    choice = validation.get_valid_int("Choose filter: ", 1, 2)
-
-    if choice == 2:
-        return "free"
-    return "all"
-
-
-def show_mode_menu(student):
-    """Print the top-level two-mode menu."""
-    print("")
-    ui.header("Opportunity Radar")
-    print("Two modes. One shared opportunity engine.")
-    print_profile(student)
-    print("")
-    print("1. Student / Opportunity Finder mode")
-    print("2. Opportunity Sender mode")
-    print("0. Quit")
-
-
-def build_career_student(student, interest_tree):
-    """Return a student profile with raw and expanded interests preserved."""
-    expanded = interests_module.get_expanded_interests(
-        interest_tree,
-        student.interests,
-    )
-    seen = set()
-    combined = []
-
-    for interest in list(student.interests) + list(expanded):
-        key = interest.strip().lower()
-        if key not in seen:
-            seen.add(key)
-            combined.append(interest)
-
-    return Student(student.name, student.level, combined)
-
-
-def ask_level_list():
-    """Ask for one or more eligible student levels."""
-    while True:
-        print("")
-        print("Eligible levels:")
-        for index, level in enumerate(LEVELS):
-            print(str(index + 1) + ". " + level)
-        print("Type comma-separated numbers, or 'all'.")
-
-        raw_text = validation.nonempty("Eligible levels: ")
-        if raw_text.strip().lower() == "all":
-            return list(LEVELS)
-
-        selected = []
-        valid = True
-        pieces = raw_text.split(",")
-
-        for piece in pieces:
-            cleaned = piece.strip()
-            if not cleaned.isdigit():
-                valid = False
-                break
-
-            number = int(cleaned)
-            if number < 1 or number > len(LEVELS):
-                valid = False
-                break
-
-            level = LEVELS[number - 1]
-            if level not in selected:
-                selected.append(level)
-
-        if valid and len(selected) > 0:
-            return selected
-
-        print("Please enter level numbers like 1,2 or type all.")
-
-
-def ask_sender_type():
-    """Ask for the opportunity type in sender mode."""
-    print("")
-    print("Opportunity type:")
-    for index, opp_type in enumerate(sender.OPPORTUNITY_TYPES):
-        print(str(index + 1) + ". " + opp_type)
-
-    choice = validation.get_valid_int(
-        "Choose opportunity type: ",
-        1,
-        len(sender.OPPORTUNITY_TYPES),
-    )
-    selected = sender.OPPORTUNITY_TYPES[choice - 1]
-
-    if selected == "other":
-        return validation.nonempty("Custom type: ")
-    return selected
-
-
-def ask_sender_interests():
-    """Ask for opportunity interest tags."""
-    while True:
-        raw_interests = validation.nonempty(
-            "Interest tags, separated by commas: "
+        core.log_search(STATE.student)
+        STATE.last_results = core.rank_opportunities(
+            STATE.opportunities,
+            STATE.student,
+            cost=cost.value,
+            opp_type=opp_type.value,
+            keyword=keyword.value or "",
+            max_days=int(max_days.value) if max_days.value is not None else None,
+            sort=sort.value,
         )
-        interests = parse_interests(raw_interests)
-
-        if len(interests) > 0:
-            return interests
-
-        print("Please include at least one interest tag.")
-
-
-def ask_sender_deadline():
-    """Ask for a deadline that has not already passed."""
-    while True:
-        deadline = validation.get_valid_date("Deadline (YYYY-MM-DD): ")
-        if matcher.days_until(deadline) >= 0:
-            return deadline
-        print("Please enter a deadline that has not already passed.")
-
-
-def ask_sender_opportunity(opportunities):
-    """Ask an organizer for a complete opportunity record."""
-    print("")
-    ui.header("Submit A New Opportunity")
-    print("")
-    print("This creates a pending submission. A reviewer must approve it before")
-    print("students can see it in Finder mode.")
-    print("")
-
-    while True:
-        title = validation.nonempty("Opportunity title: ")
-        if not sender.title_exists(opportunities, title):
-            break
-        print("That title already exists. Please use a unique title.")
-
-    organizer = validation.nonempty("Organizer name: ")
-    opp_type = ask_sender_type()
-    interests = ask_sender_interests()
-    eligible_levels = ask_level_list()
-    cost = validation.get_valid_choice("Cost (free/paid): ", ["free", "paid"])
-    beginner_text = validation.get_valid_choice(
-        "Beginner-friendly? (yes/no): ",
-        ["yes", "no"],
-    )
-    beginner_friendly = beginner_text == "yes"
-    deadline = ask_sender_deadline()
-    url = validation.nonempty("Application/info URL: ")
-
-    return sender.build_opportunity(
-        storage.next_opportunity_id(opportunities),
-        title,
-        opp_type,
-        interests,
-        eligible_levels,
-        cost,
-        beginner_friendly,
-        deadline,
-        url,
-        organizer,
-    )
-
-
-def print_sender_gap_radar(opportunities, searches_path):
-    """Print demand-vs-supply gap information for organizers."""
-    print("")
-    ui.header("Sender Demand Radar")
-    print("")
-
-    rows = sender.build_gap_rows(opportunities, searches_path)
-
-    if len(rows) == 0:
-        print("No anonymous student search demand has been logged yet.")
-        print("Showing low-supply interests so senders still have a starting point.")
-        rows = sender.build_supply_thin_rows(opportunities)
-
-    table_rows = []
-    for row in rows:
-        if row["gap_score"] > 0:
-            gap = "+" + str(row["gap_score"])
-        else:
-            gap = str(row["gap_score"])
-
-        table_rows.append([
-            row["interest"],
-            str(row["demand"]),
-            str(row["supply"]),
-            gap,
-            sender.priority_label(row),
-        ])
-
-    ui.print_table(["Interest", "Demand", "Supply", "Gap", "Priority"], table_rows)
-    print("")
-    print("Sender idea: post where demand is high and supply is thin.")
-
-
-def print_sender_preview(opportunity, opportunities, searches_path):
-    """Print an impact preview before saving a sender opportunity."""
-    preview = sender.build_sender_preview(opportunity, opportunities, searches_path)
-
-    print("")
-    ui.header("Sender Impact Preview")
-    print("")
-    print("Title: " + opportunity.title)
-    print("Organizer: " + opportunity.organizer)
-    print("Open to: " + ", ".join(opportunity.eligible_levels))
-    print("Interests: " + ", ".join(opportunity.interests))
-    print("Deadline: " + opportunity.deadline
-          + " (" + str(preview["days_left"]) + " days left)")
-    print("Matching anonymous interest-demand hits: "
-          + str(preview["demand_matches"]))
-    print("Accessibility score: " + str(preview["access_score"]) + "/100")
-
-    if preview["access_score"] >= 80:
-        print("Signal: strong access design.")
-    elif preview["access_score"] >= 60:
-        print("Signal: decent access design; consider making it free or beginner-friendly.")
-    else:
-        print("Signal: likely harder to access; explain support clearly.")
-
-
-def short_text(text, limit):
-    """Return text shortened for compact terminal tables."""
-    if len(text) <= limit:
-        return text
-    return text[:limit - 3] + "..."
-
-
-def print_review_flags(flags):
-    """Print submission review flags in a compact table."""
-    if len(flags) == 0:
-        print("Review checks: clear. No blockers or warnings found.")
-        return
-
-    rows = []
-    for flag in flags:
-        rows.append([
-            flag["severity"],
-            flag["label"],
-            flag["detail"],
-        ])
-
-    ui.print_table(["Severity", "Check", "Detail"], rows)
-
-
-def print_submission_detail(submission, submissions, opportunities, searches_path):
-    """Print one pending submission with reviewer-focused context."""
-    opportunity = submission["opportunity"]
-    preview = sender.build_sender_preview(opportunity, opportunities, searches_path)
-    spam = review_queue.spam_assessment(submission, submissions)
-    flags = review_queue.review_flags(
-        submission,
-        opportunities,
-        searches_path,
-        submissions,
-    )
-
-    print("")
-    ui.header("Submission Review")
-    print("")
-    print("Submission: " + submission["submission_id"])
-    print("Submitted: " + submission["submitted_at"])
-    print("Title: " + opportunity.title)
-    print("Organizer: " + opportunity.organizer)
-    print("Type: " + opportunity.type)
-    print("Deadline: " + opportunity.deadline)
-    print("Cost: " + opportunity.cost)
-    print("Beginner-friendly: " + ("yes" if opportunity.beginner_friendly else "no"))
-    print("Open to: " + ", ".join(opportunity.eligible_levels))
-    print("Interests: " + ", ".join(opportunity.interests))
-    print("URL: " + opportunity.url)
-    print("")
-    print("Matching anonymous interest-demand hits: "
-          + str(preview["demand_matches"]))
-    print("Accessibility score: " + str(preview["access_score"]) + "/100")
-    print("ML spam risk: " + spam["risk_level"]
-          + " (" + str(round(spam["spam_probability"] * 100)) + "%)")
-    if spam["risk_level"] != "LOW" and len(spam["signals"]) > 0:
-        signal_words = []
-        for signal in spam["signals"]:
-            signal_words.append(signal["token"])
-        print("ML spam signals: " + ", ".join(signal_words))
-    print("")
-    print_review_flags(flags)
-    return flags
-
-
-def list_pending_submissions(submissions):
-    """Print pending sender submissions."""
-    pending = review_queue.pending_submissions(submissions)
-
-    print("")
-    ui.header("Pending Submission Queue")
-    print("")
-
-    if len(pending) == 0:
-        print("No pending submissions. The live feed is clean.")
-        return []
-
-    rows = []
-    for index, submission in enumerate(pending):
-        opportunity = submission["opportunity"]
-        rows.append([
-            str(index + 1),
-            submission["submission_id"],
-            short_text(opportunity.title, 38),
-            short_text(opportunity.organizer, 24),
-            opportunity.deadline,
-        ])
-
-    ui.print_table(["#", "ID", "Title", "Organizer", "Deadline"], rows)
-    return pending
-
-
-def review_pending_submissions(submissions, submissions_path, opportunities,
-                               opportunities_path, searches_path):
-    """Let a reviewer approve or reject pending sender submissions."""
-    pending = list_pending_submissions(submissions)
-    if len(pending) == 0:
-        return
-
-    choice = validation.get_valid_int(
-        "Choose a submission to review, or 0 to cancel: ",
-        0,
-        len(pending),
-    )
-    if choice == 0:
-        return
-
-    submission = pending[choice - 1]
-    flags = print_submission_detail(
-        submission,
-        submissions,
-        opportunities,
-        searches_path,
-    )
-
-    decision = validation.get_valid_choice(
-        "Decision (approve/reject/skip): ",
-        ["approve", "reject", "skip"],
-    )
-
-    if decision == "skip":
-        print("Left pending for later review.")
-        return
-
-    if decision == "reject":
-        note = validation.nonempty("Reviewer note: ")
-        review_queue.reject_submission(submission, note)
-        review_queue.save_submissions(submissions_path, submissions)
-        print("Rejected. The submission stayed out of the live student feed.")
-        return
-
-    if review_queue.has_blocker(flags):
-        print("Cannot approve while a BLOCKER is present.")
-        print("Reject it with a note, or fix the live data first.")
-        return
-
-    new_opp_id = storage.next_opportunity_id(opportunities)
-    approved = review_queue.approve_submission(
-        submission,
-        opportunities,
-        new_opp_id,
-        note="Approved through review queue.",
-    )
-
-    if approved:
-        storage.save_opportunities(opportunities_path, opportunities)
-        review_queue.save_submissions(submissions_path, submissions)
-        print("Approved. It is now live in Student Finder mode.")
-        generate_sender_packet(submission["opportunity"])
-    else:
-        print("Not approved because a matching live title already exists.")
-
-
-def list_live_opportunities(opportunities):
-    """Print a compact list of current open opportunities."""
-    open_opportunities = get_open_opportunities(opportunities)
-
-    print("")
-    ui.header("Live Opportunity Store")
-    print("")
-
-    if len(open_opportunities) == 0:
-        print("No open opportunities are currently stored.")
-        return
-
-    rows = []
-    for index, opportunity in enumerate(open_opportunities[:15]):
-        rows.append([
-            str(index + 1),
-            opportunity.title[:42] + ("..." if len(opportunity.title) > 42 else ""),
-            opportunity.organizer,
-            opportunity.type,
-            opportunity.deadline,
-        ])
-
-    ui.print_table(["#", "Title", "Organizer", "Type", "Deadline"], rows)
-
-
-def get_open_opportunities(opportunities):
-    """Return open opportunities sorted by deadline."""
-    open_opportunities = []
-
-    for opportunity in opportunities:
-        if matcher.days_until(opportunity.deadline) >= 0:
-            open_opportunities.append(opportunity)
-
-    open_opportunities.sort(key=lambda opportunity: opportunity.deadline)
-    return open_opportunities
-
-
-def choose_opportunity(opportunities, prompt):
-    """Ask the user to choose one stored opportunity."""
-    open_opportunities = get_open_opportunities(opportunities)
-
-    if len(open_opportunities) == 0:
-        print("No opportunities are available.")
-        return None
-
-    list_live_opportunities(opportunities)
-    choice = validation.get_valid_int(prompt, 1, len(open_opportunities))
-    return open_opportunities[choice - 1]
-
-
-def generate_sender_packet(opportunity):
-    """Generate a text announcement for one opportunity."""
-    if opportunity is None:
-        return
-
-    path = build_sender_packet_path()
-    written = sender.save_announcement(path, opportunity)
-    print("")
-    print("Sender announcement written to: " + written)
-    print("Paste it into a school chat, CCA chat, or teacher announcement.")
-
-
-def print_spam_model_audit(submissions):
-    """Print training health for the adaptive spam-risk model."""
-    health = spam_model.model_health(submissions)
-
-    print("")
-    ui.header("ML Spam Model Audit")
-    print("")
-    print("Model: Multinomial Naive Bayes, standard-library Python")
-    print("Seed examples: " + str(health["seed_examples"]))
-    print("Reviewer-history examples: " + str(health["history_examples"]))
-    print("Total training examples: " + str(health["total_examples"]))
-    print("Spam examples: " + str(health["spam_examples"]))
-    print("Legit examples: " + str(health["legit_examples"]))
-    print(
-        "Leave-one-out accuracy: "
-        + format(health["leave_one_out_accuracy"] * 100, ".1f")
-        + "%"
-    )
-
-    rows = []
-    for signal in health["top_spam_tokens"]:
-        rows.append([
-            signal["token"],
-            format(signal["weight"], ".2f"),
-        ])
-
-    if len(rows) > 0:
-        print("")
-        ui.print_table(["Learned spam token", "Weight"], rows)
-
-
-def show_sender_menu(submissions):
-    """Print the Opportunity Sender mode menu."""
-    counts = review_queue.status_counts(submissions)
-    print("")
-    ui.header("Opportunity Sender Mode")
-    print("Submit supply into the gaps students reveal. Review before publishing.")
-    print("Queue: " + str(counts[review_queue.PENDING]) + " pending, "
-          + str(counts[review_queue.APPROVED]) + " approved, "
-          + str(counts[review_queue.REJECTED]) + " rejected")
-    print("")
-    print("1. Demand gap radar")
-    print("2. Submit a new opportunity for review")
-    print("3. Review pending submissions")
-    print("4. Live opportunities and announcements")
-    print("5. Reviewer diagnostics")
-    print("0. Back to mode selection")
-
-
-def show_live_announcements_menu():
-    """Print live opportunity and announcement submenu."""
-    print("")
-    ui.header("Live Opportunities And Announcements")
-    print("1. List live opportunities")
-    print("2. Generate announcement for an opportunity")
-    print("0. Back")
-
-
-def show_reviewer_diagnostics_menu():
-    """Print reviewer diagnostics submenu."""
-    print("")
-    ui.header("Reviewer Diagnostics")
-    print("1. Model health and training audit")
-    print("0. Back")
-
-
-def run_live_announcements_menu(opportunities):
-    """Run grouped live opportunity and announcement features."""
-    while True:
-        show_live_announcements_menu()
-        choice = validation.get_valid_int("Choose live option: ", 0, 2)
-
-        if choice == 0:
+        ui.notify("Anonymous demand signal saved", type="positive")
+        render_results(results_area, STATE.last_results)
+        metrics.refresh()
+
+    def show_closing() -> None:
+        if not STATE.student:
+            ui.notify("Save or load a profile first.", type="warning")
             return
+        closing = [
+            {"opportunity": opportunity, **core.score_opportunity(opportunity, STATE.student)}
+            for opportunity in core.closing_this_week(STATE.opportunities, STATE.student)
+        ]
+        render_results(results_area, closing)
 
-        if choice == 1:
-            list_live_opportunities(opportunities)
-            continue
+    render_results(results_area, STATE.last_results)
 
-        if choice == 2:
-            opportunity = choose_opportunity(
-                opportunities,
-                "Choose an opportunity number for the announcement: ",
+
+@ui.refreshable
+def applications_panel():
+    with ui.card().classes("section-card"):
+        ui.label("My applications and sharing").classes("section-title")
+        if not STATE.applications:
+            ui.label("No tracked applications yet. Add one from Discover.").classes("empty-state")
+        by_id = {opportunity.id: opportunity for opportunity in STATE.opportunities}
+        for application in STATE.applications:
+            opportunity = by_id.get(application.opp_id)
+            if not opportunity:
+                continue
+            with ui.card().classes("inner-card"):
+                ui.label(opportunity.title).classes("font-semibold text-slate-900")
+                with ui.row().classes("gap-2 items-end"):
+                    status = ui.select(
+                        ["interested", "applying", "submitted", "accepted", "declined"],
+                        value=application.status,
+                        label="Status",
+                    )
+                    notes = ui.input("Notes", value=application.notes)
+                    ui.button("Save", on_click=lambda app=application, s=status, n=notes: save_app(app, s.value, n.value)).classes("soft-button")
+                    ui.button("Remove", on_click=lambda app=application: remove_app(app)).classes("danger-button")
+        with ui.row().classes("gap-2"):
+            ui.button("Export calendar", icon="event", on_click=export_calendar).classes("soft-button")
+            ui.button("Write weekly digest", icon="article", on_click=write_digest).classes("soft-button")
+
+
+def save_app(application: core.Application, status: str, notes: str) -> None:
+    core.update_application(STATE.applications, application.opp_id, status, notes or "")
+    ui.notify("Application updated", type="positive")
+    refresh_all()
+
+
+def remove_app(application: core.Application) -> None:
+    core.remove_application(STATE.applications, application.opp_id)
+    ui.notify("Removed from tracker", type="positive")
+    refresh_all()
+
+
+def export_calendar() -> None:
+    path = core.export_calendar(STATE.applications, STATE.opportunities)
+    ui.notify("Calendar written to " + str(path.name), type="positive")
+
+
+def write_digest() -> None:
+    if not STATE.student:
+        ui.notify("Save or load a profile first.", type="warning")
+        return
+    results = STATE.last_results or core.rank_opportunities(STATE.opportunities, STATE.student)
+    path = core.weekly_digest(results, STATE.student)
+    ui.notify("Digest written to " + str(path.name), type="positive")
+
+
+@ui.refreshable
+def equity_panel():
+    if not STATE.student:
+        ui.label("Save or load a profile to see the equity views.").classes("empty-state")
+        return
+    with ui.grid(columns=2).classes("gap-5 w-full"):
+        with ui.card().classes("section-card"):
+            ui.label("Invisible starting line").classes("section-title")
+            rows = intelligence.starting_line(STATE.student, STATE.opportunities)
+            for row in rows:
+                with ui.row().classes("justify-between w-full"):
+                    ui.label(row["network"]).classes("text-slate-700")
+                    ui.label(f"{row['visible']} visible | {row['hidden']} hidden").classes("font-semibold")
+        with ui.card().classes("section-card"):
+            ui.label("Bias self-audit").classes("section-title")
+            audit = intelligence.fairness_audit(STATE.opportunities)
+            ui.label(f"{audit['students']} synthetic students tested").classes("text-slate-500")
+            ui.label(f"Neutral free share: {audit['neutral'] * 100:.1f}%")
+            ui.label(f"Access-weighted free share: {audit['weighted'] * 100:.1f}%")
+            ui.label(f"Measured lift: {audit['lift'] * 100:.1f} percentage points").classes("font-semibold text-emerald-700")
+    with ui.card().classes("section-card"):
+        ui.label("Opportunity-gap statistics").classes("section-title")
+        stats = core.opportunity_stats(STATE.opportunities, STATE.student)
+        with ui.row().classes("gap-2"):
+            badge(f"{stats['open']} open", "info")
+            badge(f"{stats['urgent']} urgent", "warn")
+            badge(f"{stats['free']} free", "good")
+        ui.label("Supply by interest").classes("mt-3 font-semibold")
+        for interest, count in stats["supply"]:
+            ui.linear_progress(min(count / 6, 1), show_value=False).props("instant-feedback").classes("w-full")
+            ui.label(f"{interest}: {count}").classes("text-xs text-slate-500")
+
+
+@ui.refreshable
+def career_panel():
+    if not STATE.student:
+        ui.label("Save or load a profile to use career intelligence.").classes("empty-state")
+        return
+    career = ui.select(intelligence.career_names(), value="cybersecurity analyst", label="Career goal").classes("max-w-md")
+    container = ui.column().classes("w-full gap-4")
+
+    def render() -> None:
+        container.clear()
+        with container:
+            ui.label("Career impact").classes("section-title")
+            for row in intelligence.rank_career_impacts(career.value, STATE.student, STATE.opportunities)[:5]:
+                with ui.card().classes("inner-card"):
+                    ui.label(row["opportunity"].title).classes("font-semibold")
+                    badge(row["label"] + " " + format(row["delta"], "+.1f"), "good" if row["delta"] > 0 else "warn")
+                    ui.label(f"Before {row['before']:.1f}/100 | After {row['after']:.1f}/100").classes("text-sm text-slate-500")
+            ui.separator()
+            ui.label("GraphRank hidden discovery").classes("section-title")
+            for row in intelligence.graph_rank(STATE.opportunities, STATE.student, career.value)[:5]:
+                with ui.card().classes("inner-card"):
+                    ui.label(row["opportunity"].title).classes("font-semibold")
+                    ui.label(row["path"]).classes("text-sm text-slate-500")
+            ui.separator()
+            ui.label("Career pathway").classes("section-title")
+            plan = intelligence.career_pathway(career.value, STATE.student, STATE.opportunities)
+            ui.label(f"Starting readiness: {plan['readiness']:.1f}/100").classes("text-slate-600")
+            ui.label("Top missing skills: " + (", ".join(plan["missing"]) or "none")).classes("text-slate-600")
+            for step in plan["steps"]:
+                opportunity = step["opportunity"]
+                with ui.card().classes("inner-card"):
+                    ui.label(step["stage"]).classes("font-semibold text-slate-900")
+                    ui.label(", ".join(step["types"])).classes("text-xs text-slate-500")
+                    ui.label(opportunity.title if opportunity else "No live fit yet").classes("text-slate-700")
+
+    ui.button("Build career intelligence view", icon="psychology", on_click=render).classes("primary-button")
+    render()
+
+
+def build_help_tab():
+    with ui.grid(columns=2).classes("gap-5 w-full"):
+        with ui.card().classes("section-card"):
+            ui.label("First-timer guides").classes("section-title")
+            for title, bullets in core.first_timer_guides().items():
+                with ui.expansion(title.title()).classes("w-full"):
+                    for bullet in bullets:
+                        ui.label("- " + bullet).classes("text-sm text-slate-600")
+        with ui.card().classes("section-card"):
+            ui.label("Optional search index").classes("section-title")
+            query = ui.input("Search opportunities").classes("w-full")
+            result_box = ui.column().classes("w-full")
+
+            def run_search() -> None:
+                result_box.clear()
+                with result_box:
+                    for row in intelligence.search_opportunities(STATE.opportunities, query.value or ""):
+                        ui.label(row["opportunity"].title + " | " + row["engine"]).classes("text-sm")
+
+            ui.button("Search", icon="search", on_click=run_search).classes("soft-button")
+
+
+@ui.refreshable
+def sender_panel():
+    counts = core.status_counts(STATE.submissions)
+    with ui.row().classes("gap-2 mb-4"):
+        badge(f"{counts['pending']} pending", "warn")
+        badge(f"{counts['approved']} approved", "good")
+        badge(f"{counts['rejected']} rejected", "bad")
+    with ui.tabs().classes("clean-tabs") as sender_tabs:
+        gaps = ui.tab("Demand")
+        submit = ui.tab("Submit")
+        review = ui.tab("Review")
+        live = ui.tab("Live")
+        diagnostics = ui.tab("Diagnostics")
+    with ui.tab_panels(sender_tabs, value=gaps).classes("w-full bg-transparent"):
+        with ui.tab_panel(gaps):
+            with ui.card().classes("section-card"):
+                ui.label("Demand gap radar").classes("section-title")
+                for row in core.gap_rows(STATE.opportunities):
+                    with ui.row().classes("justify-between w-full border-b border-slate-100 py-2"):
+                        ui.label(row["interest"]).classes("font-medium")
+                        ui.label(f"demand {row['demand']} | supply {row['supply']} | gap {row['gap']}")
+        with ui.tab_panel(submit):
+            submit_form()
+        with ui.tab_panel(review):
+            review_queue()
+        with ui.tab_panel(live):
+            live_opportunities()
+        with ui.tab_panel(diagnostics):
+            model_audit()
+
+
+def submit_form():
+    with ui.card().classes("section-card"):
+        ui.label("Submit opportunity for review").classes("section-title")
+        title = ui.input("Title").classes("w-full")
+        organizer = ui.input("Organizer").classes("w-full")
+        opp_type = ui.select(core.OPPORTUNITY_TYPES, value="workshop", label="Type").classes("w-full")
+        interests = ui.input("Interests", placeholder="AI, coding, public good").classes("w-full")
+        levels = {level: ui.checkbox(level, value=level in ["JC", "Poly"]) for level in core.LEVELS}
+        cost = ui.select(["free", "paid"], value="free", label="Cost").classes("w-full")
+        beginner = ui.switch("Beginner-friendly", value=True)
+        deadline = ui.input("Deadline", value="2026-08-20", placeholder="YYYY-MM-DD").classes("w-full")
+        url = ui.input("URL", value="https://example.com").classes("w-full")
+
+        def submit() -> None:
+            selected_levels = [level for level, checkbox in levels.items() if checkbox.value]
+            parsed = core.parse_interests(interests.value or "")
+            if not title.value or not organizer.value or not parsed or not selected_levels:
+                ui.notify("Please fill title, organizer, interests, and levels.", type="warning")
+                return
+            opportunity = core.Opportunity(
+                "draft",
+                title.value.strip(),
+                opp_type.value,
+                parsed,
+                selected_levels,
+                cost.value,
+                bool(beginner.value),
+                deadline.value.strip(),
+                url.value.strip(),
+                organizer.value.strip(),
             )
-            generate_sender_packet(opportunity)
-            continue
+            preview = core.submission_preview(opportunity, STATE.opportunities)
+            core.create_submission(STATE.submissions, opportunity)
+            ui.notify(f"Submitted for review | access {preview['access_score']}/100", type="positive")
+            refresh_all()
+
+        ui.button("Submit for review", icon="send", on_click=submit).classes("primary-button")
 
 
-def run_reviewer_diagnostics_menu(submissions):
-    """Run grouped reviewer diagnostics features."""
-    while True:
-        show_reviewer_diagnostics_menu()
-        choice = validation.get_valid_int("Choose diagnostics option: ", 0, 1)
-
-        if choice == 0:
-            return
-
-        if choice == 1:
-            print_spam_model_audit(submissions)
-            continue
-
-
-def run_sender_mode(opportunities, opportunities_path, searches_path,
-                    submissions_path):
-    """Run the organizer-facing sender mode."""
-    submissions = review_queue.load_submissions(submissions_path)
-
-    while True:
-        show_sender_menu(submissions)
-        choice = validation.get_valid_int("Choose sender option: ", 0, 5)
-
-        if choice == 0:
-            return
-
-        if choice == 1:
-            print_sender_gap_radar(opportunities, searches_path)
-            continue
-
-        if choice == 2:
-            print_sender_gap_radar(opportunities, searches_path)
-            opportunity = ask_sender_opportunity(opportunities)
-            print_sender_preview(opportunity, opportunities, searches_path)
-            confirm = validation.get_valid_choice(
-                "Submit this opportunity for review? (yes/no): ",
-                ["yes", "no"],
-            )
-
-            if confirm == "yes":
-                submission = review_queue.create_submission(
-                    submissions,
-                    opportunity,
-                )
-                review_queue.save_submissions(submissions_path, submissions)
-                print("Submitted as " + submission["submission_id"] + ".")
-                print("It is not live until a reviewer approves it.")
-            else:
-                print("Draft discarded.")
-            continue
-
-        if choice == 3:
-            review_pending_submissions(
-                submissions,
-                submissions_path,
-                opportunities,
-                opportunities_path,
-                searches_path,
-            )
-            continue
-
-        if choice == 4:
-            run_live_announcements_menu(opportunities)
-            continue
-
-        if choice == 5:
-            run_reviewer_diagnostics_menu(submissions)
-            continue
+def review_queue():
+    pending = core.pending_submissions(STATE.submissions)
+    if not pending:
+        ui.label("No pending submissions.").classes("empty-state")
+        return
+    for submission in pending:
+        opportunity = core.submission_opportunity(submission)
+        preview = core.submission_preview(opportunity, STATE.opportunities)
+        spam = intelligence.predict_spam(opportunity, STATE.submissions)
+        flags = intelligence.review_flags(opportunity, STATE.opportunities, STATE.submissions)
+        with ui.card().classes("opp-card"):
+            ui.label(opportunity.title).classes("text-lg font-semibold")
+            ui.label(opportunity.organizer + " | " + opportunity.deadline).classes("text-sm text-slate-500")
+            with ui.row().classes("gap-2"):
+                badge(f"access {preview['access_score']}/100", "info")
+                badge(f"demand {preview['demand_matches']}", "neutral")
+                badge(f"spam {round(spam['probability'] * 100)}%", "bad" if spam["risk"] == "HIGH" else "warn" if spam["risk"] == "MEDIUM" else "good")
+            for flag in flags:
+                badge(flag["severity"] + ": " + flag["label"], "bad" if flag["severity"] == "BLOCKER" else "warn")
+                ui.label(flag["detail"]).classes("text-xs text-slate-500")
+            note = ui.input("Rejection note", placeholder="spam/scam/prize/click/crypto teaches the model").classes("w-full")
+            with ui.row().classes("gap-2"):
+                ui.button("Approve", icon="check", on_click=lambda s=submission: approve(s)).classes("primary-button")
+                ui.button("Reject", icon="close", on_click=lambda s=submission, n=note: reject(s, n.value)).classes("danger-button")
 
 
-def run_student_finder_mode(student, opportunities, applications, interest_tree,
-                            applications_path, student_path, searches_path):
-    """Run the student-facing opportunity finder mode."""
-
-    last_results = []
-
-    while True:
-        show_menu(student)
-        choice = validation.get_valid_int("Choose an option: ", 0, 6)
-
-        if choice == 0:
-            return student
-
-        if choice == 1:
-            student = ask_student_profile()
-            storage.save_student(student_path, student)
-            last_results = []
-            print("Profile saved for future sessions.")
-            continue
-
-        if choice == 2:
-            last_results = run_discover_menu(
-                student,
-                opportunities,
-                interest_tree,
-                searches_path,
-                last_results,
-            )
-            continue
-
-        if choice == 3:
-            last_results = run_applications_menu(
-                student,
-                opportunities,
-                applications,
-                interest_tree,
-                applications_path,
-                last_results,
-            )
-            continue
-
-        if choice == 4:
-            run_equity_menu(student, opportunities, interest_tree)
-            continue
-
-        if choice == 5:
-            last_results = run_career_lab_menu(
-                student,
-                opportunities,
-                interest_tree,
-                last_results,
-            )
-            continue
-
-        if choice == 6:
-            demo_student = run_help_menu(student_path)
-            if demo_student is not None:
-                student = demo_student
-                last_results = []
-            continue
+def approve(submission: dict) -> None:
+    opportunity = core.submission_opportunity(submission)
+    flags = intelligence.review_flags(opportunity, STATE.opportunities, STATE.submissions)
+    if any(flag["severity"] == "BLOCKER" for flag in flags):
+        ui.notify("Cannot approve while a blocker is present.", type="negative")
+        return
+    if core.approve_submission(STATE.submissions, STATE.opportunities, submission["submission_id"]):
+        ui.notify("Approved and published", type="positive")
+        refresh_all()
 
 
-def run_menu():
-    """Run the two-mode Opportunity Radar product until the user quits."""
-    opportunities_path = build_opportunities_path()
-    applications_path = build_applications_path()
-    student_path = build_student_path()
-    interests_path = build_interests_path()
-    searches_path = build_searches_path()
-    submissions_path = build_submissions_path()
-
-    opportunities = storage.load_opportunities(opportunities_path)
-    applications = storage.load_applications(applications_path)
-    interest_tree = interests_module.load_interest_tree(interests_path)
-
-    student = storage.load_student(student_path)
-    if student is not None:
-        print("Profile loaded from last session")
-
-    while True:
-        show_mode_menu(student)
-        choice = validation.get_valid_int("Choose a mode: ", 0, 2)
-
-        if choice == 0:
-            print("Goodbye.")
-            return
-
-        if choice == 1:
-            student = run_student_finder_mode(
-                student,
-                opportunities,
-                applications,
-                interest_tree,
-                applications_path,
-                student_path,
-                searches_path,
-            )
-            continue
-
-        if choice == 2:
-            run_sender_mode(
-                opportunities,
-                opportunities_path,
-                searches_path,
-                submissions_path,
-            )
-            continue
+def reject(submission: dict, note: str) -> None:
+    if core.reject_submission(STATE.submissions, submission["submission_id"], note or "Rejected by reviewer."):
+        ui.notify("Rejected", type="positive")
+        refresh_all()
 
 
-def main():
-    """Start the command-line program and return an operating-system status."""
-    run_menu()
-    return 0
+def live_opportunities():
+    for opportunity in [opp for opp in STATE.opportunities if core.days_until(opp.deadline) >= 0][:12]:
+        with ui.card().classes("inner-card"):
+            ui.label(opportunity.title).classes("font-semibold")
+            ui.label(opportunity.organizer + " | " + opportunity.deadline).classes("text-sm text-slate-500")
+            ui.button("Write announcement", on_click=lambda opp=opportunity: write_announcement(opp)).classes("soft-button")
 
 
-if __name__ == "__main__":
-    sys.exit(main())
+def write_announcement(opportunity: core.Opportunity) -> None:
+    path = core.save_announcement(opportunity)
+    ui.notify("Announcement written to " + path.name, type="positive")
+
+
+def model_audit():
+    health = intelligence.model_health(STATE.submissions)
+    with ui.card().classes("section-card"):
+        ui.label("Reviewer diagnostics").classes("section-title")
+        ui.label("Adaptive Naive Bayes spam-risk model").classes("text-slate-600")
+        with ui.row().classes("gap-2"):
+            badge(f"{health['total']} examples", "info")
+            badge(f"{health['history']} from review history", "neutral")
+            badge(f"{health['accuracy'] * 100:.1f}% leave-one-out accuracy", "good")
+        ui.label("Top learned spam tokens").classes("mt-4 font-semibold")
+        for token, weight in health["top_tokens"]:
+            ui.label(f"{token}: {weight:.2f}").classes("text-sm text-slate-600")
+
+
+def setup_theme() -> None:
+    ui.add_head_html(
+        """
+        <style>
+        :root {
+            --radar-bg: #f7f7f4;
+            --radar-ink: #0f172a;
+            --radar-muted: #64748b;
+            --radar-line: #e7e5df;
+            --radar-accent: #2563eb;
+        }
+        body {
+            background: linear-gradient(180deg, #fbfaf7 0%, #f3f4f6 100%);
+            color: var(--radar-ink);
+        }
+        .q-page { background: transparent; }
+        .hero {
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.74);
+            box-shadow: 0 20px 70px rgba(15, 23, 42, 0.08);
+            backdrop-filter: blur(16px);
+        }
+        .metric-card, .section-card, .opp-card, .inner-card {
+            border: 1px solid var(--radar-line);
+            box-shadow: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.86);
+        }
+        .metric-card { min-height: 116px; padding: 18px; }
+        .section-card { width: 100%; padding: 20px; }
+        .inner-card { width: 100%; padding: 14px; border-radius: 8px; }
+        .opp-card { width: 100%; padding: 18px; }
+        .section-title { font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem; }
+        .side-panel { width: 100%; max-width: 360px; }
+        .content-panel { flex: 1; min-width: 0; gap: 1rem; }
+        .primary-button {
+            background: #111827 !important;
+            background-color: #111827 !important;
+            color: white !important;
+            border-radius: 999px;
+            box-shadow: none !important;
+        }
+        .soft-button {
+            background: #f1f5f9 !important;
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            border-radius: 999px;
+            box-shadow: none !important;
+            text-decoration: none;
+            padding: 8px 13px;
+        }
+        .danger-button {
+            background: #fff1f2 !important;
+            background-color: #fff1f2 !important;
+            color: #be123c !important;
+            border-radius: 999px;
+            box-shadow: none !important;
+        }
+        .empty-state { color: #64748b; padding: 1rem; border: 1px dashed #cbd5e1; border-radius: 8px; width: 100%; }
+        .clean-tabs { max-width: 100%; overflow-x: auto; }
+        .clean-tabs .q-tabs__content { min-width: max-content; }
+        .clean-tabs .q-tab { border-radius: 999px; min-height: 38px; padding: 0 16px; }
+        .clean-tabs .q-tab--active { background: #111827; color: white; }
+        @media (max-width: 900px) {
+            .side-panel { max-width: none; }
+            .hero { padding: 20px !important; }
+            .metric-card { min-height: 0; }
+            .section-card { padding: 18px; }
+        }
+        </style>
+        """
+    )
+
+
+@ui.page("/")
+def index():
+    setup_theme()
+    ui.dark_mode(False)
+    with ui.column().classes("max-w-7xl mx-auto px-4 py-6 gap-6 w-full"):
+        with ui.card().classes("hero w-full p-8"):
+            with ui.row().classes("items-center justify-between gap-6 w-full"):
+                with ui.column().classes("gap-2"):
+                    ui.label("Opportunity Radar").classes("text-4xl font-semibold tracking-tight")
+                    ui.label("A two-sided access system for students and opportunity organizers.").classes("text-lg text-slate-600")
+                ui.label("Python + NiceGUI").classes("px-4 py-2 rounded-full bg-slate-900 text-white text-sm")
+            metrics()
+
+        with ui.tabs().classes("clean-tabs") as tabs:
+            discover = ui.tab("Discover")
+            applications = ui.tab("Applications")
+            equity = ui.tab("Equity")
+            career = ui.tab("Career")
+            sender = ui.tab("Sender")
+            help_tab = ui.tab("Help")
+
+        with ui.tab_panels(tabs, value=discover).classes("w-full bg-transparent"):
+            with ui.tab_panel(discover).classes("p-0"):
+                build_discover_tab()
+            with ui.tab_panel(applications).classes("p-0"):
+                applications_panel()
+            with ui.tab_panel(equity).classes("p-0"):
+                equity_panel()
+            with ui.tab_panel(career).classes("p-0"):
+                career_panel()
+            with ui.tab_panel(sender).classes("p-0"):
+                sender_panel()
+            with ui.tab_panel(help_tab).classes("p-0"):
+                build_help_tab()
+
+
+def main() -> None:
+    ui.run(title="Opportunity Radar", host="127.0.0.1", port=8080, reload=False)
+
+
+if __name__ in {"__main__", "__mp_main__"}:
+    main()
