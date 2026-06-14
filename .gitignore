@@ -3,12 +3,12 @@ __pycache__/
 *.pyo
 weekly_digest.txt
 opportunity_sender_packet.txt
-judge_impact_report.txt
 calendar_export.ics
 *.ics
 data/applications.json
 data/searches.json
 data/student.json
+data/submissions.json
 
 .planning/
 run_out.txt

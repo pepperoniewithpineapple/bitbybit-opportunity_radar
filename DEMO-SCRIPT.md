@@ -14,7 +14,7 @@ Then:
 
 > In Singapore, opportunities exist: hackathons, olympiads, scholarships, research attachments, workshops. But information about them travels through uneven networks: connected parents, plugged-in teachers, school chats, seniors, enrichment circles.
 >
-> Opportunity Radar has two modes. Students use Finder mode to discover and understand opportunities. Organizers use Sender mode to see demand gaps and post opportunities into them. Same data store. Same scoring engine. No external libraries.
+> Opportunity Radar has two modes. Students use Finder mode to discover and understand opportunities. Organizers use Sender mode to see demand gaps, submit opportunities, and review them before they become live. Same data store. Same scoring engine. No external libraries.
 
 Close:
 
@@ -35,12 +35,11 @@ Point at the top-level menu:
 ```text
 1. Student / Opportunity Finder mode
 2. Opportunity Sender mode
-3. Export Python-only judge impact report
 ```
 
 Say:
 
-> This is not just a recommendation list. It is a tiny two-sided opportunity system, plus a Python-generated report for the judges.
+> This is not just a recommendation list. It is a tiny two-sided opportunity system with a review gate before new supply reaches students.
 
 ### Beat 2 - Student creates demand, 70 sec
 
@@ -86,7 +85,7 @@ Say:
 
 > Now we switch perspectives. The sender does not guess what students need. They see demand against current supply.
 
-Choose `2` to send/post a new opportunity. You can either actually post a short demo opportunity or stop at the impact preview if time is tight.
+Choose `2` to submit a new opportunity for review.
 
 Suggested demo values:
 
@@ -104,23 +103,25 @@ URL: https://example.com/ai-public-good
 
 At the impact preview, say:
 
-> The sender sees matching demand and an accessibility score before posting. If they confirm, this saves into the same JSON store and becomes live for students immediately.
+> The sender sees matching demand and an accessibility score before submitting. It does not become live yet, because a deployed product needs a gate before outside submissions reach students.
 
-If you post it, mention that `opportunity_sender_packet.txt` is generated for a school or CCA chat.
+Confirm the submission.
 
-### Beat 5 - Python-generated judge report, 45 sec
-
-Press `0` back to mode selection.
-
-Choose `3` to export the judge impact report.
+Then choose `3` to review pending submissions. Pick the new submission.
 
 Say:
 
-> This is the workaround: no Flask, no web framework, no live server, no HTML. Python generates a plain-text impact report from the same JSON data. It is still polished, but unambiguously Python-only.
+> The reviewer sees quality checks: duplicate title blockers, deadline risk, URL issues, access friction, and whether current demand actually matches the opportunity.
 
-Open `judge_impact_report.txt` if time allows.
+Choose `approve`.
 
-### Beat 6 - Transparency screen, 50 sec
+Say:
+
+> Only after approval does the opportunity enter the live JSON store and become visible in Student Finder mode. This is still pure Python, but it behaves more like a real product.
+
+Mention that `opportunity_sender_packet.txt` is generated for a school or CCA chat after approval.
+
+### Beat 5 - Transparency screen, 50 sec
 
 Return to Student Finder mode, choose `3`, and open a result.
 
@@ -137,7 +138,7 @@ equity_boost
 total
 ```
 
-### Beat 7 - Career impact simulator, 45 sec
+### Beat 6 - Career impact simulator, 45 sec
 
 Choose `13`.
 
@@ -151,7 +152,7 @@ Point at the before/after score and delta.
 
 > The model uses weighted skill vectors, a sigmoid readiness curve, event-type multipliers, and an opportunity-cost penalty. The math is still explainable.
 
-### Beat 8 - Bias self-audit, 30 sec
+### Beat 7 - Bias self-audit, 30 sec
 
 Choose `10`.
 
@@ -159,7 +160,7 @@ Say:
 
 > We compare our access-weighted ranking against a neutral baseline. We do not just say the design widens access. We measure it.
 
-### Beat 9 - Error handling, 25 sec
+### Beat 8 - Error handling, 25 sec
 
 At any prompt, type bad input.
 
@@ -176,8 +177,8 @@ Show:
 3. `matcher.py`: hard filters and transparent scoring.
 4. `access.py`: starting-line simulation.
 5. `demand.py`: anonymous demand records.
-6. `sender.py`: demand radar, posting, impact preview, announcement generation.
-7. `impact_report.py`: Python-generated judge report.
+6. `sender.py`: demand radar, submission drafting, impact preview, announcement generation.
+7. `review_queue.py`: approval gate, quality flags, audit trail.
 8. `interests.py`: recursive taxonomy expansion.
 
 Closing line:
@@ -192,7 +193,7 @@ Yes. We do not claim neutrality. We make a deliberate, visible access choice and
 
 **Why not use a web app or database?**
 
-The brief rewards polished, explainable Python. We keep the product in Python and generate plain text artifacts instead of adding a web layer. For data, JSON keeps the flow visible and testable. The next standard-library step would be SQLite.
+The brief rewards polished, explainable Python. We keep the product in Python and use JSON instead of adding a web layer. The review queue shows how deployment logic can still be modeled with standard-library Python. The next standard-library step would be SQLite.
 
 **Does sender mode prove real organizers will post?**
 
@@ -211,7 +212,6 @@ Every module is readable and explainable. Ask us about any file.
 - Run `python -m unittest discover -s tests`.
 - Run `python main.py`.
 - Rehearse both modes: student search, starting-line simulation, sender demand radar.
-- Rehearse exporting `judge_impact_report.txt`.
-- Decide whether to actually post the demo opportunity live or stop at preview.
+- Rehearse submitting and approving one demo opportunity.
 - Prepare a backup screenshot or recording.
 - Submit the public GitHub link by Thursday 19 June 2026, 23:59.

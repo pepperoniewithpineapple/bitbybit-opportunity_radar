@@ -15,10 +15,10 @@ import fairness
 import filters
 import firsttimer
 import ics_export
-import impact_report
 import interests as interests_module
 import matcher
 import recommend
+import review_queue
 import sender
 import stats as stats_module
 import storage
@@ -83,10 +83,10 @@ def build_sender_packet_path():
     return os.path.join(base_dir, "opportunity_sender_packet.txt")
 
 
-def build_impact_report_path():
-    """Return the path to the generated judge impact report text file."""
+def build_submissions_path():
+    """Return the path to the pending sender submissions JSON file."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_dir, "judge_impact_report.txt")
+    return os.path.join(base_dir, "data", "submissions.json")
 
 
 def parse_interests(raw_text):
@@ -616,20 +616,7 @@ def show_mode_menu(student):
     print("")
     print("1. Student / Opportunity Finder mode")
     print("2. Opportunity Sender mode")
-    print("3. Export Python-only judge impact report")
     print("0. Quit")
-
-
-def build_report_student(student, interest_tree):
-    """Return a student profile expanded for report scoring."""
-    if student is None:
-        return None
-
-    expanded = interests_module.get_expanded_interests(
-        interest_tree,
-        student.interests,
-    )
-    return Student(student.name, student.level, expanded)
 
 
 def build_career_student(student, interest_tree):
@@ -648,21 +635,6 @@ def build_career_student(student, interest_tree):
             combined.append(interest)
 
     return Student(student.name, student.level, combined)
-
-
-def export_judge_impact_report(opportunities, searches_path, student, interest_tree):
-    """Generate the plain-text Python-only impact report for judges."""
-    report_student = build_report_student(student, interest_tree)
-    path = build_impact_report_path()
-    written = impact_report.save_report(
-        path,
-        opportunities,
-        searches_path,
-        report_student,
-    )
-    print("")
-    print("Judge impact report written to: " + written)
-    print("This is a Python-generated text artifact, not an HTML/web app.")
 
 
 def ask_level_list():
@@ -748,9 +720,10 @@ def ask_sender_deadline():
 def ask_sender_opportunity(opportunities):
     """Ask an organizer for a complete opportunity record."""
     print("")
-    ui.header("Send A New Opportunity")
+    ui.header("Submit A New Opportunity")
     print("")
-    print("This will post into the same live JSON store used by Student Finder.")
+    print("This creates a pending submission. A reviewer must approve it before")
+    print("students can see it in Finder mode.")
     print("")
 
     while True:
@@ -844,6 +817,142 @@ def print_sender_preview(opportunity, opportunities, searches_path):
         print("Signal: likely harder to access; explain support clearly.")
 
 
+def short_text(text, limit):
+    """Return text shortened for compact terminal tables."""
+    if len(text) <= limit:
+        return text
+    return text[:limit - 3] + "..."
+
+
+def print_review_flags(flags):
+    """Print submission review flags in a compact table."""
+    if len(flags) == 0:
+        print("Review checks: clear. No blockers or warnings found.")
+        return
+
+    rows = []
+    for flag in flags:
+        rows.append([
+            flag["severity"],
+            flag["label"],
+            flag["detail"],
+        ])
+
+    ui.print_table(["Severity", "Check", "Detail"], rows)
+
+
+def print_submission_detail(submission, opportunities, searches_path):
+    """Print one pending submission with reviewer-focused context."""
+    opportunity = submission["opportunity"]
+    preview = sender.build_sender_preview(opportunity, opportunities, searches_path)
+    flags = review_queue.review_flags(submission, opportunities, searches_path)
+
+    print("")
+    ui.header("Submission Review")
+    print("")
+    print("Submission: " + submission["submission_id"])
+    print("Submitted: " + submission["submitted_at"])
+    print("Title: " + opportunity.title)
+    print("Organizer: " + opportunity.organizer)
+    print("Type: " + opportunity.type)
+    print("Deadline: " + opportunity.deadline)
+    print("Cost: " + opportunity.cost)
+    print("Beginner-friendly: " + ("yes" if opportunity.beginner_friendly else "no"))
+    print("Open to: " + ", ".join(opportunity.eligible_levels))
+    print("Interests: " + ", ".join(opportunity.interests))
+    print("URL: " + opportunity.url)
+    print("")
+    print("Matching anonymous interest-demand hits: "
+          + str(preview["demand_matches"]))
+    print("Accessibility score: " + str(preview["access_score"]) + "/100")
+    print("")
+    print_review_flags(flags)
+    return flags
+
+
+def list_pending_submissions(submissions):
+    """Print pending sender submissions."""
+    pending = review_queue.pending_submissions(submissions)
+
+    print("")
+    ui.header("Pending Submission Queue")
+    print("")
+
+    if len(pending) == 0:
+        print("No pending submissions. The live feed is clean.")
+        return []
+
+    rows = []
+    for index, submission in enumerate(pending):
+        opportunity = submission["opportunity"]
+        rows.append([
+            str(index + 1),
+            submission["submission_id"],
+            short_text(opportunity.title, 38),
+            short_text(opportunity.organizer, 24),
+            opportunity.deadline,
+        ])
+
+    ui.print_table(["#", "ID", "Title", "Organizer", "Deadline"], rows)
+    return pending
+
+
+def review_pending_submissions(submissions, submissions_path, opportunities,
+                               opportunities_path, searches_path):
+    """Let a reviewer approve or reject pending sender submissions."""
+    pending = list_pending_submissions(submissions)
+    if len(pending) == 0:
+        return
+
+    choice = validation.get_valid_int(
+        "Choose a submission to review, or 0 to cancel: ",
+        0,
+        len(pending),
+    )
+    if choice == 0:
+        return
+
+    submission = pending[choice - 1]
+    flags = print_submission_detail(submission, opportunities, searches_path)
+
+    decision = validation.get_valid_choice(
+        "Decision (approve/reject/skip): ",
+        ["approve", "reject", "skip"],
+    )
+
+    if decision == "skip":
+        print("Left pending for later review.")
+        return
+
+    if decision == "reject":
+        note = validation.nonempty("Reviewer note: ")
+        review_queue.reject_submission(submission, note)
+        review_queue.save_submissions(submissions_path, submissions)
+        print("Rejected. The submission stayed out of the live student feed.")
+        return
+
+    if review_queue.has_blocker(flags):
+        print("Cannot approve while a BLOCKER is present.")
+        print("Reject it with a note, or fix the live data first.")
+        return
+
+    new_opp_id = storage.next_opportunity_id(opportunities)
+    approved = review_queue.approve_submission(
+        submission,
+        opportunities,
+        new_opp_id,
+        note="Approved through review queue.",
+    )
+
+    if approved:
+        storage.save_opportunities(opportunities_path, opportunities)
+        review_queue.save_submissions(submissions_path, submissions)
+        print("Approved. It is now live in Student Finder mode.")
+        generate_sender_packet(submission["opportunity"])
+    else:
+        print("Not approved because a matching live title already exists.")
+
+
 def list_live_opportunities(opportunities):
     """Print a compact list of current open opportunities."""
     open_opportunities = get_open_opportunities(opportunities)
@@ -906,24 +1015,32 @@ def generate_sender_packet(opportunity):
     print("Paste it into a school chat, CCA chat, or teacher announcement.")
 
 
-def show_sender_menu():
+def show_sender_menu(submissions):
     """Print the Opportunity Sender mode menu."""
+    counts = review_queue.status_counts(submissions)
     print("")
     ui.header("Opportunity Sender Mode")
-    print("Post supply into the gaps students reveal.")
+    print("Submit supply into the gaps students reveal. Review before publishing.")
+    print("Queue: " + str(counts[review_queue.PENDING]) + " pending, "
+          + str(counts[review_queue.APPROVED]) + " approved, "
+          + str(counts[review_queue.REJECTED]) + " rejected")
     print("")
     print("1. View demand gap radar")
-    print("2. Send/post a new opportunity")
-    print("3. List live opportunities")
-    print("4. Generate announcement for an opportunity")
+    print("2. Submit a new opportunity for review")
+    print("3. Review pending submissions")
+    print("4. List live opportunities")
+    print("5. Generate announcement for an opportunity")
     print("0. Back to mode selection")
 
 
-def run_sender_mode(opportunities, opportunities_path, searches_path):
+def run_sender_mode(opportunities, opportunities_path, searches_path,
+                    submissions_path):
     """Run the organizer-facing sender mode."""
+    submissions = review_queue.load_submissions(submissions_path)
+
     while True:
-        show_sender_menu()
-        choice = validation.get_valid_int("Choose sender option: ", 0, 4)
+        show_sender_menu(submissions)
+        choice = validation.get_valid_int("Choose sender option: ", 0, 5)
 
         if choice == 0:
             return
@@ -937,27 +1054,37 @@ def run_sender_mode(opportunities, opportunities_path, searches_path):
             opportunity = ask_sender_opportunity(opportunities)
             print_sender_preview(opportunity, opportunities, searches_path)
             confirm = validation.get_valid_choice(
-                "Post this opportunity? (yes/no): ",
+                "Submit this opportunity for review? (yes/no): ",
                 ["yes", "no"],
             )
 
             if confirm == "yes":
-                added = sender.add_opportunity(opportunities, opportunity)
-                if added:
-                    storage.save_opportunities(opportunities_path, opportunities)
-                    print("Posted. It is now live in Student Finder mode.")
-                    generate_sender_packet(opportunity)
-                else:
-                    print("Not posted because a matching title already exists.")
+                submission = review_queue.create_submission(
+                    submissions,
+                    opportunity,
+                )
+                review_queue.save_submissions(submissions_path, submissions)
+                print("Submitted as " + submission["submission_id"] + ".")
+                print("It is not live until a reviewer approves it.")
             else:
                 print("Draft discarded.")
             continue
 
         if choice == 3:
-            list_live_opportunities(opportunities)
+            review_pending_submissions(
+                submissions,
+                submissions_path,
+                opportunities,
+                opportunities_path,
+                searches_path,
+            )
             continue
 
         if choice == 4:
+            list_live_opportunities(opportunities)
+            continue
+
+        if choice == 5:
             opportunity = choose_opportunity(
                 opportunities,
                 "Choose an opportunity number for the announcement: ",
@@ -1095,6 +1222,7 @@ def run_menu():
     student_path = build_student_path()
     interests_path = build_interests_path()
     searches_path = build_searches_path()
+    submissions_path = build_submissions_path()
 
     opportunities = storage.load_opportunities(opportunities_path)
     applications = storage.load_applications(applications_path)
@@ -1106,7 +1234,7 @@ def run_menu():
 
     while True:
         show_mode_menu(student)
-        choice = validation.get_valid_int("Choose a mode: ", 0, 3)
+        choice = validation.get_valid_int("Choose a mode: ", 0, 2)
 
         if choice == 0:
             print("Goodbye.")
@@ -1125,15 +1253,11 @@ def run_menu():
             continue
 
         if choice == 2:
-            run_sender_mode(opportunities, opportunities_path, searches_path)
-            continue
-
-        if choice == 3:
-            export_judge_impact_report(
+            run_sender_mode(
                 opportunities,
+                opportunities_path,
                 searches_path,
-                student,
-                interest_tree,
+                submissions_path,
             )
             continue
 

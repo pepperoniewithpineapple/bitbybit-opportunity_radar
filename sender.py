@@ -169,7 +169,7 @@ def add_opportunity(opportunities, opportunity):
 
 
 def build_announcement(opportunity):
-    """Return a student-facing announcement for a posted opportunity."""
+    """Return a student-facing announcement for an approved opportunity."""
     lines = []
     lines.append("OPPORTUNITY RADAR - New Opportunity")
     lines.append("")

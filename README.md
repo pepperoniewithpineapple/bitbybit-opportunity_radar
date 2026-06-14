@@ -1,6 +1,6 @@
 # Opportunity Radar
 
-Opportunity Radar is a two-mode terminal Python product for Singapore students and opportunity organizers. Students use **Student / Opportunity Finder mode** to discover hackathons, olympiads, scholarships, workshops, and programmes they might never hear about through ordinary networks. Organizers use **Opportunity Sender mode** to see demand gaps and send new opportunities into the same live store.
+Opportunity Radar is a two-mode terminal Python product for Singapore students and opportunity organizers. Students use **Student / Opportunity Finder mode** to discover hackathons, olympiads, scholarships, workshops, and programmes they might never hear about through ordinary networks. Organizers use **Opportunity Sender mode** to see demand gaps and submit new opportunities into a review queue before they reach the live student feed.
 
 The core idea is simple: the gap is not always talent or effort. Often, the gap is who hears in time.
 
@@ -13,7 +13,7 @@ Opportunity Radar responds by making the hidden layer visible. It does not claim
 ## Two Modes, One Engine
 
 ```text
-Student searches -> anonymous demand signal -> sender sees gap -> sender posts opportunity -> student feed updates
+Student searches -> anonymous demand signal -> sender sees gap -> sender submits opportunity -> reviewer approves -> student feed updates
 ```
 
 Both modes share the same:
@@ -23,15 +23,17 @@ Both modes share the same:
 - `validation.py` input gateway
 - `storage.py` JSON File I/O helpers
 - `models.py` classes
+- `review_queue.py` approval gate for sender submissions
 
 ## Features
 
 - **Student / Opportunity Finder mode**: ranked, explained opportunity feed for a student profile.
-- **Opportunity Sender mode**: organizer-facing flow for viewing demand gaps, posting new opportunities, listing live supply, and generating a student-facing announcement.
+- **Opportunity Sender mode**: organizer-facing flow for viewing demand gaps, submitting new opportunities, reviewing pending submissions, listing live supply, and generating a student-facing announcement.
 - **Demand gap radar**: every student feed search writes an anonymous demand signal: level + interests + timestamp, no name.
-- **Sender impact preview**: before posting, organizers see matching demand, deadline pressure, eligible levels, and an accessibility score.
-- **Instant live posting**: sender-posted opportunities are saved into `data/opportunities.json` and immediately appear in Student Finder mode.
-- **Judge impact report**: exports `judge_impact_report.txt`, a polished Python-generated text report from the live JSON data.
+- **Sender impact preview**: before submitting, organizers see matching demand, deadline pressure, eligible levels, and an accessibility score.
+- **Submission review queue**: sender submissions are saved as pending records in `data/submissions.json`; they do not appear for students until approved.
+- **Reviewer quality checks**: the queue flags duplicate titles, closed or urgent deadlines, weak URLs, access friction, and submissions with no current demand match.
+- **Approval audit trail**: approved and rejected submissions keep status, review time, and reviewer notes, which is closer to how a deployed product would protect the live feed.
 - **Career impact simulator**: a transparent ML-style model estimates whether joining a specific event increases, decreases, or does not change a student's career-readiness alignment for a chosen goal.
 - **Invisible Starting-Line Simulation**: estimates how many suitable opportunities the same student might hear about through different information networks, then shows what Radar recovers.
 - **Transparent scoring breakdown**: shows the exact formula and numbers behind any recommendation.
@@ -63,7 +65,7 @@ Run tests:
 python -m unittest discover -s tests
 ```
 
-Current verification: **104 unit tests pass**.
+Current verification: **109 unit tests pass**.
 
 Optional feed import:
 
@@ -78,7 +80,6 @@ Top-level:
 ```text
 1. Student / Opportunity Finder mode
 2. Opportunity Sender mode
-3. Export Python-only judge impact report
 0. Quit
 ```
 
@@ -105,9 +106,10 @@ Opportunity Sender mode:
 
 ```text
 1. View demand gap radar
-2. Send/post a new opportunity
-3. List live opportunities
-4. Generate announcement for an opportunity
+2. Submit a new opportunity for review
+3. Review pending submissions
+4. List live opportunities
+5. Generate announcement for an opportunity
 0. Back to mode selection
 ```
 
@@ -117,7 +119,7 @@ Opportunity Sender mode:
 bbb/
   main.py                 CLI entry point, two-mode routing, interactive flows
   career_model.py         ML-style career-readiness impact model
-  impact_report.py        Python-only judge impact report generator
+  review_queue.py         Pending submission approval workflow
   sender.py               Opportunity Sender mode helpers and announcements
   access.py               Invisible starting-line simulation
   matcher.py              Weighted scoring, filtering, explanations, urgent deadlines
@@ -139,14 +141,15 @@ bbb/
   ui.py                   ANSI colors, aligned tables, countdown badges, bar charts
 
   data/
-    opportunities.json    Curated seed and sender-posted opportunities
+    opportunities.json    Curated seed and approved sender opportunities
     interests.json        Nested interest taxonomy
     student.json          Auto-created saved student profile
     searches.json         Auto-created anonymous student demand log
+    submissions.json      Auto-created sender submission review queue
 
   tests/
     test_career_model.py  Career impact model tests
-    test_impact_report.py Judge impact report generation tests
+    test_review_queue.py  Submission queue and approval tests
     test_sender.py        Sender mode helper tests
     test_access.py        Starting-line simulation tests
     test_matcher.py       Scoring, hard filters, equity ordering, fuzzy matching
@@ -166,7 +169,7 @@ bbb/
 
 ## Code Spotlight
 
-The best code spotlight is `career_model.py`, `matcher.py`, `access.py`, `sender.py`, and `impact_report.py`.
+The best code spotlight is `career_model.py`, `matcher.py`, `access.py`, `sender.py`, and `review_queue.py`.
 
 `career_model.py` is the ML-style layer: it uses weighted skill vectors, a sigmoid readiness curve, event-type multipliers, and an opportunity-cost penalty to estimate whether one event increases, decreases, or does not change career-readiness alignment. It avoids fake hiring promises by reporting readiness movement, not real job probability.
 
@@ -181,14 +184,14 @@ total          = interest_score + urgency_score + equity_boost
 
 `access.py` makes the starting line visible: a strong opportunity can be a perfect fit and still be invisible if it travels through narrow information channels.
 
-`sender.py` closes the loop: it turns anonymous student demand into organizer action, then writes a new opportunity back into the same JSON store.
+`sender.py` closes the loop: it turns anonymous student demand into organizer action and previews the likely access impact before anything is submitted.
 
-`impact_report.py` is the Python-only presentation workaround: it generates a polished plain-text judge report using the same live data, without HTML, a web server, or an external package.
+`review_queue.py` is the deployment-hardening layer: it prevents unreviewed sender submissions from changing the live student feed, flags risky records, and keeps an approval/rejection audit trail using only JSON.
 
 ## Reflection
 
 The hardest problem was making the project socially serious without turning the algorithm into a mysterious black box. The solution was to make every assumption visible: each recommendation carries its own reasons, the scoring screen prints the formula, the fairness audit compares a neutral baseline against the access-weighted ranking, and the starting-line simulation names exactly what it is estimating.
 
-The second hardest problem was making the product feel two-sided and polished without needing a web server, database, or external package. The solution was to use structured JSON File I/O as the shared layer: student searches create demand records, senders read those records, and new opportunities are posted back into the same store. For presentation polish, Python generates a plain-text judge report as an output artifact.
+The second hardest problem was making the product feel two-sided and polished without needing a web server, database, or external package. The solution was to use structured JSON File I/O as the shared layer: student searches create demand records, senders read those records, submissions enter a review queue, and approved opportunities are published back into the same store.
 
-With two more weeks, we would add a school-facing report export that summarizes which interests have high demand and thin supply, then pilot the sender mode with a real teacher or CCA lead. The student side would stay free.
+With two more weeks, we would add reviewer accounts, a school-facing demand report, and a pilot with a real teacher or CCA lead. The student side would stay free.
