@@ -8,6 +8,7 @@ from nicegui import ui
 
 import core
 import intelligence
+from theme import (apply_theme, badge, stat_card, section_card, inner_card, page_container, primary_button, soft_button, danger_button, hero)
 
 
 @dataclass
@@ -46,26 +47,6 @@ def short(text: str, limit: int = 70) -> str:
     return text if len(text) <= limit else text[: limit - 3] + "..."
 
 
-def badge(text: str, tone: str = "neutral"):
-    colors = {
-        "neutral": "bg-slate-100 text-slate-700",
-        "good": "bg-emerald-100 text-emerald-700",
-        "warn": "bg-amber-100 text-amber-800",
-        "bad": "bg-rose-100 text-rose-700",
-        "info": "bg-sky-100 text-sky-700",
-    }
-    return ui.label(text).classes(
-        "px-2.5 py-1 rounded-full text-xs font-medium " + colors[tone]
-    )
-
-
-def stat_card(label: str, value: str, hint: str):
-    with ui.card().classes("metric-card"):
-        ui.label(value).classes("text-3xl font-semibold text-slate-950")
-        ui.label(label).classes("text-sm font-medium text-slate-700")
-        ui.label(hint).classes("text-xs text-slate-500")
-
-
 def opportunity_card(result: dict, show_track: bool = True):
     opportunity = result["opportunity"]
     breakdown = result["breakdown"]
@@ -98,7 +79,7 @@ def opportunity_card(result: dict, show_track: bool = True):
         with ui.row().classes("gap-2"):
             ui.link("Open link", opportunity.url, new_tab=True).classes("soft-button")
             if show_track:
-                ui.button("Track", icon="bookmark_add", on_click=lambda opp=opportunity: track_opportunity(opp)).classes("primary-button")
+                primary_button("Track", icon="bookmark_add", on_click=lambda opp=opportunity: track_opportunity(opp))
 
 
 def track_opportunity(opportunity: core.Opportunity) -> None:
@@ -123,8 +104,7 @@ def metrics():
 
 @ui.refreshable
 def profile_panel():
-    with ui.card().classes("section-card"):
-        ui.label("Student profile").classes("section-title")
+    with section_card("Student profile"):
         student = STATE.student or core.demo_student()
         name = ui.input("Name", value=student.name).classes("w-full")
         level = ui.select(core.LEVELS, label="Level", value=student.level).classes("w-full")
@@ -145,12 +125,12 @@ def profile_panel():
             refresh_all()
 
         with ui.row().classes("gap-2"):
-            ui.button("Save profile", icon="save", on_click=save_profile).classes("primary-button")
-            ui.button(
+            primary_button("Save profile", icon="save", on_click=save_profile)
+            soft_button(
                 "Load demo",
                 icon="auto_awesome",
                 on_click=lambda: (core.save_student(core.demo_student()), ui.notify("Demo student loaded", type="positive"), refresh_all()),
-            ).classes("soft-button")
+            )
 
 
 def render_results(container, results: list[dict]) -> None:
@@ -167,18 +147,17 @@ def render_results(container, results: list[dict]) -> None:
 
 
 def build_discover_tab():
-    with ui.row().classes("items-stretch gap-5 w-full"):
+    with ui.row().classes("items-stretch gap-5 w-full flex-wrap"):
         with ui.column().classes("side-panel"):
             profile_panel()
-            with ui.card().classes("section-card"):
-                ui.label("Filters").classes("section-title")
+            with section_card("Filters"):
                 cost = ui.select(["all", "free", "paid"], value="all", label="Cost").classes("w-full")
                 opp_type = ui.select(["all"] + core.OPPORTUNITY_TYPES, value="all", label="Type").classes("w-full")
                 keyword = ui.input("Keyword").classes("w-full")
                 max_days = ui.number("Deadline within days", value=None, min=0).classes("w-full")
                 sort = ui.select(["score", "deadline", "title"], value="score", label="Sort").classes("w-full")
-                ui.button("Run discovery", icon="radar", on_click=lambda: run_search()).classes("primary-button w-full")
-                ui.button("Closing this week", icon="timer", on_click=lambda: show_closing()).classes("soft-button w-full")
+                primary_button("Run discovery", icon="radar", on_click=lambda: run_search()).classes("w-full")
+                soft_button("Closing this week", icon="timer", on_click=lambda: show_closing()).classes("w-full")
 
         results_area = ui.column().classes("content-panel")
 
@@ -215,8 +194,7 @@ def build_discover_tab():
 
 @ui.refreshable
 def applications_panel():
-    with ui.card().classes("section-card"):
-        ui.label("My applications and sharing").classes("section-title")
+    with section_card("My applications and sharing"):
         if not STATE.applications:
             ui.label("No tracked applications yet. Add one from Discover.").classes("empty-state")
         by_id = {opportunity.id: opportunity for opportunity in STATE.opportunities}
@@ -224,7 +202,7 @@ def applications_panel():
             opportunity = by_id.get(application.opp_id)
             if not opportunity:
                 continue
-            with ui.card().classes("inner-card"):
+            with inner_card():
                 ui.label(opportunity.title).classes("font-semibold text-slate-900")
                 with ui.row().classes("gap-2 items-end"):
                     status = ui.select(
@@ -233,11 +211,11 @@ def applications_panel():
                         label="Status",
                     )
                     notes = ui.input("Notes", value=application.notes)
-                    ui.button("Save", on_click=lambda app=application, s=status, n=notes: save_app(app, s.value, n.value)).classes("soft-button")
-                    ui.button("Remove", on_click=lambda app=application: remove_app(app)).classes("danger-button")
+                    soft_button("Save", on_click=lambda app=application, s=status, n=notes: save_app(app, s.value, n.value))
+                    danger_button("Remove", on_click=lambda app=application: remove_app(app))
         with ui.row().classes("gap-2"):
-            ui.button("Export calendar", icon="event", on_click=export_calendar).classes("soft-button")
-            ui.button("Write weekly digest", icon="article", on_click=write_digest).classes("soft-button")
+            soft_button("Export calendar", icon="event", on_click=export_calendar)
+            soft_button("Write weekly digest", icon="article", on_click=write_digest)
 
 
 def save_app(application: core.Application, status: str, notes: str) -> None:
@@ -271,23 +249,20 @@ def equity_panel():
     if not STATE.student:
         ui.label("Save or load a profile to see the equity views.").classes("empty-state")
         return
-    with ui.grid(columns=2).classes("gap-5 w-full"):
-        with ui.card().classes("section-card"):
-            ui.label("Invisible starting line").classes("section-title")
+    with ui.grid(columns=2).classes("radar-grid-2 gap-5 w-full"):
+        with section_card("Invisible starting line"):
             rows = intelligence.starting_line(STATE.student, STATE.opportunities)
             for row in rows:
                 with ui.row().classes("justify-between w-full"):
                     ui.label(row["network"]).classes("text-slate-700")
                     ui.label(f"{row['visible']} visible | {row['hidden']} hidden").classes("font-semibold")
-        with ui.card().classes("section-card"):
-            ui.label("Bias self-audit").classes("section-title")
+        with section_card("Bias self-audit"):
             audit = intelligence.fairness_audit(STATE.opportunities)
             ui.label(f"{audit['students']} synthetic students tested").classes("text-slate-500")
             ui.label(f"Neutral free share: {audit['neutral'] * 100:.1f}%")
             ui.label(f"Access-weighted free share: {audit['weighted'] * 100:.1f}%")
             ui.label(f"Measured lift: {audit['lift'] * 100:.1f} percentage points").classes("font-semibold text-emerald-700")
-    with ui.card().classes("section-card"):
-        ui.label("Opportunity-gap statistics").classes("section-title")
+    with section_card("Opportunity-gap statistics"):
         stats = core.opportunity_stats(STATE.opportunities, STATE.student)
         with ui.row().classes("gap-2"):
             badge(f"{stats['open']} open", "info")
@@ -312,14 +287,14 @@ def career_panel():
         with container:
             ui.label("Career impact").classes("section-title")
             for row in intelligence.rank_career_impacts(career.value, STATE.student, STATE.opportunities)[:5]:
-                with ui.card().classes("inner-card"):
+                with inner_card():
                     ui.label(row["opportunity"].title).classes("font-semibold")
                     badge(row["label"] + " " + format(row["delta"], "+.1f"), "good" if row["delta"] > 0 else "warn")
                     ui.label(f"Before {row['before']:.1f}/100 | After {row['after']:.1f}/100").classes("text-sm text-slate-500")
             ui.separator()
             ui.label("GraphRank hidden discovery").classes("section-title")
             for row in intelligence.graph_rank(STATE.opportunities, STATE.student, career.value)[:5]:
-                with ui.card().classes("inner-card"):
+                with inner_card():
                     ui.label(row["opportunity"].title).classes("font-semibold")
                     ui.label(row["path"]).classes("text-sm text-slate-500")
             ui.separator()
@@ -329,25 +304,23 @@ def career_panel():
             ui.label("Top missing skills: " + (", ".join(plan["missing"]) or "none")).classes("text-slate-600")
             for step in plan["steps"]:
                 opportunity = step["opportunity"]
-                with ui.card().classes("inner-card"):
+                with inner_card():
                     ui.label(step["stage"]).classes("font-semibold text-slate-900")
                     ui.label(", ".join(step["types"])).classes("text-xs text-slate-500")
                     ui.label(opportunity.title if opportunity else "No live fit yet").classes("text-slate-700")
 
-    ui.button("Build career intelligence view", icon="psychology", on_click=render).classes("primary-button")
+    primary_button("Build career intelligence view", icon="psychology", on_click=render)
     render()
 
 
 def build_help_tab():
-    with ui.grid(columns=2).classes("gap-5 w-full"):
-        with ui.card().classes("section-card"):
-            ui.label("First-timer guides").classes("section-title")
+    with ui.grid(columns=2).classes("radar-grid-2 gap-5 w-full"):
+        with section_card("First-timer guides"):
             for title, bullets in core.first_timer_guides().items():
                 with ui.expansion(title.title()).classes("w-full"):
                     for bullet in bullets:
                         ui.label("- " + bullet).classes("text-sm text-slate-600")
-        with ui.card().classes("section-card"):
-            ui.label("Optional search index").classes("section-title")
+        with section_card("Optional search index"):
             query = ui.input("Search opportunities").classes("w-full")
             result_box = ui.column().classes("w-full")
 
@@ -357,7 +330,7 @@ def build_help_tab():
                     for row in intelligence.search_opportunities(STATE.opportunities, query.value or ""):
                         ui.label(row["opportunity"].title + " | " + row["engine"]).classes("text-sm")
 
-            ui.button("Search", icon="search", on_click=run_search).classes("soft-button")
+            soft_button("Search", icon="search", on_click=run_search)
 
 
 @ui.refreshable
@@ -367,16 +340,17 @@ def sender_panel():
         badge(f"{counts['pending']} pending", "warn")
         badge(f"{counts['approved']} approved", "good")
         badge(f"{counts['rejected']} rejected", "bad")
-    with ui.tabs().classes("clean-tabs") as sender_tabs:
-        gaps = ui.tab("Demand")
-        submit = ui.tab("Submit")
-        review = ui.tab("Review")
-        live = ui.tab("Live")
-        diagnostics = ui.tab("Diagnostics")
-    with ui.tab_panels(sender_tabs, value=gaps).classes("w-full bg-transparent"):
+    with ui.tabs().classes("clean-tabs").props("inline-label") as sender_tabs:
+        gaps = ui.tab("Demand", icon="insights")
+        submit = ui.tab("Submit", icon="post_add")
+        review = ui.tab("Review", icon="rule")
+        live = ui.tab("Live", icon="campaign")
+        diagnostics = ui.tab("Diagnostics", icon="monitoring")
+    with ui.tab_panels(sender_tabs, value=gaps).classes("w-full bg-transparent").props(
+        'transition-prev="fade" transition-next="fade" transition-duration="300"'
+    ):
         with ui.tab_panel(gaps):
-            with ui.card().classes("section-card"):
-                ui.label("Demand gap radar").classes("section-title")
+            with section_card("Demand gap radar"):
                 for row in core.gap_rows(STATE.opportunities):
                     with ui.row().classes("justify-between w-full border-b border-slate-100 py-2"):
                         ui.label(row["interest"]).classes("font-medium")
@@ -392,8 +366,7 @@ def sender_panel():
 
 
 def submit_form():
-    with ui.card().classes("section-card"):
-        ui.label("Submit opportunity for review").classes("section-title")
+    with section_card("Submit opportunity for review"):
         title = ui.input("Title").classes("w-full")
         organizer = ui.input("Organizer").classes("w-full")
         opp_type = ui.select(core.OPPORTUNITY_TYPES, value="workshop", label="Type").classes("w-full")
@@ -427,7 +400,7 @@ def submit_form():
             ui.notify(f"Submitted for review | access {preview['access_score']}/100", type="positive")
             refresh_all()
 
-        ui.button("Submit for review", icon="send", on_click=submit).classes("primary-button")
+        primary_button("Submit for review", icon="send", on_click=submit)
 
 
 def review_queue():
@@ -452,8 +425,8 @@ def review_queue():
                 ui.label(flag["detail"]).classes("text-xs text-slate-500")
             note = ui.input("Rejection note", placeholder="spam/scam/prize/click/crypto teaches the model").classes("w-full")
             with ui.row().classes("gap-2"):
-                ui.button("Approve", icon="check", on_click=lambda s=submission: approve(s)).classes("primary-button")
-                ui.button("Reject", icon="close", on_click=lambda s=submission, n=note: reject(s, n.value)).classes("danger-button")
+                primary_button("Approve", icon="check", on_click=lambda s=submission: approve(s))
+                danger_button("Reject", icon="close", on_click=lambda s=submission, n=note: reject(s, n.value))
 
 
 def approve(submission: dict) -> None:
@@ -475,10 +448,10 @@ def reject(submission: dict, note: str) -> None:
 
 def live_opportunities():
     for opportunity in [opp for opp in STATE.opportunities if core.days_until(opp.deadline) >= 0][:12]:
-        with ui.card().classes("inner-card"):
+        with inner_card():
             ui.label(opportunity.title).classes("font-semibold")
             ui.label(opportunity.organizer + " | " + opportunity.deadline).classes("text-sm text-slate-500")
-            ui.button("Write announcement", on_click=lambda opp=opportunity: write_announcement(opp)).classes("soft-button")
+            soft_button("Write announcement", on_click=lambda opp=opportunity: write_announcement(opp))
 
 
 def write_announcement(opportunity: core.Opportunity) -> None:
@@ -488,8 +461,7 @@ def write_announcement(opportunity: core.Opportunity) -> None:
 
 def model_audit():
     health = intelligence.model_health(STATE.submissions)
-    with ui.card().classes("section-card"):
-        ui.label("Reviewer diagnostics").classes("section-title")
+    with section_card("Reviewer diagnostics"):
         ui.label("Adaptive Naive Bayes spam-risk model").classes("text-slate-600")
         with ui.row().classes("gap-2"):
             badge(f"{health['total']} examples", "info")
@@ -500,103 +472,24 @@ def model_audit():
             ui.label(f"{token}: {weight:.2f}").classes("text-sm text-slate-600")
 
 
-def setup_theme() -> None:
-    ui.add_head_html(
-        """
-        <style>
-        :root {
-            --radar-bg: #f7f7f4;
-            --radar-ink: #0f172a;
-            --radar-muted: #64748b;
-            --radar-line: #e7e5df;
-            --radar-accent: #2563eb;
-        }
-        body {
-            background: linear-gradient(180deg, #fbfaf7 0%, #f3f4f6 100%);
-            color: var(--radar-ink);
-        }
-        .q-page { background: transparent; }
-        .hero {
-            border: 1px solid rgba(15, 23, 42, 0.08);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.74);
-            box-shadow: 0 20px 70px rgba(15, 23, 42, 0.08);
-            backdrop-filter: blur(16px);
-        }
-        .metric-card, .section-card, .opp-card, .inner-card {
-            border: 1px solid var(--radar-line);
-            box-shadow: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.86);
-        }
-        .metric-card { min-height: 116px; padding: 18px; }
-        .section-card { width: 100%; padding: 20px; }
-        .inner-card { width: 100%; padding: 14px; border-radius: 8px; }
-        .opp-card { width: 100%; padding: 18px; }
-        .section-title { font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem; }
-        .side-panel { width: 100%; max-width: 360px; }
-        .content-panel { flex: 1; min-width: 0; gap: 1rem; }
-        .primary-button {
-            background: #111827 !important;
-            background-color: #111827 !important;
-            color: white !important;
-            border-radius: 999px;
-            box-shadow: none !important;
-        }
-        .soft-button {
-            background: #f1f5f9 !important;
-            background-color: #f1f5f9 !important;
-            color: #0f172a !important;
-            border-radius: 999px;
-            box-shadow: none !important;
-            text-decoration: none;
-            padding: 8px 13px;
-        }
-        .danger-button {
-            background: #fff1f2 !important;
-            background-color: #fff1f2 !important;
-            color: #be123c !important;
-            border-radius: 999px;
-            box-shadow: none !important;
-        }
-        .empty-state { color: #64748b; padding: 1rem; border: 1px dashed #cbd5e1; border-radius: 8px; width: 100%; }
-        .clean-tabs { max-width: 100%; overflow-x: auto; }
-        .clean-tabs .q-tabs__content { min-width: max-content; }
-        .clean-tabs .q-tab { border-radius: 999px; min-height: 38px; padding: 0 16px; }
-        .clean-tabs .q-tab--active { background: #111827; color: white; }
-        @media (max-width: 900px) {
-            .side-panel { max-width: none; }
-            .hero { padding: 20px !important; }
-            .metric-card { min-height: 0; }
-            .section-card { padding: 18px; }
-        }
-        </style>
-        """
-    )
-
-
 @ui.page("/")
 def index():
-    setup_theme()
+    apply_theme()
     ui.dark_mode(False)
-    with ui.column().classes("max-w-7xl mx-auto px-4 py-6 gap-6 w-full"):
-        with ui.card().classes("hero w-full p-8"):
-            with ui.row().classes("items-center justify-between gap-6 w-full"):
-                with ui.column().classes("gap-2"):
-                    ui.label("Opportunity Radar").classes("text-4xl font-semibold tracking-tight")
-                    ui.label("A two-sided access system for students and opportunity organizers.").classes("text-lg text-slate-600")
-                ui.label("Python + NiceGUI").classes("px-4 py-2 rounded-full bg-slate-900 text-white text-sm")
-            metrics()
+    with page_container():
+        hero("Opportunity Radar", "A two-sided access system for students and opportunity organizers.", "Built with Python · NiceGUI")
+        metrics()
+        with ui.tabs().classes("clean-tabs").props("inline-label") as tabs:
+            discover = ui.tab("Discover", icon="travel_explore")
+            applications = ui.tab("Applications", icon="fact_check")
+            equity = ui.tab("Equity", icon="balance")
+            career = ui.tab("Career", icon="trending_up")
+            sender = ui.tab("Sender", icon="move_to_inbox")
+            help_tab = ui.tab("Help", icon="help_outline")
 
-        with ui.tabs().classes("clean-tabs") as tabs:
-            discover = ui.tab("Discover")
-            applications = ui.tab("Applications")
-            equity = ui.tab("Equity")
-            career = ui.tab("Career")
-            sender = ui.tab("Sender")
-            help_tab = ui.tab("Help")
-
-        with ui.tab_panels(tabs, value=discover).classes("w-full bg-transparent"):
+        with ui.tab_panels(tabs, value=discover).classes("w-full bg-transparent").props(
+            'transition-prev="fade" transition-next="fade" transition-duration="300"'
+        ):
             with ui.tab_panel(discover).classes("p-0"):
                 build_discover_tab()
             with ui.tab_panel(applications).classes("p-0"):
