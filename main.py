@@ -845,6 +845,7 @@ def print_submission_detail(submission, opportunities, searches_path):
     """Print one pending submission with reviewer-focused context."""
     opportunity = submission["opportunity"]
     preview = sender.build_sender_preview(opportunity, opportunities, searches_path)
+    spam = review_queue.spam_assessment(submission)
     flags = review_queue.review_flags(submission, opportunities, searches_path)
 
     print("")
@@ -865,6 +866,13 @@ def print_submission_detail(submission, opportunities, searches_path):
     print("Matching anonymous interest-demand hits: "
           + str(preview["demand_matches"]))
     print("Accessibility score: " + str(preview["access_score"]) + "/100")
+    print("ML spam risk: " + spam["risk_level"]
+          + " (" + str(round(spam["spam_probability"] * 100)) + "%)")
+    if spam["risk_level"] != "LOW" and len(spam["signals"]) > 0:
+        signal_words = []
+        for signal in spam["signals"]:
+            signal_words.append(signal["token"])
+        print("ML spam signals: " + ", ".join(signal_words))
     print("")
     print_review_flags(flags)
     return flags

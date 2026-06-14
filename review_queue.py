@@ -10,6 +10,7 @@ import os
 
 import matcher
 import sender
+import spam_model
 import storage
 from models import Opportunity
 
@@ -165,10 +166,31 @@ def status_counts(submissions):
     return counts
 
 
+def spam_assessment(submission):
+    """Return the ML spam-risk assessment for one submission."""
+    return spam_model.assess_opportunity(submission["opportunity"])
+
+
+def spam_flag_detail(assessment):
+    """Return a compact detail string for a spam-risk review flag."""
+    percent = str(round(assessment["spam_probability"] * 100))
+    detail = "Naive Bayes spam risk " + percent + "%"
+
+    signal_words = []
+    for signal in assessment["signals"]:
+        signal_words.append(signal["token"])
+
+    if len(signal_words) > 0:
+        detail = detail + "; learned signals: " + ", ".join(signal_words)
+
+    return detail
+
+
 def review_flags(submission, opportunities, searches_path):
     """Return quality flags a reviewer should consider before approval."""
     opportunity = submission["opportunity"]
     preview = sender.build_sender_preview(opportunity, opportunities, searches_path)
+    spam = spam_assessment(submission)
     days_left = matcher.days_until(opportunity.deadline)
     flags = []
 
@@ -204,6 +226,19 @@ def review_flags(submission, opportunities, searches_path):
             "severity": "WARNING",
             "label": "Access friction",
             "detail": "Paid and not beginner-friendly may narrow access.",
+        })
+
+    if spam["risk_level"] == "HIGH":
+        flags.append({
+            "severity": "BLOCKER",
+            "label": "ML spam risk",
+            "detail": spam_flag_detail(spam),
+        })
+    elif spam["risk_level"] == "MEDIUM":
+        flags.append({
+            "severity": "WARNING",
+            "label": "ML spam risk",
+            "detail": spam_flag_detail(spam),
         })
 
     if preview["demand_matches"] == 0:

@@ -14,7 +14,7 @@ Then:
 
 > In Singapore, opportunities exist: hackathons, olympiads, scholarships, research attachments, workshops. But information about them travels through uneven networks: connected parents, plugged-in teachers, school chats, seniors, enrichment circles.
 >
-> Opportunity Radar has two modes. Students use Finder mode to discover and understand opportunities. Organizers use Sender mode to see demand gaps, submit opportunities, and review them before they become live. Same data store. Same scoring engine. No external libraries.
+> Opportunity Radar has two modes. Students use Finder mode to discover and understand opportunities. Organizers use Sender mode to see demand gaps, submit opportunities, and review them before they become live. Same data store. Same scoring engine, plus a trainable spam-risk model. No external libraries.
 
 Close:
 
@@ -39,7 +39,7 @@ Point at the top-level menu:
 
 Say:
 
-> This is not just a recommendation list. It is a tiny two-sided opportunity system with a review gate before new supply reaches students.
+> This is not just a recommendation list. It is a tiny two-sided opportunity system with an ML spam scan and a review gate before new supply reaches students.
 
 ### Beat 2 - Student creates demand, 70 sec
 
@@ -111,7 +111,7 @@ Then choose `3` to review pending submissions. Pick the new submission.
 
 Say:
 
-> The reviewer sees quality checks: duplicate title blockers, deadline risk, URL issues, access friction, and whether current demand actually matches the opportunity.
+> The reviewer sees quality checks: duplicate title blockers, deadline risk, URL issues, access friction, whether current demand matches the opportunity, and an ML spam-risk score trained from labeled examples.
 
 Choose `approve`.
 
@@ -174,12 +174,13 @@ Show:
 
 1. `main.py`: two modes, one shared store.
 2. `career_model.py`: ML-style career-readiness impact model.
-3. `matcher.py`: hard filters and transparent scoring.
-4. `access.py`: starting-line simulation.
-5. `demand.py`: anonymous demand records.
-6. `sender.py`: demand radar, submission drafting, impact preview, announcement generation.
-7. `review_queue.py`: approval gate, quality flags, audit trail.
-8. `interests.py`: recursive taxonomy expansion.
+3. `spam_model.py`: trainable Naive Bayes spam-risk classifier.
+4. `matcher.py`: hard filters and transparent scoring.
+5. `access.py`: starting-line simulation.
+6. `demand.py`: anonymous demand records.
+7. `sender.py`: demand radar, submission drafting, impact preview, announcement generation.
+8. `review_queue.py`: approval gate, ML spam score, quality flags, audit trail.
+9. `interests.py`: recursive taxonomy expansion.
 
 Closing line:
 
@@ -203,6 +204,10 @@ No. It proves the product can connect student demand to organizer action. The ne
 
 No. It estimates readiness alignment, not actual hiring probability. That is intentional: the model is transparent and useful without pretending to know a student's future.
 
+**Is the spam model real machine learning?**
+
+Yes. It is a supervised Naive Bayes classifier trained from labeled examples. It produces a probability and learned signal words, then a human still makes the final decision.
+
 **Did you write this yourselves?**
 
 Every module is readable and explainable. Ask us about any file.
@@ -213,5 +218,6 @@ Every module is readable and explainable. Ask us about any file.
 - Run `python main.py`.
 - Rehearse both modes: student search, starting-line simulation, sender demand radar.
 - Rehearse submitting and approving one demo opportunity.
+- Optional: submit a spammy title like `Guaranteed Scholarship Prize Click Now` to show the ML spam blocker.
 - Prepare a backup screenshot or recording.
 - Submit the public GitHub link by Thursday 19 June 2026, 23:59.

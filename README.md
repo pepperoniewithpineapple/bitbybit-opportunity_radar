@@ -24,6 +24,7 @@ Both modes share the same:
 - `storage.py` JSON File I/O helpers
 - `models.py` classes
 - `review_queue.py` approval gate for sender submissions
+- `spam_model.py` trainable ML spam-risk layer
 
 ## Features
 
@@ -31,8 +32,10 @@ Both modes share the same:
 - **Opportunity Sender mode**: organizer-facing flow for viewing demand gaps, submitting new opportunities, reviewing pending submissions, listing live supply, and generating a student-facing announcement.
 - **Demand gap radar**: every student feed search writes an anonymous demand signal: level + interests + timestamp, no name.
 - **Sender impact preview**: before submitting, organizers see matching demand, deadline pressure, eligible levels, and an accessibility score.
+- **Trainable ML spam-risk layer**: a standard-library Naive Bayes classifier trains on labeled examples, then scores each submission before manual review.
 - **Submission review queue**: sender submissions are saved as pending records in `data/submissions.json`; they do not appear for students until approved.
-- **Reviewer quality checks**: the queue flags duplicate titles, closed or urgent deadlines, weak URLs, access friction, and submissions with no current demand match.
+- **Reviewer quality checks**: the queue flags duplicate titles, closed or urgent deadlines, weak URLs, access friction, spam risk, and submissions with no current demand match.
+- **Explainable spam signals**: high-risk submissions show the learned tokens that pushed the model toward spam, such as prize, guaranteed, crypto, or click.
 - **Approval audit trail**: approved and rejected submissions keep status, review time, and reviewer notes, which is closer to how a deployed product would protect the live feed.
 - **Career impact simulator**: a transparent ML-style model estimates whether joining a specific event increases, decreases, or does not change a student's career-readiness alignment for a chosen goal.
 - **Invisible Starting-Line Simulation**: estimates how many suitable opportunities the same student might hear about through different information networks, then shows what Radar recovers.
@@ -65,7 +68,7 @@ Run tests:
 python -m unittest discover -s tests
 ```
 
-Current verification: **109 unit tests pass**.
+Current verification: **116 unit tests pass**.
 
 Optional feed import:
 
@@ -119,6 +122,7 @@ Opportunity Sender mode:
 bbb/
   main.py                 CLI entry point, two-mode routing, interactive flows
   career_model.py         ML-style career-readiness impact model
+  spam_model.py           Trainable Naive Bayes spam-risk model
   review_queue.py         Pending submission approval workflow
   sender.py               Opportunity Sender mode helpers and announcements
   access.py               Invisible starting-line simulation
@@ -149,6 +153,7 @@ bbb/
 
   tests/
     test_career_model.py  Career impact model tests
+    test_spam_model.py    Trainable spam-risk model tests
     test_review_queue.py  Submission queue and approval tests
     test_sender.py        Sender mode helper tests
     test_access.py        Starting-line simulation tests
@@ -169,9 +174,11 @@ bbb/
 
 ## Code Spotlight
 
-The best code spotlight is `career_model.py`, `matcher.py`, `access.py`, `sender.py`, and `review_queue.py`.
+The best code spotlight is `career_model.py`, `spam_model.py`, `matcher.py`, `access.py`, `sender.py`, and `review_queue.py`.
 
 `career_model.py` is the ML-style layer: it uses weighted skill vectors, a sigmoid readiness curve, event-type multipliers, and an opportunity-cost penalty to estimate whether one event increases, decreases, or does not change career-readiness alignment. It avoids fake hiring promises by reporting readiness movement, not real job probability.
+
+`spam_model.py` is the second ML layer: it trains a Naive Bayes classifier from labeled legitimate/spam examples, converts a submission into tokens, estimates spam probability, and shows the learned words that drove the risk score.
 
 `matcher.py` shows the concrete recommender:
 
@@ -186,7 +193,7 @@ total          = interest_score + urgency_score + equity_boost
 
 `sender.py` closes the loop: it turns anonymous student demand into organizer action and previews the likely access impact before anything is submitted.
 
-`review_queue.py` is the deployment-hardening layer: it prevents unreviewed sender submissions from changing the live student feed, flags risky records, and keeps an approval/rejection audit trail using only JSON.
+`review_queue.py` is the deployment-hardening layer: it prevents unreviewed sender submissions from changing the live student feed, combines rule-based checks with the ML spam score, and keeps an approval/rejection audit trail using only JSON.
 
 ## Reflection
 

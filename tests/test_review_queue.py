@@ -135,6 +135,30 @@ class TestReviewQueue(unittest.TestCase):
         self.assertIn("No current demand match", labels)
         self.assertTrue(review_queue.has_blocker(flags))
 
+    def test_review_flags_include_ml_spam_blocker(self):
+        opportunity = Opportunity(
+            "draft-001",
+            "Guaranteed Scholarship Prize Click Now",
+            "scholarship",
+            ["crypto", "cash"],
+            ["JC"],
+            "free",
+            True,
+            "2099-12-31",
+            "http://bit.ly/prize",
+            "Crypto Winners Club",
+        )
+        submission = review_queue.build_submission("sub-001", opportunity)
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            searches_path = os.path.join(tmp_dir, "searches.json")
+            flags = review_queue.review_flags(submission, [], searches_path)
+
+        labels = [flag["label"] for flag in flags]
+
+        self.assertIn("ML spam risk", labels)
+        self.assertTrue(review_queue.has_blocker(flags))
+
     def test_review_flags_clear_when_demand_and_link_are_good(self):
         submission = review_queue.build_submission("sub-001", make_opportunity())
 
