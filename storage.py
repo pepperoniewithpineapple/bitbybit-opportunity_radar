@@ -16,12 +16,20 @@ def load_json(path):
 
 def save_json(path, data):
     """Save data as readable JSON, creating the parent folder if needed."""
-    folder = os.path.dirname(path)
+    absolute_path = os.path.abspath(path)
+    folder = os.path.dirname(absolute_path)
     if folder != "" and not os.path.exists(folder):
         os.makedirs(folder)
 
-    with open(path, "w", encoding="utf-8") as file_handle:
-        json.dump(data, file_handle, indent=2)
+    temp_path = absolute_path + ".tmp"
+
+    try:
+        with open(temp_path, "w", encoding="utf-8") as file_handle:
+            json.dump(data, file_handle, indent=2)
+        os.replace(temp_path, absolute_path)
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
 
 
 def load_opportunities(path):
@@ -36,26 +44,33 @@ def load_opportunities(path):
 
     try:
         records = load_json(path)
-    except (json.JSONDecodeError, ValueError):
+    except (json.JSONDecodeError, ValueError, OSError):
         print("Notice: opportunities file could not be read. Using empty list.")
+        return []
+
+    if not isinstance(records, list):
+        print("Notice: opportunities file was not a list. Using empty list.")
         return []
 
     opportunities = []
 
     for record in records:
-        opportunity = Opportunity(
-            record["id"],
-            record["title"],
-            record["type"],
-            record["interests"],
-            record["eligible_levels"],
-            record["cost"],
-            record["beginner_friendly"],
-            record["deadline"],
-            record["url"],
-            record["organizer"],
-        )
-        opportunities.append(opportunity)
+        try:
+            opportunity = Opportunity(
+                record["id"],
+                record["title"],
+                record["type"],
+                record["interests"],
+                record["eligible_levels"],
+                record["cost"],
+                record["beginner_friendly"],
+                record["deadline"],
+                record["url"],
+                record["organizer"],
+            )
+            opportunities.append(opportunity)
+        except (KeyError, TypeError):
+            print("Notice: skipped one invalid opportunity record.")
 
     return opportunities
 
@@ -65,16 +80,28 @@ def load_applications(path):
     if not os.path.exists(path):
         return []
 
-    records = load_json(path)
+    try:
+        records = load_json(path)
+    except (json.JSONDecodeError, ValueError, OSError):
+        print("Notice: applications file could not be read. Using empty tracker.")
+        return []
+
+    if not isinstance(records, list):
+        print("Notice: applications file was not a list. Using empty tracker.")
+        return []
+
     applications = []
 
     for record in records:
-        application = Application(
-            record["opp_id"],
-            record["status"],
-            record["notes"],
-        )
-        applications.append(application)
+        try:
+            application = Application(
+                record["opp_id"],
+                record["status"],
+                record["notes"],
+            )
+            applications.append(application)
+        except (KeyError, TypeError):
+            print("Notice: skipped one invalid application record.")
 
     return applications
 

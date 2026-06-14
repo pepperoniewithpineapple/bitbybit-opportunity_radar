@@ -7,14 +7,19 @@ import sys
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
+import access
+import career_model
+import demand
 import digest
 import fairness
 import filters
 import firsttimer
 import ics_export
+import impact_report
 import interests as interests_module
 import matcher
 import recommend
+import sender
 import stats as stats_module
 import storage
 import tracker
@@ -48,6 +53,12 @@ def build_student_path():
     return os.path.join(base_dir, "data", "student.json")
 
 
+def build_searches_path():
+    """Return the path to anonymous student search demand signals."""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_dir, "data", "searches.json")
+
+
 def build_interests_path():
     """Return the path to the interest taxonomy JSON file."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -64,6 +75,18 @@ def build_digest_path():
     """Return the path to the generated weekly digest text file."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(base_dir, "weekly_digest.txt")
+
+
+def build_sender_packet_path():
+    """Return the path to the generated sender announcement text file."""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_dir, "opportunity_sender_packet.txt")
+
+
+def build_impact_report_path():
+    """Return the path to the generated judge impact report text file."""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_dir, "judge_impact_report.txt")
 
 
 def parse_interests(raw_text):
@@ -367,7 +390,7 @@ def show_feed(results):
 def show_menu(student):
     """Print the main menu and current profile status."""
     print("")
-    ui.header("Opportunity Radar")
+    ui.header("Student / Opportunity Finder")
     print_profile(student)
     print("")
     print("1.  Set/edit student profile")
@@ -381,7 +404,9 @@ def show_menu(student):
     print("9.  Load demo student (quick-start for demo)")
     print("10. Bias self-audit (does the equity weighting work?)")
     print("11. Closing this week (urgent deadlines)")
-    print("0.  Quit")
+    print("12. Invisible starting-line simulation")
+    print("13. Career impact simulator")
+    print("0.  Back to mode selection")
 
 
 def ensure_profile(student):
@@ -404,6 +429,104 @@ def choose_breakdown_result(results):
         len(results),
     )
     matcher.print_scoring_breakdown(results[choice - 1])
+
+
+def ask_career_goal():
+    """Ask the student which career direction to simulate."""
+    careers = career_model.career_names()
+
+    print("")
+    print("Career goals:")
+    for index, career in enumerate(careers):
+        print(str(index + 1) + ". " + career)
+
+    choice = validation.get_valid_int("Choose career goal: ", 1, len(careers))
+    return careers[choice - 1]
+
+
+def choose_impact_opportunity(results):
+    """Ask the user to choose a ranked opportunity for career impact."""
+    if len(results) == 0:
+        print("No ranked opportunities available. View the feed first.")
+        return None
+
+    print("")
+    print("Choose an opportunity to simulate:")
+    for index, result in enumerate(results):
+        opportunity = result["opportunity"]
+        print(str(index + 1) + ". " + opportunity.title)
+
+    choice = validation.get_valid_int(
+        "Choose opportunity number: ",
+        1,
+        len(results),
+    )
+    return results[choice - 1]["opportunity"]
+
+
+def print_career_impact(impact):
+    """Print one career impact result in a transparent, judge-friendly format."""
+    opportunity = impact["opportunity"]
+
+    print("")
+    ui.header("Career Impact Simulator")
+    print("")
+    print("Career goal: " + impact["career"])
+    print("Opportunity: " + opportunity.title)
+    print("")
+    print("This is NOT a real hiring-probability prediction.")
+    print("It estimates career-readiness alignment if you join and complete it.")
+    print("The model uses weighted skill vectors, not real hiring probability.")
+    print("")
+    print("Before joining: " + format(impact["before"], ".1f") + "/100")
+    print("After joining:  " + format(impact["after"], ".1f") + "/100")
+
+    delta_text = format(impact["delta"], "+.1f")
+    print("Impact: " + impact["classification"] + " (" + delta_text + " points)")
+    print("")
+    print("Why:")
+    for reason in impact["reasons"]:
+        print("- " + reason)
+
+
+def show_best_career_boosters(career_name, student, results):
+    """Print the strongest positive career boosters from current feed results."""
+    opportunities = []
+    for result in results:
+        opportunities.append(result["opportunity"])
+
+    impacts = career_model.rank_impacts(career_name, student, opportunities, limit=5)
+
+    print("")
+    print("Strongest career boosters in your current feed:")
+    rows = []
+    for impact in impacts:
+        opportunity = impact["opportunity"]
+        rows.append([
+            opportunity.title[:42] + ("..." if len(opportunity.title) > 42 else ""),
+            impact["classification"],
+            format(impact["delta"], "+.1f"),
+            format(impact["after"], ".1f") + "/100",
+        ])
+
+    ui.print_table(["Opportunity", "Impact", "Delta", "After"], rows)
+
+
+def run_career_impact_flow(student, results):
+    """Run the career impact simulator."""
+    if len(results) == 0:
+        print("View the For You feed first so there are opportunities to simulate.")
+        return
+
+    career_name = ask_career_goal()
+    show_best_career_boosters(career_name, student, results)
+    opportunity = choose_impact_opportunity(results)
+
+    if opportunity is None:
+        return
+
+    impact = career_model.evaluate_opportunity(career_name, student, opportunity)
+    print_career_impact(impact)
 
 
 def show_tracker_menu():
@@ -484,30 +607,377 @@ def ask_cost_filter():
     return "all"
 
 
-def run_menu():
-    """Run the menu loop until the user chooses to quit."""
-    opportunities_path = build_opportunities_path()
-    applications_path = build_applications_path()
-    student_path = build_student_path()
-    interests_path = build_interests_path()
+def show_mode_menu(student):
+    """Print the top-level two-mode menu."""
+    print("")
+    ui.header("Opportunity Radar")
+    print("Two modes. One shared opportunity engine.")
+    print_profile(student)
+    print("")
+    print("1. Student / Opportunity Finder mode")
+    print("2. Opportunity Sender mode")
+    print("3. Export Python-only judge impact report")
+    print("0. Quit")
 
-    opportunities = storage.load_opportunities(opportunities_path)
-    applications = storage.load_applications(applications_path)
-    interest_tree = interests_module.load_interest_tree(interests_path)
 
-    student = storage.load_student(student_path)
-    if student is not None:
-        print("Profile loaded from last session")
+def build_report_student(student, interest_tree):
+    """Return a student profile expanded for report scoring."""
+    if student is None:
+        return None
+
+    expanded = interests_module.get_expanded_interests(
+        interest_tree,
+        student.interests,
+    )
+    return Student(student.name, student.level, expanded)
+
+
+def build_career_student(student, interest_tree):
+    """Return a student profile with raw and expanded interests preserved."""
+    expanded = interests_module.get_expanded_interests(
+        interest_tree,
+        student.interests,
+    )
+    seen = set()
+    combined = []
+
+    for interest in list(student.interests) + list(expanded):
+        key = interest.strip().lower()
+        if key not in seen:
+            seen.add(key)
+            combined.append(interest)
+
+    return Student(student.name, student.level, combined)
+
+
+def export_judge_impact_report(opportunities, searches_path, student, interest_tree):
+    """Generate the plain-text Python-only impact report for judges."""
+    report_student = build_report_student(student, interest_tree)
+    path = build_impact_report_path()
+    written = impact_report.save_report(
+        path,
+        opportunities,
+        searches_path,
+        report_student,
+    )
+    print("")
+    print("Judge impact report written to: " + written)
+    print("This is a Python-generated text artifact, not an HTML/web app.")
+
+
+def ask_level_list():
+    """Ask for one or more eligible student levels."""
+    while True:
+        print("")
+        print("Eligible levels:")
+        for index, level in enumerate(LEVELS):
+            print(str(index + 1) + ". " + level)
+        print("Type comma-separated numbers, or 'all'.")
+
+        raw_text = validation.nonempty("Eligible levels: ")
+        if raw_text.strip().lower() == "all":
+            return list(LEVELS)
+
+        selected = []
+        valid = True
+        pieces = raw_text.split(",")
+
+        for piece in pieces:
+            cleaned = piece.strip()
+            if not cleaned.isdigit():
+                valid = False
+                break
+
+            number = int(cleaned)
+            if number < 1 or number > len(LEVELS):
+                valid = False
+                break
+
+            level = LEVELS[number - 1]
+            if level not in selected:
+                selected.append(level)
+
+        if valid and len(selected) > 0:
+            return selected
+
+        print("Please enter level numbers like 1,2 or type all.")
+
+
+def ask_sender_type():
+    """Ask for the opportunity type in sender mode."""
+    print("")
+    print("Opportunity type:")
+    for index, opp_type in enumerate(sender.OPPORTUNITY_TYPES):
+        print(str(index + 1) + ". " + opp_type)
+
+    choice = validation.get_valid_int(
+        "Choose opportunity type: ",
+        1,
+        len(sender.OPPORTUNITY_TYPES),
+    )
+    selected = sender.OPPORTUNITY_TYPES[choice - 1]
+
+    if selected == "other":
+        return validation.nonempty("Custom type: ")
+    return selected
+
+
+def ask_sender_interests():
+    """Ask for opportunity interest tags."""
+    while True:
+        raw_interests = validation.nonempty(
+            "Interest tags, separated by commas: "
+        )
+        interests = parse_interests(raw_interests)
+
+        if len(interests) > 0:
+            return interests
+
+        print("Please include at least one interest tag.")
+
+
+def ask_sender_deadline():
+    """Ask for a deadline that has not already passed."""
+    while True:
+        deadline = validation.get_valid_date("Deadline (YYYY-MM-DD): ")
+        if matcher.days_until(deadline) >= 0:
+            return deadline
+        print("Please enter a deadline that has not already passed.")
+
+
+def ask_sender_opportunity(opportunities):
+    """Ask an organizer for a complete opportunity record."""
+    print("")
+    ui.header("Send A New Opportunity")
+    print("")
+    print("This will post into the same live JSON store used by Student Finder.")
+    print("")
+
+    while True:
+        title = validation.nonempty("Opportunity title: ")
+        if not sender.title_exists(opportunities, title):
+            break
+        print("That title already exists. Please use a unique title.")
+
+    organizer = validation.nonempty("Organizer name: ")
+    opp_type = ask_sender_type()
+    interests = ask_sender_interests()
+    eligible_levels = ask_level_list()
+    cost = validation.get_valid_choice("Cost (free/paid): ", ["free", "paid"])
+    beginner_text = validation.get_valid_choice(
+        "Beginner-friendly? (yes/no): ",
+        ["yes", "no"],
+    )
+    beginner_friendly = beginner_text == "yes"
+    deadline = ask_sender_deadline()
+    url = validation.nonempty("Application/info URL: ")
+
+    return sender.build_opportunity(
+        storage.next_opportunity_id(opportunities),
+        title,
+        opp_type,
+        interests,
+        eligible_levels,
+        cost,
+        beginner_friendly,
+        deadline,
+        url,
+        organizer,
+    )
+
+
+def print_sender_gap_radar(opportunities, searches_path):
+    """Print demand-vs-supply gap information for organizers."""
+    print("")
+    ui.header("Sender Demand Radar")
+    print("")
+
+    rows = sender.build_gap_rows(opportunities, searches_path)
+
+    if len(rows) == 0:
+        print("No anonymous student search demand has been logged yet.")
+        print("Showing low-supply interests so senders still have a starting point.")
+        rows = sender.build_supply_thin_rows(opportunities)
+
+    table_rows = []
+    for row in rows:
+        if row["gap_score"] > 0:
+            gap = "+" + str(row["gap_score"])
+        else:
+            gap = str(row["gap_score"])
+
+        table_rows.append([
+            row["interest"],
+            str(row["demand"]),
+            str(row["supply"]),
+            gap,
+            sender.priority_label(row),
+        ])
+
+    ui.print_table(["Interest", "Demand", "Supply", "Gap", "Priority"], table_rows)
+    print("")
+    print("Sender idea: post where demand is high and supply is thin.")
+
+
+def print_sender_preview(opportunity, opportunities, searches_path):
+    """Print an impact preview before saving a sender opportunity."""
+    preview = sender.build_sender_preview(opportunity, opportunities, searches_path)
+
+    print("")
+    ui.header("Sender Impact Preview")
+    print("")
+    print("Title: " + opportunity.title)
+    print("Organizer: " + opportunity.organizer)
+    print("Open to: " + ", ".join(opportunity.eligible_levels))
+    print("Interests: " + ", ".join(opportunity.interests))
+    print("Deadline: " + opportunity.deadline
+          + " (" + str(preview["days_left"]) + " days left)")
+    print("Matching anonymous interest-demand hits: "
+          + str(preview["demand_matches"]))
+    print("Accessibility score: " + str(preview["access_score"]) + "/100")
+
+    if preview["access_score"] >= 80:
+        print("Signal: strong access design.")
+    elif preview["access_score"] >= 60:
+        print("Signal: decent access design; consider making it free or beginner-friendly.")
+    else:
+        print("Signal: likely harder to access; explain support clearly.")
+
+
+def list_live_opportunities(opportunities):
+    """Print a compact list of current open opportunities."""
+    open_opportunities = get_open_opportunities(opportunities)
+
+    print("")
+    ui.header("Live Opportunity Store")
+    print("")
+
+    if len(open_opportunities) == 0:
+        print("No open opportunities are currently stored.")
+        return
+
+    rows = []
+    for index, opportunity in enumerate(open_opportunities[:15]):
+        rows.append([
+            str(index + 1),
+            opportunity.title[:42] + ("..." if len(opportunity.title) > 42 else ""),
+            opportunity.organizer,
+            opportunity.type,
+            opportunity.deadline,
+        ])
+
+    ui.print_table(["#", "Title", "Organizer", "Type", "Deadline"], rows)
+
+
+def get_open_opportunities(opportunities):
+    """Return open opportunities sorted by deadline."""
+    open_opportunities = []
+
+    for opportunity in opportunities:
+        if matcher.days_until(opportunity.deadline) >= 0:
+            open_opportunities.append(opportunity)
+
+    open_opportunities.sort(key=lambda opportunity: opportunity.deadline)
+    return open_opportunities
+
+
+def choose_opportunity(opportunities, prompt):
+    """Ask the user to choose one stored opportunity."""
+    open_opportunities = get_open_opportunities(opportunities)
+
+    if len(open_opportunities) == 0:
+        print("No opportunities are available.")
+        return None
+
+    list_live_opportunities(opportunities)
+    choice = validation.get_valid_int(prompt, 1, len(open_opportunities))
+    return open_opportunities[choice - 1]
+
+
+def generate_sender_packet(opportunity):
+    """Generate a text announcement for one opportunity."""
+    if opportunity is None:
+        return
+
+    path = build_sender_packet_path()
+    written = sender.save_announcement(path, opportunity)
+    print("")
+    print("Sender announcement written to: " + written)
+    print("Paste it into a school chat, CCA chat, or teacher announcement.")
+
+
+def show_sender_menu():
+    """Print the Opportunity Sender mode menu."""
+    print("")
+    ui.header("Opportunity Sender Mode")
+    print("Post supply into the gaps students reveal.")
+    print("")
+    print("1. View demand gap radar")
+    print("2. Send/post a new opportunity")
+    print("3. List live opportunities")
+    print("4. Generate announcement for an opportunity")
+    print("0. Back to mode selection")
+
+
+def run_sender_mode(opportunities, opportunities_path, searches_path):
+    """Run the organizer-facing sender mode."""
+    while True:
+        show_sender_menu()
+        choice = validation.get_valid_int("Choose sender option: ", 0, 4)
+
+        if choice == 0:
+            return
+
+        if choice == 1:
+            print_sender_gap_radar(opportunities, searches_path)
+            continue
+
+        if choice == 2:
+            print_sender_gap_radar(opportunities, searches_path)
+            opportunity = ask_sender_opportunity(opportunities)
+            print_sender_preview(opportunity, opportunities, searches_path)
+            confirm = validation.get_valid_choice(
+                "Post this opportunity? (yes/no): ",
+                ["yes", "no"],
+            )
+
+            if confirm == "yes":
+                added = sender.add_opportunity(opportunities, opportunity)
+                if added:
+                    storage.save_opportunities(opportunities_path, opportunities)
+                    print("Posted. It is now live in Student Finder mode.")
+                    generate_sender_packet(opportunity)
+                else:
+                    print("Not posted because a matching title already exists.")
+            else:
+                print("Draft discarded.")
+            continue
+
+        if choice == 3:
+            list_live_opportunities(opportunities)
+            continue
+
+        if choice == 4:
+            opportunity = choose_opportunity(
+                opportunities,
+                "Choose an opportunity number for the announcement: ",
+            )
+            generate_sender_packet(opportunity)
+            continue
+
+
+def run_student_finder_mode(student, opportunities, applications, interest_tree,
+                            applications_path, student_path, searches_path):
+    """Run the student-facing opportunity finder mode."""
 
     last_results = []
 
     while True:
         show_menu(student)
-        choice = validation.get_valid_int("Choose an option: ", 0, 11)
+        choice = validation.get_valid_int("Choose an option: ", 0, 13)
 
         if choice == 0:
-            print("Goodbye.")
-            return
+            return student
 
         if choice == 1:
             student = ask_student_profile()
@@ -518,6 +988,8 @@ def run_menu():
 
         if choice == 2:
             if ensure_profile(student):
+                demand.log_search(searches_path, student.level, student.interests)
+                print("Anonymous demand signal saved.")
                 ranked = get_ranked_results(opportunities, student, interest_tree)
                 last_results = run_feed_options(ranked)
                 show_feed(last_results)
@@ -588,6 +1060,81 @@ def run_menu():
         if choice == 11:
             if ensure_profile(student):
                 show_closing_this_week(opportunities, student)
+            continue
+
+        if choice == 12:
+            if ensure_profile(student):
+                expanded = interests_module.get_expanded_interests(
+                    interest_tree,
+                    student.interests,
+                )
+                simulation_student = Student(student.name, student.level, expanded)
+                access.print_starting_line_simulation(
+                    opportunities,
+                    simulation_student,
+                )
+            continue
+
+        if choice == 13:
+            if ensure_profile(student):
+                if len(last_results) == 0:
+                    last_results = get_ranked_results(
+                        opportunities,
+                        student,
+                        interest_tree,
+                    )
+                impact_student = build_career_student(student, interest_tree)
+                run_career_impact_flow(impact_student, last_results)
+            continue
+
+
+def run_menu():
+    """Run the two-mode Opportunity Radar product until the user quits."""
+    opportunities_path = build_opportunities_path()
+    applications_path = build_applications_path()
+    student_path = build_student_path()
+    interests_path = build_interests_path()
+    searches_path = build_searches_path()
+
+    opportunities = storage.load_opportunities(opportunities_path)
+    applications = storage.load_applications(applications_path)
+    interest_tree = interests_module.load_interest_tree(interests_path)
+
+    student = storage.load_student(student_path)
+    if student is not None:
+        print("Profile loaded from last session")
+
+    while True:
+        show_mode_menu(student)
+        choice = validation.get_valid_int("Choose a mode: ", 0, 3)
+
+        if choice == 0:
+            print("Goodbye.")
+            return
+
+        if choice == 1:
+            student = run_student_finder_mode(
+                student,
+                opportunities,
+                applications,
+                interest_tree,
+                applications_path,
+                student_path,
+                searches_path,
+            )
+            continue
+
+        if choice == 2:
+            run_sender_mode(opportunities, opportunities_path, searches_path)
+            continue
+
+        if choice == 3:
+            export_judge_impact_report(
+                opportunities,
+                searches_path,
+                student,
+                interest_tree,
+            )
             continue
 
 

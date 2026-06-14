@@ -113,6 +113,84 @@ class TestSaveStudent(unittest.TestCase):
             self.assertTrue(os.path.exists(nested))
 
 
+class TestCrashResistantStorage(unittest.TestCase):
+
+    def test_load_applications_returns_empty_on_corrupt_json(self):
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False, encoding="utf-8"
+        ) as tmp:
+            tmp.write("NOT VALID JSON }{")
+            tmp_path = tmp.name
+
+        try:
+            applications = storage.load_applications(tmp_path)
+            self.assertEqual(applications, [])
+        finally:
+            os.unlink(tmp_path)
+
+    def test_load_applications_skips_invalid_records(self):
+        records = [
+            {"opp_id": "opp-001", "status": "interested", "notes": ""},
+            {"broken": "record"},
+        ]
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False, encoding="utf-8"
+        ) as tmp:
+            json.dump(records, tmp)
+            tmp_path = tmp.name
+
+        try:
+            applications = storage.load_applications(tmp_path)
+            self.assertEqual(len(applications), 1)
+            self.assertEqual(applications[0].opp_id, "opp-001")
+        finally:
+            os.unlink(tmp_path)
+
+    def test_load_applications_returns_empty_on_non_list_json(self):
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False, encoding="utf-8"
+        ) as tmp:
+            json.dump({"not": "a list"}, tmp)
+            tmp_path = tmp.name
+
+        try:
+            applications = storage.load_applications(tmp_path)
+            self.assertEqual(applications, [])
+        finally:
+            os.unlink(tmp_path)
+
+    def test_load_opportunities_skips_invalid_records(self):
+        records = [
+            make_opp("opp-001").to_dict(),
+            {"broken": "record"},
+        ]
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False, encoding="utf-8"
+        ) as tmp:
+            json.dump(records, tmp)
+            tmp_path = tmp.name
+
+        try:
+            opportunities = storage.load_opportunities(tmp_path)
+            self.assertEqual(len(opportunities), 1)
+            self.assertEqual(opportunities[0].id, "opp-001")
+        finally:
+            os.unlink(tmp_path)
+
+    def test_load_opportunities_returns_empty_on_non_list_json(self):
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False, encoding="utf-8"
+        ) as tmp:
+            json.dump({"not": "a list"}, tmp)
+            tmp_path = tmp.name
+
+        try:
+            opportunities = storage.load_opportunities(tmp_path)
+            self.assertEqual(opportunities, [])
+        finally:
+            os.unlink(tmp_path)
+
+
 class TestNextOpportunityId(unittest.TestCase):
 
     def test_returns_opp_001_when_empty(self):

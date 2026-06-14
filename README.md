@@ -1,132 +1,194 @@
 # Opportunity Radar
 
-A two-interface platform that aggregates student opportunities in Singapore, matches them to each student with a transparent and explainable algorithm, lets organizers post new opportunities, and maps where the opportunity gap actually is — all in pure Python with zero external libraries.
+Opportunity Radar is a two-mode terminal Python product for Singapore students and opportunity organizers. Students use **Student / Opportunity Finder mode** to discover hackathons, olympiads, scholarships, workshops, and programmes they might never hear about through ordinary networks. Organizers use **Opportunity Sender mode** to see demand gaps and send new opportunities into the same live store.
 
-**Why it exists:** In Singapore, opportunities — hackathons, scholarships, olympiads, workshops — travel through privileged networks: elite schools, connected parents, plugged-in teachers. Students outside those networks never hear about the competition that could have changed their trajectory. This tool replaces network privilege with open access. Following Dr. Jennifer Eberhardt's insight about algorithmic bias, the matcher is not a black box: every recommendation explains its own reasoning, and instead of amplifying prestige signals it is deliberately and transparently weighted toward free and beginner-friendly events. We don't claim the algorithm is neutral — we **measure** that it widens access, and show the numbers.
+The core idea is simple: the gap is not always talent or effort. Often, the gap is who hears in time.
 
----
+## Why This Matters
 
-## Two interfaces, one engine
+Dr. Teo You Yenn's work on inequality highlights how different starting lines compound over time. Dr. Jennifer Eberhardt's work on bias warns that technology can quietly reproduce unequal outcomes if its assumptions stay hidden.
 
-The same scoring engine (`matcher.py`), data store (`data/opportunities.json`), and validation gateway (`validation.py`) power **both** front-ends, with no duplicated logic:
+Opportunity Radar responds by making the hidden layer visible. It does not claim neutrality. It ranks with transparent access weights for free and beginner-friendly opportunities, logs anonymous demand signals when students search, and gives senders a way to close the opportunity gap instead of guessing.
 
-- **Command-line app** (`python main.py`) — the full, tested core. Profile, ranked feed, transparency screen, tracker, calendar export, stats, bias audit.
-- **Web app** (`python webapp.py`) — a browser interface built on Python's standard-library `http.server` (no Flask, no installs). Two roles:
-  - **Students** search and see ranked, explained matches.
-  - **Organizers** post new opportunities that appear on the student side immediately.
-  - Runs on your wifi, so anyone (a teacher, a judge) can open it on their phone.
+## Two Modes, One Engine
 
----
+```text
+Student searches -> anonymous demand signal -> sender sees gap -> sender posts opportunity -> student feed updates
+```
+
+Both modes share the same:
+
+- `data/opportunities.json` opportunity store
+- `matcher.py` scoring engine
+- `validation.py` input gateway
+- `storage.py` JSON File I/O helpers
+- `models.py` classes
 
 ## Features
 
-- **Weighted, explainable scoring** — ranks by interest overlap, deadline urgency, and a transparent equity boost for free / beginner-friendly events. Every recommendation prints why it matched.
-- **Transparency screen** — shows the full scoring formula with real numbers for any result. No black box.
-- **Bias self-audit** (`fairness.py`) — runs the matcher across many synthetic students with and without the equity weighting and reports how much it widens access to free opportunities. Eberhardt's challenge, answered with measurement.
-- **Recursive interest taxonomy** (`interests.py`) — broad interests like "Technology" expand recursively through a nested category tree to match every leaf interest at any depth.
-- **Fuzzy interest matching** — uses the standard-library `difflib` so typos and near-synonyms still match.
-- **Live demand map** (`demand.py`) — every search is logged anonymously (level + interests, no names). The opportunity-gap view is driven by real demand versus real supply, not guesses.
-- **Two-role web app** (`webapp.py`) — student finder + organizer posting, sharing one live data store, with hand-written SVG charts.
-- **Structured feed ingestion** (`feeds.py`, `import_feed.py`) — imports real opportunities from RSS / Atom feeds using only `urllib` + `xml.etree`. No brittle HTML scraping, no dependencies.
-- **Persistent structured state via JSON File I/O** — opportunities, applications, and demand signals all persist as structured JSON.
-- **Calendar export (.ics File I/O)** — generates real RFC-5545 calendar files (whole-tracker export in the CLI, single-event download in the web app).
-- **Application tracker** — status, notes, deadline countdowns with urgency badges.
-- **Shareable weekly digest** — generates a `weekly_digest.txt` formatted to paste into a class group chat.
-- **First-timer guide** — explains each opportunity type to students who've never entered one.
-- **Central input-validation gateway** (`validation.py`) — every input in both front-ends validates here. Unhandled crashes on bad input are impossible by design. Data files load crash-resistantly even if missing or corrupt.
-- **Hand-rolled terminal polish** (`ui.py`) — ANSI colors, aligned tables, countdown badges, no libraries.
-- **OOP throughout** — `Opportunity`, `Student`, `Application` classes; single-responsibility modules.
-- **Zero external libraries** — 100% Python standard library. Every line is ours and explainable.
+- **Student / Opportunity Finder mode**: ranked, explained opportunity feed for a student profile.
+- **Opportunity Sender mode**: organizer-facing flow for viewing demand gaps, posting new opportunities, listing live supply, and generating a student-facing announcement.
+- **Demand gap radar**: every student feed search writes an anonymous demand signal: level + interests + timestamp, no name.
+- **Sender impact preview**: before posting, organizers see matching demand, deadline pressure, eligible levels, and an accessibility score.
+- **Instant live posting**: sender-posted opportunities are saved into `data/opportunities.json` and immediately appear in Student Finder mode.
+- **Judge impact report**: exports `judge_impact_report.txt`, a polished Python-generated text report from the live JSON data.
+- **Career impact simulator**: a transparent ML-style model estimates whether joining a specific event increases, decreases, or does not change a student's career-readiness alignment for a chosen goal.
+- **Invisible Starting-Line Simulation**: estimates how many suitable opportunities the same student might hear about through different information networks, then shows what Radar recovers.
+- **Transparent scoring breakdown**: shows the exact formula and numbers behind any recommendation.
+- **Bias self-audit**: compares rankings with and without the access boost and reports the measured lift toward free opportunities.
+- **Recursive interest taxonomy**: broad interests like `Technology` expand into deeper leaf interests such as `algorithms`, `machine learning`, and `cybersecurity`.
+- **Advanced feed controls**: filter by cost, type, keyword, deadline window, and sort by score, deadline, or title.
+- **Improve-your-match suggestions**: recommends interests that would unlock more eligible opportunities.
+- **Application tracker**: saves status and notes for opportunities the student wants to pursue.
+- **Calendar export**: writes a real `.ics` file for tracked deadlines.
+- **Shareable weekly digest**: writes `weekly_digest.txt`, formatted for a class group chat.
+- **Sender announcement packet**: writes `opportunity_sender_packet.txt`, formatted for school or CCA chats.
+- **Opportunity-gap statistics**: shows supply by interest, free-vs-paid ratio, deadline pressure, and thin-supply interests using ASCII charts.
+- **First-timer guides**: explains what to expect for hackathons, competitions, scholarships, workshops, and olympiads.
+- **Structured feed importer**: optionally imports RSS or Atom feeds using only `urllib` and `xml.etree`.
+- **Central validation gateway**: all interactive input goes through `validation.py`, so bad input is handled gracefully.
+- **Standard library only**: no packages to install. Every line can be explained from Python basics.
 
----
+## How To Run
 
-## How to Run
+Requirements: Python 3.
 
-**Requirements:** Python 3. Nothing to install.
-
-**Command-line app:**
 ```bash
 python main.py
 ```
 
-**Web app (student finder + organizer posting):**
-```bash
-python webapp.py
-```
-Then open `http://localhost:8000` in a browser. On the same wifi, others can open `http://<your-computer-ip>:8000` on their phones.
+Run tests:
 
-**Import opportunities from a live feed (optional):**
-```bash
-python import_feed.py <RSS-or-Atom-feed-URL>
-```
-
-**Run the tests:**
 ```bash
 python -m unittest discover -s tests
 ```
 
----
+Current verification: **104 unit tests pass**.
+
+Optional feed import:
+
+```bash
+python import_feed.py <RSS-or-Atom-feed-URL>
+```
+
+## Menus
+
+Top-level:
+
+```text
+1. Student / Opportunity Finder mode
+2. Opportunity Sender mode
+3. Export Python-only judge impact report
+0. Quit
+```
+
+Student / Opportunity Finder mode:
+
+```text
+1.  Set/edit student profile
+2.  View ranked + explained For You feed
+3.  Show full scoring breakdown (transparency screen)
+4.  Application tracker
+5.  Export tracker deadlines to .ics calendar
+6.  First-timer guide
+7.  Opportunity-gap statistics
+8.  Generate shareable weekly digest
+9.  Load demo student (quick-start for demo)
+10. Bias self-audit (does the equity weighting work?)
+11. Closing this week (urgent deadlines)
+12. Invisible starting-line simulation
+13. Career impact simulator
+0.  Back to mode selection
+```
+
+Opportunity Sender mode:
+
+```text
+1. View demand gap radar
+2. Send/post a new opportunity
+3. List live opportunities
+4. Generate announcement for an opportunity
+0. Back to mode selection
+```
 
 ## File Structure
 
-```
+```text
 bbb/
-├── main.py            CLI entry point — menu loop wiring everything together
-├── webapp.py          Web app (http.server) — student finder + organizer posting
-├── import_feed.py     Runner: import opportunities from an RSS/Atom feed
-│
-├── matcher.py         Scoring engine: hard filter, weighted score, fuzzy match, explanations
-├── models.py          Opportunity, Student, Application classes
-├── validation.py      Central input gateway — interactive (CLI) and pure (web) checks
-├── storage.py         Crash-resistant JSON load/save for opportunities and applications
-├── interests.py       Recursive interest-taxonomy expansion
-├── demand.py          Anonymous search logging and demand-vs-supply gap reporting
-├── fairness.py        Bias self-audit: measures the equity weighting's effect
-├── feeds.py           RSS/Atom feed parsing and conversion to opportunities
-├── tracker.py         Application tracker: status, notes, deadline countdown
-├── ics_export.py      RFC-5545 .ics calendar file generator
-├── digest.py          Weekly digest text-file generator
-├── stats.py           Opportunity-gap statistics: supply, ratio, unmet interests
-├── firsttimer.py      First-timer guide for each opportunity type
-├── ui.py              Hand-rolled ANSI terminal polish: colors, tables, badges
-│
-├── data/
-│   ├── opportunities.json   Curated seed: 20 real Singapore student opportunities
-│   ├── interests.json       Nested interest taxonomy tree (for recursive expansion)
-│   ├── applications.json    Auto-created; persists tracked applications
-│   └── searches.json        Auto-created; anonymous demand log
-│
-└── tests/                   54 unit tests across all modules
-    ├── test_matcher.py      Scoring math, filters, equity ordering, fuzzy matching
-    ├── test_validation.py   Input gateway: rejects junk, accepts valid input
-    ├── test_tracker.py      Status transitions, persistence, countdown badges
-    ├── test_ics.py          ICS wrapper structure and VEVENT generation
-    ├── test_interests.py    Recursive expansion at every depth, deduplication
-    ├── test_stats.py        Supply counts, free/paid ratio, unmet-interest detection
-    ├── test_digest.py       Digest written, header present, top match included
-    ├── test_demand.py       Search logging, demand aggregation, gap ranking
-    ├── test_fairness.py     Free-share measurement and audit lift
-    ├── test_feeds.py        RSS/Atom parsing, interest guessing, dedup merge
-    └── test_webapp.py       Badges, SVG chart, posted-opportunity validation
+  main.py                 CLI entry point, two-mode routing, interactive flows
+  career_model.py         ML-style career-readiness impact model
+  impact_report.py        Python-only judge impact report generator
+  sender.py               Opportunity Sender mode helpers and announcements
+  access.py               Invisible starting-line simulation
+  matcher.py              Weighted scoring, filtering, explanations, urgent deadlines
+  models.py               Opportunity, Student, and Application classes
+  validation.py           Central input-validation gateway
+  storage.py              Crash-resistant JSON load/save helpers
+  interests.py            Recursive interest taxonomy expansion
+  filters.py              Pure feed filtering and sorting helpers
+  recommend.py            Interest suggestions to unlock more opportunities
+  fairness.py             Bias/access self-audit against a neutral baseline
+  stats.py                Opportunity-gap statistics and ASCII charts
+  demand.py               Anonymous demand logging and demand-vs-supply gap rows
+  tracker.py              Application tracker logic
+  ics_export.py           RFC-5545 calendar export
+  digest.py               Weekly digest text-file generator
+  firsttimer.py           First-timer guides by opportunity type
+  feeds.py                RSS/Atom parsing and opportunity conversion
+  import_feed.py          Command-line feed import runner
+  ui.py                   ANSI colors, aligned tables, countdown badges, bar charts
+
+  data/
+    opportunities.json    Curated seed and sender-posted opportunities
+    interests.json        Nested interest taxonomy
+    student.json          Auto-created saved student profile
+    searches.json         Auto-created anonymous student demand log
+
+  tests/
+    test_career_model.py  Career impact model tests
+    test_impact_report.py Judge impact report generation tests
+    test_sender.py        Sender mode helper tests
+    test_access.py        Starting-line simulation tests
+    test_matcher.py       Scoring, hard filters, equity ordering, fuzzy matching
+    test_validation.py    Bad input rejection and valid input acceptance
+    test_interests.py     Recursive taxonomy expansion
+    test_filters.py       Feed filters and sorting
+    test_recommend.py     Improve-your-match suggestions
+    test_storage_student.py Student profile persistence
+    test_tracker.py       Application tracker behavior
+    test_ics.py           Calendar export structure
+    test_digest.py        Weekly digest generation
+    test_stats.py         Gap statistics
+    test_fairness.py      Bias/access audit
+    test_feeds.py         RSS/Atom parsing and deduplication
+    test_demand.py        Demand log aggregation
 ```
 
----
+## Code Spotlight
+
+The best code spotlight is `career_model.py`, `matcher.py`, `access.py`, `sender.py`, and `impact_report.py`.
+
+`career_model.py` is the ML-style layer: it uses weighted skill vectors, a sigmoid readiness curve, event-type multipliers, and an opportunity-cost penalty to estimate whether one event increases, decreases, or does not change career-readiness alignment. It avoids fake hiring promises by reporting readiness movement, not real job probability.
+
+`matcher.py` shows the concrete recommender:
+
+```text
+interest_score = shared_interests / max(1, student_interests) * 0.5
+urgency_score  = (1 - clamp(days_left / 60, 0, 1)) * 0.2
+equity_boost   = free boost + beginner-friendly boost
+total          = interest_score + urgency_score + equity_boost
+```
+
+`access.py` makes the starting line visible: a strong opportunity can be a perfect fit and still be invisible if it travels through narrow information channels.
+
+`sender.py` closes the loop: it turns anonymous student demand into organizer action, then writes a new opportunity back into the same JSON store.
+
+`impact_report.py` is the Python-only presentation workaround: it generates a polished plain-text judge report using the same live data, without HTML, a web server, or an external package.
 
 ## Reflection
 
-**Hardest problem:** Designing a scoring algorithm that is simultaneously personalised, fair, and explainable. Early versions were either too opaque (a single number) or too crude (counting shared interests). The breakthrough was attaching human-readable reason strings to each score at the moment it is computed, so the explanation can never disagree with the ranking. We also refused to claim the matcher is "unbiased." Instead we built `fairness.py` to **measure** whether our equity weighting actually changes outcomes — turning a claim into a number.
+The hardest problem was making the project socially serious without turning the algorithm into a mysterious black box. The solution was to make every assumption visible: each recommendation carries its own reasons, the scoring screen prints the formula, the fairness audit compares a neutral baseline against the access-weighted ranking, and the starting-line simulation names exactly what it is estimating.
 
-**Second hardest:** Building a second interface without duplicating the engine. We kept `matcher.py`, `storage.py`, `models.py`, and `validation.py` as a shared core and added the web app as a thin layer on top. Getting the standard-library `http.server` to handle form posting, validation, and a live shared JSON store — so an organizer's post appears on the student side instantly — took careful routing, but it meant the CLI and the web app can never drift apart.
+The second hardest problem was making the product feel two-sided and polished without needing a web server, database, or external package. The solution was to use structured JSON File I/O as the shared layer: student searches create demand records, senders read those records, and new opportunities are posted back into the same store. For presentation polish, Python generates a plain-text judge report as an output artifact.
 
-**If we had two more weeks:** Authenticated organizer accounts, a school-facing dashboard of the anonymised opportunity-gap data, and email/calendar deadline reminders. We'd also let opportunities be posted only after demand is proven, so the platform never suffers an empty-marketplace cold start.
-
----
-
-## Tech Notes
-
-- No external libraries anywhere. `pip install` is never required.
-- File I/O uses `json`, `datetime`, plain text, and `.ics` generation — all standard library.
-- The web app uses `http.server`; feed ingestion uses `urllib` + `xml.etree`.
-- ANSI colors in `ui.py` have a TTY-detection fallback so piped output stays clean.
-- Recursion lives in `interests.py`; its docstring explains why recursion is necessary.
-- Run `python -m unittest discover -s tests` to execute all 54 tests.
+With two more weeks, we would add a school-facing report export that summarizes which interests have high demand and thin supply, then pilot the sender mode with a real teacher or CCA lead. The student side would stay free.

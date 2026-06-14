@@ -2,6 +2,8 @@ __pycache__/
 *.pyc
 *.pyo
 weekly_digest.txt
+opportunity_sender_packet.txt
+judge_impact_report.txt
 calendar_export.ics
 *.ics
 data/applications.json

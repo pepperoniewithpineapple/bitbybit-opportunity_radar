@@ -1,5 +1,7 @@
 """Tests for the recursive interest taxonomy module."""
 
+import json
+import tempfile
 import unittest
 
 import sys
@@ -76,6 +78,34 @@ class TestInterests(unittest.TestCase):
         raw = ["AI", "machine learning"]
         result = interests.get_expanded_interests(SAMPLE_TREE, raw)
         self.assertEqual(result.count("machine learning"), 1)
+
+    def test_load_interest_tree_returns_empty_on_corrupt_json(self):
+        """A corrupt interest-tree file should not crash startup."""
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False, encoding="utf-8"
+        ) as tmp:
+            tmp.write("NOT VALID JSON }{")
+            tmp_path = tmp.name
+
+        try:
+            result = interests.load_interest_tree(tmp_path)
+            self.assertEqual(result, {})
+        finally:
+            os.unlink(tmp_path)
+
+    def test_load_interest_tree_returns_empty_for_non_dict(self):
+        """The interest tree must be a dict; other JSON shapes are ignored."""
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False, encoding="utf-8"
+        ) as tmp:
+            json.dump(["coding"], tmp)
+            tmp_path = tmp.name
+
+        try:
+            result = interests.load_interest_tree(tmp_path)
+            self.assertEqual(result, {})
+        finally:
+            os.unlink(tmp_path)
 
 
 if __name__ == "__main__":

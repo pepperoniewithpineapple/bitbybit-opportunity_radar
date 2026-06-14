@@ -9,8 +9,18 @@ def load_interest_tree(path):
     if not os.path.exists(path):
         return {}
 
-    with open(path, "r", encoding="utf-8") as file_handle:
-        return json.load(file_handle)
+    try:
+        with open(path, "r", encoding="utf-8") as file_handle:
+            tree = json.load(file_handle)
+    except (json.JSONDecodeError, ValueError, OSError):
+        print("Notice: interest tree could not be read. Using plain interests.")
+        return {}
+
+    if not isinstance(tree, dict):
+        print("Notice: interest tree was invalid. Using plain interests.")
+        return {}
+
+    return tree
 
 
 def expand_interest(tree, name):

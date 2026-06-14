@@ -19,6 +19,8 @@ def suggest_interests(opportunities, student, interest_tree, limit=3):
     matching_student = Student(student.name, student.level, expanded_interests)
 
     existing = set()
+    for interest in student.interests:
+        existing.add(matcher.normalize_interest(interest))
     for interest in expanded_interests:
         existing.add(matcher.normalize_interest(interest))
 

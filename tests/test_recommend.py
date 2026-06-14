@@ -59,6 +59,24 @@ class TestSuggestInterests(unittest.TestCase):
         interest_names = [name for name, count in suggestions]
         self.assertNotIn("coding", interest_names)
 
+    def test_does_not_suggest_raw_interest_after_expansion(self):
+        student = Student("Ali", "JC", ["AI"])
+        tree = {
+            "AI": {
+                "machine learning": {},
+                "computer vision": {},
+            }
+        }
+        opps = [
+            make_opp("opp-001", ["machine learning"]),
+            make_opp("opp-002", ["AI"]),
+        ]
+
+        suggestions = recommend.suggest_interests(opps, student, tree, limit=3)
+        interest_names = [name for name, count in suggestions]
+
+        self.assertNotIn("AI", interest_names)
+
     def test_counts_are_correct(self):
         student = Student("Ali", "JC", ["coding"])
         opps = [

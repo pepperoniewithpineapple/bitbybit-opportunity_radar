@@ -1,95 +1,217 @@
-# Pitch Day Script — 15 Minutes
+# Pitch Day Script - 15 Minutes
 
-**Format:** Pitch 3 min · Demo 7 min · Code Spotlight 3 min · Q&A 2 min
-**Judges:** Jing An Tew (Stick'em, technical + education-access founder) · Chris Soh (Entrepreneurship lecturer) · Zhen Xian Kee (organiser, National Cybersecurity Olympiad @ NUS) · Yaojie Xiao (Co-founder, Dibs)
+Format: Pitch 3 min, Demo 7 min, Code Spotlight 3 min, Q&A 2 min.
 
-Assign one speaker per segment, or rotate. Rehearse the full 15 minutes out loud at least twice. Have the backup video ready in case the laptop misbehaves.
+The demo should feel like a hidden system becoming visible: students reveal demand, senders fill gaps, and the terminal proves the loop.
 
----
+## Segment 1 - Pitch, 3 min
 
-## Segment 1 — Pitch (3 min) · the problem
+Open with:
 
-> "In Singapore, the problem isn't a lack of opportunities — hackathons, scholarships, olympiads, competitions exist. The problem is **access to knowing about them**. That information travels through privileged networks: elite schools, connected parents, plugged-in teachers. A student without that network simply never hears about the competition that could have changed their trajectory.
+> The gap is not a lack of opportunities. The gap is who hears in time.
+
+Then:
+
+> In Singapore, opportunities exist: hackathons, olympiads, scholarships, research attachments, workshops. But information about them travels through uneven networks: connected parents, plugged-in teachers, school chats, seniors, enrichment circles.
 >
-> Dr. Teo You Yenn calls this the *different starting lines* problem — advantage compounds for those who are already plugged in. And when platforms try to fix it with recommendation algorithms, Dr. Jennifer Eberhardt warns they often amplify the same bias — ranking on prestige and popularity, on who-you-know.
->
-> So we built **Opportunity Radar**: a tool that aggregates opportunities in one place, and matches each student to the ones they qualify for — ranked **only** on their interests, their eligibility, and the deadline. It never sees your school or your background. And it shows its work: every recommendation explains *why* it matched. It's free, it runs entirely offline, and it's built by students, for students like us."
+> Opportunity Radar has two modes. Students use Finder mode to discover and understand opportunities. Organizers use Sender mode to see demand gaps and post opportunities into them. Same data store. Same scoring engine. No external libraries.
 
-Keep it to 3 minutes. Don't oversell. Land the one sentence: **"the gap isn't opportunities — it's access to knowing about them."**
+Close:
 
----
+> We are not claiming the algorithm is neutral. We make our assumptions visible, then measure whether they widen access.
 
-## Segment 2 — Demo (7 min) · THE STAR. Don't rush.
+## Segment 2 - Demo, 7 min
 
-Run `python main.py`. Move slowly, narrate every step.
+Run:
 
-**Beat 1 — Load the demo student (10 sec).** Use the "Load demo student" option (don't type live — protects against fat-fingering). Profile appears: Wei Ming, JC, interests coding / AI / cybersecurity.
+```bash
+python main.py
+```
 
-**Beat 2 — The For You feed (90 sec).** Show the ranked, explained feed. Point at one row:
-> "Notice every result tells you *why* — matched interests with ticks, eligibility, a deadline countdown badge. No black box."
-Point out that expired and ineligible opportunities are already filtered out.
+### Beat 1 - Show the two-mode product, 20 sec
 
-**Beat 3 — The judge sees himself (30 sec).** Scroll to the **National Cybersecurity Olympiad** entry.
-> "This is a real opportunity — the National Cybersecurity Olympiad at NUS, open to pre-university students, free. Exactly the kind of thing a student outside the right network never hears about. Our tool surfaced it automatically."
-(Mr Zhen Xian Kee organises this. He is watching his own event get matched to a student who needs it.)
+Point at the top-level menu:
 
-**Beat 4 — The transparency screen (60 sec).** Open the full scoring breakdown for one result. Show the raw formula and numbers.
-> "This is the Eberhardt answer made literal. A student can always see the exact weights. We are **not** claiming the algorithm is neutral — we're claiming it's *honest*. We deliberately give a small lift to free and beginner-friendly opportunities, and you can see that weight right here. We tuned it to widen access, not to maximise engagement."
+```text
+1. Student / Opportunity Finder mode
+2. Opportunity Sender mode
+3. Export Python-only judge impact report
+```
 
-**Beat 5 — The opportunity-gap stats (45 sec).** Open the stats view. Show free-vs-paid ratio, deadline pressure, and the **unmet interests** — interests with few or no matching opportunities.
-> "This near-empty line *is* the data. This is where the opportunity gap actually is — and it's the first thing a school or a funder would want to see."
+Say:
 
-**Beat 6 — Terminal reaches the real world (60 sec).** Add the NCO to the tracker, then export the `.ics` file. Open it / import to a phone calendar held up to the room (or show the QR / pre-recorded clip if no AirDrop).
-> "A beginner Python program just put a real deadline into a real calendar on a real phone."
+> This is not just a recommendation list. It is a tiny two-sided opportunity system, plus a Python-generated report for the judges.
 
-**Beat 7 — The torture test (60 sec).** This is what wins on the rubric. Go to any input and abuse it: press Enter on empty, type letters where a number is expected, type a nonsense date.
-> "We assumed users would do their worst. Every single input in the entire app flows through one validation gateway. Nothing crashes — every error message is human."
-(The brief says verbatim: *judges notice error handling.* This beat is worth real points.)
+### Beat 2 - Student creates demand, 70 sec
 
-**Buffer:** ~30 sec spare. If short on time, cut Beat 5, never Beat 7.
+Choose `1` for Student / Opportunity Finder mode.
 
----
+Choose `9` to load demo student.
 
-## Segment 3 — Code Spotlight (3 min) · aimed at the CTO
+Choose `2` to view the feed, then `0` to show results with default filters.
 
-Pick **`matcher.py` — the scoring function** (Jing An Tew is a software engineer; show him real logic).
+Say:
 
-Walk through, slowly:
-1. The hard filter (eligibility + expired) — "we never rank something you can't enter."
-2. The three weighted components — interest overlap, urgency, equity boost — and how they sum to one score.
-3. The recursive interest-taxonomy expansion — "if you pick 'Technology', this function recurses through the category tree and matches every sub-interest under it, at any depth."
-4. That each score carries its own list of human reasons — "the explanation isn't generated separately; it falls out of the same code that computes the score, so it can never lie about the ranking."
+> Wei Ming is a JC student interested in coding, AI, and cybersecurity. When he searches, the app logs anonymous demand: level and interests only, no name, no school, no background.
 
-One sentence to close: **"No external libraries. Every line here is ours, and any of us can derive it on a whiteboard."**
+Point to the ranked feed:
 
----
+> The student sees eligible opportunities ranked by interest match, deadline urgency, and transparent access weights.
 
-## Segment 4 — Q&A (2 min) · anticipated questions + crisp answers
+### Beat 3 - The awe moment: invisible starting-line simulation, 80 sec
 
-**Yaojie Xiao / Jing An Tew (algorithm fairness):** *"Your equity boost is itself a bias — how is that fair?"*
-> "Agreed — it's not neutral, and we don't claim it is. Neutral ranking would just reproduce the existing advantage, because well-marketed elite-circuit events would always win. We made a deliberate, transparent choice to lift free and beginner-friendly opportunities, and every weight is visible on screen. The honesty is the feature."
+Choose `12`.
 
-**Jing An Tew (technical / scale):** *"JSON flat files won't scale."*
-> "Correct, for a single-user CLI MVP they're perfect and crash-resistant. The migration path is SQLite — still standard library — then Postgres if it ever goes multi-user."
+Say:
 
-**Chris Soh (entrepreneurship):** *"Who are your first users and how do you reach them?"*
-> "Our own JC cohort first. The shareable digest is built to be pasted into class group chats — the product spreads through exactly the peer networks it's trying to open up. Our one north-star metric is first-timer conversion: students who applied to their first-ever opportunity because of us."
+> Same student. Same ability. Different information network.
 
-**Chris Soh (marketplace skeptic):** *"Two-sided platforms die of cold start."*
-> "Agreed — which is why this isn't a two-sided platform yet. It delivers value to a single student on day one with curated supply. We'd only let organisations post after we've proven there's demand."
+Point at the before/after table.
 
-**Zhen Xian Kee (reach / authenticity):** *"Does this actually reach disadvantaged students?"*
-> "That's the whole point and also our hardest open problem. The tool is free and offline so cost and connectivity aren't barriers. Distribution is the unsolved part — honestly, that's where we'd spend the next two weeks."
+> This is what we wanted to make visible. Before Radar, an outside-network student might hear about only a fraction of what they are eligible for. After Radar, the opportunity set becomes visible.
 
-**General (AI use):** *"Did you write this yourselves?"*
-> "We used AI the way professionals do — to think and debug. Every module we can explain cold. Ask us about any file." (Then be able to do it.)
+Land this line:
 
----
+> The gap is not talent. The gap is who hears in time.
 
-## Pre-flight checklist
-- [ ] Confirm group size is allowed (brief max is 4 — ask a tutor).
-- [ ] Public GitHub repo created, all teammates added as collaborators, link submitted to the Google Form **by Thu 19 June 23:59**.
-- [ ] README.md complete and pushed.
-- [ ] `python main.py` and `python -m unittest discover -s tests` both run clean on the demo laptop.
-- [ ] Backup video of the full demo recorded (in case the laptop/internet fails).
-- [ ] Demo rehearsed out loud twice, with each person's lines assigned.
+### Beat 4 - Sender closes the loop, 90 sec
+
+Press `0` to return to mode selection.
+
+Choose `2` for Opportunity Sender mode.
+
+Choose `1` to view demand gap radar.
+
+Say:
+
+> Now we switch perspectives. The sender does not guess what students need. They see demand against current supply.
+
+Choose `2` to send/post a new opportunity. You can either actually post a short demo opportunity or stop at the impact preview if time is tight.
+
+Suggested demo values:
+
+```text
+Title: JC AI for Public Good Sprint
+Organizer: Demo School Innovation Lab
+Type: workshop
+Interests: AI, coding, public good
+Eligible levels: 2
+Cost: free
+Beginner-friendly: yes
+Deadline: 2026-08-20
+URL: https://example.com/ai-public-good
+```
+
+At the impact preview, say:
+
+> The sender sees matching demand and an accessibility score before posting. If they confirm, this saves into the same JSON store and becomes live for students immediately.
+
+If you post it, mention that `opportunity_sender_packet.txt` is generated for a school or CCA chat.
+
+### Beat 5 - Python-generated judge report, 45 sec
+
+Press `0` back to mode selection.
+
+Choose `3` to export the judge impact report.
+
+Say:
+
+> This is the workaround: no Flask, no web framework, no live server, no HTML. Python generates a plain-text impact report from the same JSON data. It is still polished, but unambiguously Python-only.
+
+Open `judge_impact_report.txt` if time allows.
+
+### Beat 6 - Transparency screen, 50 sec
+
+Return to Student Finder mode, choose `3`, and open a result.
+
+Say:
+
+> The explanation is not generated after the fact. It comes from the same calculation that creates the score.
+
+Point to:
+
+```text
+interest_score
+urgency_score
+equity_boost
+total
+```
+
+### Beat 7 - Career impact simulator, 45 sec
+
+Choose `13`.
+
+Pick a career goal such as `cybersecurity analyst`, then choose the National Cybersecurity Olympiad or DSTA BrainHack result.
+
+Say:
+
+> This is the ML-style layer. It does not claim to predict a real job offer. It estimates whether this event increases, decreases, or does not change career-readiness alignment for a chosen goal.
+
+Point at the before/after score and delta.
+
+> The model uses weighted skill vectors, a sigmoid readiness curve, event-type multipliers, and an opportunity-cost penalty. The math is still explainable.
+
+### Beat 8 - Bias self-audit, 30 sec
+
+Choose `10`.
+
+Say:
+
+> We compare our access-weighted ranking against a neutral baseline. We do not just say the design widens access. We measure it.
+
+### Beat 9 - Error handling, 25 sec
+
+At any prompt, type bad input.
+
+Say:
+
+> Every input goes through one validation gateway. The app does not crash when a user behaves like a real user.
+
+## Segment 3 - Code Spotlight, 3 min
+
+Show:
+
+1. `main.py`: two modes, one shared store.
+2. `career_model.py`: ML-style career-readiness impact model.
+3. `matcher.py`: hard filters and transparent scoring.
+4. `access.py`: starting-line simulation.
+5. `demand.py`: anonymous demand records.
+6. `sender.py`: demand radar, posting, impact preview, announcement generation.
+7. `impact_report.py`: Python-generated judge report.
+8. `interests.py`: recursive taxonomy expansion.
+
+Closing line:
+
+> This project uses only standard-library Python: classes, lists, dictionaries, File I/O, recursion, tests, and transparent logic. The impressive part is not a library. It is the model of the problem.
+
+## Segment 4 - Q&A, 2 min
+
+**Isn't the equity boost itself biased?**
+
+Yes. We do not claim neutrality. We make a deliberate, visible access choice and measure its effect. Hidden bias is the problem; transparent weighting is the design.
+
+**Why not use a web app or database?**
+
+The brief rewards polished, explainable Python. We keep the product in Python and generate plain text artifacts instead of adding a web layer. For data, JSON keeps the flow visible and testable. The next standard-library step would be SQLite.
+
+**Does sender mode prove real organizers will post?**
+
+No. It proves the product can connect student demand to organizer action. The next step is piloting it with real teachers, CCAs, or programme leads.
+
+**Does the career model predict jobs?**
+
+No. It estimates readiness alignment, not actual hiring probability. That is intentional: the model is transparent and useful without pretending to know a student's future.
+
+**Did you write this yourselves?**
+
+Every module is readable and explainable. Ask us about any file.
+
+## Pre-Flight
+
+- Run `python -m unittest discover -s tests`.
+- Run `python main.py`.
+- Rehearse both modes: student search, starting-line simulation, sender demand radar.
+- Rehearse exporting `judge_impact_report.txt`.
+- Decide whether to actually post the demo opportunity live or stop at preview.
+- Prepare a backup screenshot or recording.
+- Submit the public GitHub link by Thursday 19 June 2026, 23:59.
