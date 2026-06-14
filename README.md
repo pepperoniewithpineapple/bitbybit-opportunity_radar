@@ -1,6 +1,6 @@
 # Opportunity Radar
 
-Opportunity Radar is a two-mode terminal Python product for Singapore students and opportunity organizers. Students use **Student / Opportunity Finder mode** to discover hackathons, olympiads, scholarships, workshops, and programmes they might never hear about through ordinary networks. Organizers use **Opportunity Sender mode** to see demand gaps and submit new opportunities into a review queue before they reach the live student feed.
+Opportunity Radar is a two-sided access system for Singapore students and opportunity organizers. Students discover opportunities and reveal anonymous demand. Organizers see where supply is missing, submit new opportunities, and use review safeguards before anything reaches the live student feed.
 
 The core idea is simple: the gap is not always talent or effort. Often, the gap is who hears in time.
 
@@ -24,41 +24,37 @@ Both modes share the same:
 - `storage.py` JSON File I/O helpers
 - `models.py` classes
 - `review_queue.py` approval gate for sender submissions
-- `spam_model.py` trainable ML spam-risk layer
-- `graph_rank.py` personalized graph discovery engine
-- `pathway.py` prerequisite-aware career planner
 
 ## Features
 
-- **Student / Opportunity Finder mode**: ranked, explained opportunity feed for a student profile.
-- **Opportunity Sender mode**: organizer-facing flow for viewing demand gaps, submitting new opportunities, reviewing pending submissions, listing live supply, and generating a student-facing announcement.
-- **Demand gap radar**: every student feed search writes an anonymous demand signal: level + interests + timestamp, no name.
-- **Sender impact preview**: before submitting, organizers see matching demand, deadline pressure, eligible levels, and an accessibility score.
-- **Adaptive ML spam-risk layer**: a standard-library Naive Bayes classifier trains on labeled seed examples plus real reviewer history, then scores each submission before manual review.
-- **Submission review queue**: sender submissions are saved as pending records in `data/submissions.json`; they do not appear for students until approved.
-- **Reviewer quality checks**: the queue flags duplicate titles, closed or urgent deadlines, weak URLs, access friction, spam risk, and submissions with no current demand match.
-- **Explainable spam signals**: high-risk submissions show the learned tokens that pushed the model toward spam, such as prize, guaranteed, crypto, or click.
-- **Spam model health audit**: Sender mode shows training size, spam/legit counts, leave-one-out accuracy, and the top learned spam tokens.
-- **GraphRank hidden discovery**: a personalized PageRank-style graph connects students, interests, organizers, opportunities, and career goals to surface bridge opportunities.
-- **Career pathway planner**: uses `graphlib.TopologicalSorter` to recommend a sequence from foundation to launch for a chosen career goal.
-- **Optional search index**: builds an in-memory SQLite FTS5 index when available, with pure-Python TF-IDF fallback when it is not.
-- **Approval audit trail**: approved and rejected submissions keep status, review time, and reviewer notes, which is closer to how a deployed product would protect the live feed.
-- **Career impact simulator**: a transparent ML-style model estimates whether joining a specific event increases, decreases, or does not change a student's career-readiness alignment for a chosen goal.
-- **Invisible Starting-Line Simulation**: estimates how many suitable opportunities the same student might hear about through different information networks, then shows what Radar recovers.
-- **Transparent scoring breakdown**: shows the exact formula and numbers behind any recommendation.
-- **Bias self-audit**: compares rankings with and without the access boost and reports the measured lift toward free opportunities.
-- **Recursive interest taxonomy**: broad interests like `Technology` expand into deeper leaf interests such as `algorithms`, `machine learning`, and `cybersecurity`.
-- **Advanced feed controls**: filter by cost, type, keyword, deadline window, and sort by score, deadline, or title.
-- **Improve-your-match suggestions**: recommends interests that would unlock more eligible opportunities.
-- **Application tracker**: saves status and notes for opportunities the student wants to pursue.
-- **Calendar export**: writes a real `.ics` file for tracked deadlines.
-- **Shareable weekly digest**: writes `weekly_digest.txt`, formatted for a class group chat.
-- **Sender announcement packet**: writes `opportunity_sender_packet.txt`, formatted for school or CCA chats.
-- **Opportunity-gap statistics**: shows supply by interest, free-vs-paid ratio, deadline pressure, and thin-supply interests using ASCII charts.
-- **First-timer guides**: explains what to expect for hackathons, competitions, scholarships, workshops, and olympiads.
-- **Structured feed importer**: optionally imports RSS or Atom feeds using only `urllib` and `xml.etree`.
-- **Central validation gateway**: all interactive input goes through `validation.py`, so bad input is handled gracefully.
-- **Standard library only**: no packages to install. Every line can be explained from Python basics.
+Opportunity Radar is organized into four layers rather than a pile of separate tools.
+
+### Student Discovery
+
+- Ranked, explained opportunity feed with cost/type/keyword/deadline filters.
+- Closing-this-week view, match-improvement tips, first-timer guides, and opportunity-gap statistics.
+- Application tracker, `.ics` calendar export, and shareable weekly digest.
+
+### Sender Supply Loop
+
+- Anonymous demand logging every time a student searches: level + interests + timestamp, no name.
+- Demand gap radar so organizers can see where student interest is higher than current supply.
+- Submission flow with impact preview, review queue, approval/rejection, live publishing, and announcement packet generation.
+
+### Trust And Safety
+
+- Transparent scoring breakdown for every recommendation.
+- Invisible Starting-Line Simulation and bias self-audit to show how access assumptions affect rankings.
+- Adaptive Naive Bayes spam-risk model, reviewer quality flags, and approval audit trail.
+- Central validation gateway so bad input is handled gracefully.
+
+### Advanced Intelligence
+
+- Career impact simulator using weighted skill vectors and a sigmoid readiness curve.
+- GraphRank hidden discovery using personalized PageRank-style graph ranking.
+- Career pathway planner using `graphlib.TopologicalSorter`.
+- Recursive interest taxonomy, optional SQLite FTS5 search index, pure-Python TF-IDF fallback, and RSS/Atom feed importer.
+- Standard library only: no packages to install.
 
 ## How To Run
 
@@ -74,7 +70,7 @@ Run tests:
 python -m unittest discover -s tests
 ```
 
-Current verification: **126 unit tests pass**.
+Current verification: **130 unit tests pass**.
 
 Optional feed import:
 
@@ -95,34 +91,63 @@ Top-level:
 Student / Opportunity Finder mode:
 
 ```text
-1.  Set/edit student profile
-2.  View ranked + explained For You feed
-3.  Show full scoring breakdown (transparency screen)
-4.  Application tracker
-5.  Export tracker deadlines to .ics calendar
-6.  First-timer guide
-7.  Opportunity-gap statistics
-8.  Generate shareable weekly digest
-9.  Load demo student (quick-start for demo)
-10. Bias self-audit (does the equity weighting work?)
-11. Closing this week (urgent deadlines)
-12. Invisible starting-line simulation
-13. Career impact simulator
-14. Hidden opportunity graph discovery
-15. Build my career pathway
-0.  Back to mode selection
+1. Profile
+2. Discover opportunities
+3. My applications and sharing
+4. Equity and transparency lab
+5. Career intelligence lab
+6. Help and demo tools
+0. Back to mode selection
+```
+
+Student features are grouped inside submenus:
+
+```text
+Discover opportunities:
+1. View ranked + explained For You feed
+2. Show full scoring breakdown
+3. Closing this week
+
+My applications and sharing:
+1. Application tracker
+2. Export tracker deadlines to .ics calendar
+3. Generate shareable weekly digest
+
+Equity and transparency lab:
+1. Invisible starting-line simulation
+2. Bias self-audit
+3. Opportunity-gap statistics
+
+Career intelligence lab:
+1. Career impact simulator
+2. Hidden opportunity graph discovery
+3. Build my career pathway
+
+Help and demo tools:
+1. Load demo student
+2. First-timer guide
 ```
 
 Opportunity Sender mode:
 
 ```text
-1. View demand gap radar
+1. Demand gap radar
 2. Submit a new opportunity for review
 3. Review pending submissions
-4. List live opportunities
-5. Generate announcement for an opportunity
-6. Model health and training audit
+4. Live opportunities and announcements
+5. Reviewer diagnostics
 0. Back to mode selection
+```
+
+Sender support tools are grouped inside submenus:
+
+```text
+Live opportunities and announcements:
+1. List live opportunities
+2. Generate announcement for an opportunity
+
+Reviewer diagnostics:
+1. Model health and training audit
 ```
 
 ## File Structure
@@ -189,7 +214,7 @@ bbb/
 
 ## Code Spotlight
 
-The best code spotlight is `career_model.py`, `spam_model.py`, `graph_rank.py`, `pathway.py`, `matcher.py`, `access.py`, `sender.py`, and `review_queue.py`.
+The strongest code spotlight uses four anchors: `matcher.py`, `access.py`, `sender.py` plus `review_queue.py`, and one advanced intelligence module such as `spam_model.py` or `graph_rank.py`.
 
 `career_model.py` is the ML-style layer: it uses weighted skill vectors, a sigmoid readiness curve, event-type multipliers, and an opportunity-cost penalty to estimate whether one event increases, decreases, or does not change career-readiness alignment. It avoids fake hiring promises by reporting readiness movement, not real job probability.
 

@@ -387,7 +387,7 @@ def show_feed(results):
     ui.print_table(headers, rows)
 
     print("")
-    print("Tip: choose option 3 to see the full scoring breakdown for any result.")
+    print("Tip: use the scoring breakdown view to inspect any result.")
 
 
 def show_menu(student):
@@ -396,22 +396,62 @@ def show_menu(student):
     ui.header("Student / Opportunity Finder")
     print_profile(student)
     print("")
-    print("1.  Set/edit student profile")
-    print("2.  View ranked + explained For You feed")
-    print("3.  Show full scoring breakdown (transparency screen)")
-    print("4.  Application tracker")
-    print("5.  Export tracker deadlines to .ics calendar")
-    print("6.  First-timer guide")
-    print("7.  Opportunity-gap statistics")
-    print("8.  Generate shareable weekly digest")
-    print("9.  Load demo student (quick-start for demo)")
-    print("10. Bias self-audit (does the equity weighting work?)")
-    print("11. Closing this week (urgent deadlines)")
-    print("12. Invisible starting-line simulation")
-    print("13. Career impact simulator")
-    print("14. Hidden opportunity graph discovery")
-    print("15. Build my career pathway")
-    print("0.  Back to mode selection")
+    print("1. Profile")
+    print("2. Discover opportunities")
+    print("3. My applications and sharing")
+    print("4. Equity and transparency lab")
+    print("5. Career intelligence lab")
+    print("6. Help and demo tools")
+    print("0. Back to mode selection")
+
+
+def show_discover_menu():
+    """Print the grouped discovery submenu."""
+    print("")
+    ui.header("Discover Opportunities")
+    print("1. View ranked + explained For You feed")
+    print("2. Show full scoring breakdown")
+    print("3. Closing this week")
+    print("0. Back")
+
+
+def show_applications_menu():
+    """Print the grouped applications and sharing submenu."""
+    print("")
+    ui.header("My Applications And Sharing")
+    print("1. Application tracker")
+    print("2. Export tracker deadlines to .ics calendar")
+    print("3. Generate shareable weekly digest")
+    print("0. Back")
+
+
+def show_equity_menu():
+    """Print the grouped equity and transparency submenu."""
+    print("")
+    ui.header("Equity And Transparency Lab")
+    print("1. Invisible starting-line simulation")
+    print("2. Bias self-audit")
+    print("3. Opportunity-gap statistics")
+    print("0. Back")
+
+
+def show_career_lab_menu():
+    """Print the grouped career intelligence submenu."""
+    print("")
+    ui.header("Career Intelligence Lab")
+    print("1. Career impact simulator")
+    print("2. Hidden opportunity graph discovery")
+    print("3. Build my career pathway")
+    print("0. Back")
+
+
+def show_help_menu():
+    """Print the help and demo submenu."""
+    print("")
+    ui.header("Help And Demo Tools")
+    print("1. Load demo student")
+    print("2. First-timer guide")
+    print("0. Back")
 
 
 def ensure_profile(student):
@@ -685,6 +725,197 @@ def export_calendar(applications, opportunities):
     )
     print("Calendar exported to: " + written_path)
     print("Import this into Google Calendar with Settings > Import & export > Import.")
+
+
+def load_demo_student(student_path):
+    """Load and persist the built-in demo student."""
+    student = Student(
+        DEMO_STUDENT_NAME,
+        DEMO_STUDENT_LEVEL,
+        DEMO_STUDENT_INTERESTS,
+    )
+    storage.save_student(student_path, student)
+    print("")
+    print("Demo student loaded: " + student.name
+          + " | " + student.level
+          + " | " + ", ".join(student.interests))
+    return student
+
+
+def ensure_last_results(opportunities, student, interest_tree, last_results):
+    """Return existing feed results or compute them when missing."""
+    if len(last_results) > 0:
+        return last_results
+    return get_ranked_results(opportunities, student, interest_tree)
+
+
+def generate_weekly_digest(opportunities, student, interest_tree, last_results):
+    """Generate the weekly digest and return the results used."""
+    last_results = ensure_last_results(
+        opportunities,
+        student,
+        interest_tree,
+        last_results,
+    )
+    digest_path = build_digest_path()
+    written = digest.generate_digest(last_results, student, digest_path)
+    print("")
+    print("Weekly digest written to: " + written)
+    print("Paste this into your class group chat to share opportunities.")
+    return last_results
+
+
+def run_discover_menu(student, opportunities, interest_tree, searches_path,
+                      last_results):
+    """Run grouped discovery features."""
+    while True:
+        show_discover_menu()
+        choice = validation.get_valid_int("Choose discovery option: ", 0, 3)
+
+        if choice == 0:
+            return last_results
+
+        if choice == 1:
+            if ensure_profile(student):
+                demand.log_search(searches_path, student.level, student.interests)
+                print("Anonymous demand signal saved.")
+                ranked = get_ranked_results(opportunities, student, interest_tree)
+                last_results = run_feed_options(ranked)
+                show_feed(last_results)
+                print_match_tips(opportunities, student, interest_tree)
+            continue
+
+        if choice == 2:
+            if ensure_profile(student):
+                last_results = ensure_last_results(
+                    opportunities,
+                    student,
+                    interest_tree,
+                    last_results,
+                )
+                choose_breakdown_result(last_results)
+            continue
+
+        if choice == 3:
+            if ensure_profile(student):
+                show_closing_this_week(opportunities, student)
+            continue
+
+
+def run_applications_menu(student, opportunities, applications, interest_tree,
+                          applications_path, last_results):
+    """Run grouped application and sharing features."""
+    while True:
+        show_applications_menu()
+        choice = validation.get_valid_int("Choose applications option: ", 0, 3)
+
+        if choice == 0:
+            return last_results
+
+        if choice == 1:
+            run_tracker_menu(
+                applications,
+                opportunities,
+                last_results,
+                applications_path,
+            )
+            continue
+
+        if choice == 2:
+            export_calendar(applications, opportunities)
+            continue
+
+        if choice == 3:
+            if ensure_profile(student):
+                last_results = generate_weekly_digest(
+                    opportunities,
+                    student,
+                    interest_tree,
+                    last_results,
+                )
+            continue
+
+
+def run_equity_menu(student, opportunities, interest_tree):
+    """Run grouped equity and transparency features."""
+    while True:
+        show_equity_menu()
+        choice = validation.get_valid_int("Choose equity option: ", 0, 3)
+
+        if choice == 0:
+            return
+
+        if choice == 1:
+            if ensure_profile(student):
+                expanded = interests_module.get_expanded_interests(
+                    interest_tree,
+                    student.interests,
+                )
+                simulation_student = Student(student.name, student.level, expanded)
+                access.print_starting_line_simulation(
+                    opportunities,
+                    simulation_student,
+                )
+            continue
+
+        if choice == 2:
+            fairness.print_audit(opportunities, Student)
+            continue
+
+        if choice == 3:
+            stats_module.print_stats(opportunities, student)
+            continue
+
+
+def run_career_lab_menu(student, opportunities, interest_tree, last_results):
+    """Run grouped career intelligence features."""
+    while True:
+        show_career_lab_menu()
+        choice = validation.get_valid_int("Choose career option: ", 0, 3)
+
+        if choice == 0:
+            return last_results
+
+        if choice == 1:
+            if ensure_profile(student):
+                last_results = ensure_last_results(
+                    opportunities,
+                    student,
+                    interest_tree,
+                    last_results,
+                )
+                impact_student = build_career_student(student, interest_tree)
+                run_career_impact_flow(impact_student, last_results)
+            continue
+
+        if choice == 2:
+            if ensure_profile(student):
+                graph_student = build_career_student(student, interest_tree)
+                run_graph_discovery_flow(opportunities, graph_student)
+            continue
+
+        if choice == 3:
+            if ensure_profile(student):
+                pathway_student = build_career_student(student, interest_tree)
+                run_pathway_flow(opportunities, pathway_student)
+            continue
+
+
+def run_help_menu(student_path):
+    """Run grouped help and demo features. Return a demo student when loaded."""
+    while True:
+        show_help_menu()
+        choice = validation.get_valid_int("Choose help option: ", 0, 2)
+
+        if choice == 0:
+            return None
+
+        if choice == 1:
+            return load_demo_student(student_path)
+
+        if choice == 2:
+            firsttimer.run_first_timer_menu()
+            continue
 
 
 def ask_cost_filter():
@@ -1167,13 +1398,65 @@ def show_sender_menu(submissions):
           + str(counts[review_queue.APPROVED]) + " approved, "
           + str(counts[review_queue.REJECTED]) + " rejected")
     print("")
-    print("1. View demand gap radar")
+    print("1. Demand gap radar")
     print("2. Submit a new opportunity for review")
     print("3. Review pending submissions")
-    print("4. List live opportunities")
-    print("5. Generate announcement for an opportunity")
-    print("6. Model health and training audit")
+    print("4. Live opportunities and announcements")
+    print("5. Reviewer diagnostics")
     print("0. Back to mode selection")
+
+
+def show_live_announcements_menu():
+    """Print live opportunity and announcement submenu."""
+    print("")
+    ui.header("Live Opportunities And Announcements")
+    print("1. List live opportunities")
+    print("2. Generate announcement for an opportunity")
+    print("0. Back")
+
+
+def show_reviewer_diagnostics_menu():
+    """Print reviewer diagnostics submenu."""
+    print("")
+    ui.header("Reviewer Diagnostics")
+    print("1. Model health and training audit")
+    print("0. Back")
+
+
+def run_live_announcements_menu(opportunities):
+    """Run grouped live opportunity and announcement features."""
+    while True:
+        show_live_announcements_menu()
+        choice = validation.get_valid_int("Choose live option: ", 0, 2)
+
+        if choice == 0:
+            return
+
+        if choice == 1:
+            list_live_opportunities(opportunities)
+            continue
+
+        if choice == 2:
+            opportunity = choose_opportunity(
+                opportunities,
+                "Choose an opportunity number for the announcement: ",
+            )
+            generate_sender_packet(opportunity)
+            continue
+
+
+def run_reviewer_diagnostics_menu(submissions):
+    """Run grouped reviewer diagnostics features."""
+    while True:
+        show_reviewer_diagnostics_menu()
+        choice = validation.get_valid_int("Choose diagnostics option: ", 0, 1)
+
+        if choice == 0:
+            return
+
+        if choice == 1:
+            print_spam_model_audit(submissions)
+            continue
 
 
 def run_sender_mode(opportunities, opportunities_path, searches_path,
@@ -1183,7 +1466,7 @@ def run_sender_mode(opportunities, opportunities_path, searches_path,
 
     while True:
         show_sender_menu(submissions)
-        choice = validation.get_valid_int("Choose sender option: ", 0, 6)
+        choice = validation.get_valid_int("Choose sender option: ", 0, 5)
 
         if choice == 0:
             return
@@ -1224,19 +1507,11 @@ def run_sender_mode(opportunities, opportunities_path, searches_path,
             continue
 
         if choice == 4:
-            list_live_opportunities(opportunities)
+            run_live_announcements_menu(opportunities)
             continue
 
         if choice == 5:
-            opportunity = choose_opportunity(
-                opportunities,
-                "Choose an opportunity number for the announcement: ",
-            )
-            generate_sender_packet(opportunity)
-            continue
-
-        if choice == 6:
-            print_spam_model_audit(submissions)
+            run_reviewer_diagnostics_menu(submissions)
             continue
 
 
@@ -1248,7 +1523,7 @@ def run_student_finder_mode(student, opportunities, applications, interest_tree,
 
     while True:
         show_menu(student)
-        choice = validation.get_valid_int("Choose an option: ", 0, 15)
+        choice = validation.get_valid_int("Choose an option: ", 0, 6)
 
         if choice == 0:
             return student
@@ -1261,116 +1536,44 @@ def run_student_finder_mode(student, opportunities, applications, interest_tree,
             continue
 
         if choice == 2:
-            if ensure_profile(student):
-                demand.log_search(searches_path, student.level, student.interests)
-                print("Anonymous demand signal saved.")
-                ranked = get_ranked_results(opportunities, student, interest_tree)
-                last_results = run_feed_options(ranked)
-                show_feed(last_results)
-                print_match_tips(opportunities, student, interest_tree)
+            last_results = run_discover_menu(
+                student,
+                opportunities,
+                interest_tree,
+                searches_path,
+                last_results,
+            )
             continue
 
         if choice == 3:
-            if ensure_profile(student):
-                if len(last_results) == 0:
-                    last_results = get_ranked_results(
-                        opportunities, student, interest_tree
-                    )
-                choose_breakdown_result(last_results)
+            last_results = run_applications_menu(
+                student,
+                opportunities,
+                applications,
+                interest_tree,
+                applications_path,
+                last_results,
+            )
             continue
 
         if choice == 4:
-            run_tracker_menu(
-                applications,
-                opportunities,
-                last_results,
-                applications_path,
-            )
+            run_equity_menu(student, opportunities, interest_tree)
             continue
 
         if choice == 5:
-            export_calendar(applications, opportunities)
+            last_results = run_career_lab_menu(
+                student,
+                opportunities,
+                interest_tree,
+                last_results,
+            )
             continue
 
         if choice == 6:
-            firsttimer.run_first_timer_menu()
-            continue
-
-        if choice == 7:
-            stats_module.print_stats(opportunities, student)
-            continue
-
-        if choice == 8:
-            if ensure_profile(student):
-                if len(last_results) == 0:
-                    last_results = get_ranked_results(
-                        opportunities, student, interest_tree
-                    )
-                digest_path = build_digest_path()
-                written = digest.generate_digest(last_results, student, digest_path)
-                print("")
-                print("Weekly digest written to: " + written)
-                print("Paste this into your class group chat to share opportunities.")
-            continue
-
-        if choice == 9:
-            student = Student(
-                DEMO_STUDENT_NAME,
-                DEMO_STUDENT_LEVEL,
-                DEMO_STUDENT_INTERESTS,
-            )
-            last_results = []
-            storage.save_student(student_path, student)
-            print("")
-            print("Demo student loaded: " + student.name
-                  + " | " + student.level
-                  + " | " + ", ".join(student.interests))
-            continue
-
-        if choice == 10:
-            fairness.print_audit(opportunities, Student)
-            continue
-
-        if choice == 11:
-            if ensure_profile(student):
-                show_closing_this_week(opportunities, student)
-            continue
-
-        if choice == 12:
-            if ensure_profile(student):
-                expanded = interests_module.get_expanded_interests(
-                    interest_tree,
-                    student.interests,
-                )
-                simulation_student = Student(student.name, student.level, expanded)
-                access.print_starting_line_simulation(
-                    opportunities,
-                    simulation_student,
-                )
-            continue
-
-        if choice == 13:
-            if ensure_profile(student):
-                if len(last_results) == 0:
-                    last_results = get_ranked_results(
-                        opportunities,
-                        student,
-                        interest_tree,
-                    )
-                impact_student = build_career_student(student, interest_tree)
-                run_career_impact_flow(impact_student, last_results)
-            continue
-
-        if choice == 14:
-            if ensure_profile(student):
-                graph_student = build_career_student(student, interest_tree)
-                run_graph_discovery_flow(opportunities, graph_student)
-            continue
-
-        if choice == 15:
-            if ensure_profile(student):
-                pathway_student = build_career_student(student, interest_tree)
-                run_pathway_flow(opportunities, pathway_student)
+            demo_student = run_help_menu(student_path)
+            if demo_student is not None:
+                student = demo_student
+                last_results = []
             continue
 
 

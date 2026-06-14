@@ -2,7 +2,7 @@
 
 Format: Pitch 3 min, Demo 7 min, Code Spotlight 3 min, Q&A 2 min.
 
-The demo should feel like a hidden system becoming visible: students reveal demand, senders fill gaps, and the terminal proves the loop.
+The demo should feel like one system becoming visible: a student reveals demand, the app reveals the access gap, a sender fills the gap, and review protects the live feed.
 
 ## Segment 1 - Pitch, 3 min
 
@@ -14,7 +14,7 @@ Then:
 
 > In Singapore, opportunities exist: hackathons, olympiads, scholarships, research attachments, workshops. But information about them travels through uneven networks: connected parents, plugged-in teachers, school chats, seniors, enrichment circles.
 >
-> Opportunity Radar has two modes. Students use Finder mode to discover and understand opportunities. Organizers use Sender mode to see demand gaps, submit opportunities, and review them before they become live. Same data store. Same scoring engine, plus adaptive ML, graph discovery, and a career pathway planner. No external libraries.
+> Opportunity Radar is a two-sided access system. Students discover opportunities and reveal anonymous demand. Organizers see where opportunity supply is missing, submit opportunities, and review them before they become live. The ranking is transparent, because we do not want hidden assumptions deciding who gets seen.
 
 Close:
 
@@ -28,7 +28,7 @@ Run:
 python main.py
 ```
 
-### Beat 1 - Show the two-mode product, 20 sec
+### Beat 1 - Show the product shape, 20 sec
 
 Point at the top-level menu:
 
@@ -39,15 +39,19 @@ Point at the top-level menu:
 
 Say:
 
-> This is not just a recommendation list. It is a tiny two-sided opportunity system with an adaptive spam model, graph discovery, and a review gate before new supply reaches students.
+> There are only two modes because the product loop is simple: students reveal demand, senders fill gaps.
 
-### Beat 2 - Student creates demand, 70 sec
+### Beat 2 - Student creates demand, 75 sec
 
 Choose `1` for Student / Opportunity Finder mode.
 
-Choose `9` to load demo student.
+Choose `6` for Help and demo tools.
 
-Choose `2` to view the feed, then `0` to show results with default filters.
+Choose `1` to load the demo student.
+
+Choose `2` for Discover opportunities.
+
+Choose `1` to view the ranked feed, then `0` to show results with default filters.
 
 Say:
 
@@ -55,11 +59,13 @@ Say:
 
 Point to the ranked feed:
 
-> The student sees eligible opportunities ranked by interest match, deadline urgency, and transparent access weights.
+> The student sees eligible opportunities ranked by interest match, deadline urgency, and access weights for free and beginner-friendly opportunities.
 
-### Beat 3 - The awe moment: invisible starting-line simulation, 80 sec
+### Beat 3 - The memorable access-gap moment, 90 sec
 
-Choose `12`.
+Back in Student mode, choose `4` for Equity and transparency lab.
+
+Choose `1` for Invisible starting-line simulation.
 
 Say:
 
@@ -73,13 +79,13 @@ Land this line:
 
 > The gap is not talent. The gap is who hears in time.
 
-### Beat 4 - Sender closes the loop, 90 sec
+### Beat 4 - Sender closes the loop, 120 sec
 
-Press `0` to return to mode selection.
+Press `0` back to Student mode, then `0` back to mode selection.
 
 Choose `2` for Opportunity Sender mode.
 
-Choose `1` to view demand gap radar.
+Choose `1` for Demand gap radar.
 
 Say:
 
@@ -103,27 +109,29 @@ URL: https://example.com/ai-public-good
 
 At the impact preview, say:
 
-> The sender sees matching demand and an accessibility score before submitting. It does not become live yet, because a deployed product needs a gate before outside submissions reach students.
+> The sender sees matching demand and an accessibility score before submitting. It does not become live yet, because a real product needs a gate before outside submissions reach students.
 
 Confirm the submission.
 
-Then choose `3` to review pending submissions. Pick the new submission.
+Choose `3` to review pending submissions. Pick the new submission.
 
 Say:
 
-> The reviewer sees quality checks: duplicate title blockers, deadline risk, URL issues, access friction, whether current demand matches the opportunity, and an ML spam-risk score trained from labeled examples.
+> The reviewer sees quality checks and the spam-risk layer inside the review flow. It is trust infrastructure, not a separate product.
 
 Choose `approve`.
 
 Say:
 
-> Only after approval does the opportunity enter the live JSON store and become visible in Student Finder mode. This is still pure Python, but it behaves more like a real product.
+> Only after approval does the opportunity enter the live JSON store and become visible in Student Finder mode.
 
-Mention that `opportunity_sender_packet.txt` is generated for a school or CCA chat after approval.
+### Beat 5 - Transparency if time allows, 50 sec
 
-### Beat 5 - Transparency screen, 50 sec
+Return to Student mode.
 
-Return to Student Finder mode, choose `3`, and open a result.
+Choose `2` for Discover opportunities.
+
+Choose `2` for scoring breakdown.
 
 Say:
 
@@ -138,75 +146,32 @@ equity_boost
 total
 ```
 
-### Beat 6 - Career impact simulator, 45 sec
-
-Choose `13`.
-
-Pick a career goal such as `cybersecurity analyst`, then choose the National Cybersecurity Olympiad or DSTA BrainHack result.
-
-Say:
-
-> This is the ML-style layer. It does not claim to predict a real job offer. It estimates whether this event increases, decreases, or does not change career-readiness alignment for a chosen goal.
-
-Point at the before/after score and delta.
-
-> The model uses weighted skill vectors, a sigmoid readiness curve, event-type multipliers, and an opportunity-cost penalty. The math is still explainable.
-
-### Beat 7 - Hidden graph discovery, 45 sec
-
-Choose `14`.
-
-When asked whether to add a career goal, choose `yes`, then pick `cybersecurity analyst`.
-
-Say:
-
-> This is the graph layer. It connects student interests, career skills, organizers, and opportunities, then runs a PageRank-style algorithm to find bridge opportunities that exact keyword matching might miss.
-
-Point at the bridge path column.
-
-### Beat 8 - Career pathway planner, 45 sec
-
-Choose `15`, then pick a career goal.
-
-Say:
-
-> Instead of recommending one event in isolation, this builds a pathway: foundation, practice, proof, and launch. The order is validated with Python's graphlib prerequisite sorting.
-
-### Beat 9 - Bias self-audit, 30 sec
-
-Choose `10`.
-
-Say:
-
-> We compare our access-weighted ranking against a neutral baseline. We do not just say the design widens access. We measure it.
-
-### Beat 10 - Error handling, 25 sec
-
-At any prompt, type bad input.
-
-Say:
-
-> Every input goes through one validation gateway. The app does not crash when a user behaves like a real user.
-
 ## Segment 3 - Code Spotlight, 3 min
 
-Show:
+Do not tour every file. Show four anchors:
 
-1. `main.py`: two modes, one shared store.
-2. `career_model.py`: ML-style career-readiness impact model.
-3. `spam_model.py`: adaptive Naive Bayes spam-risk classifier.
-4. `graph_rank.py`: PageRank-style hidden opportunity discovery.
-5. `pathway.py`: prerequisite-aware career pathway planning.
-6. `matcher.py`: hard filters and transparent scoring.
-7. `access.py`: starting-line simulation.
-8. `demand.py`: anonymous demand records.
-9. `sender.py`: demand radar, submission drafting, impact preview, announcement generation.
-10. `review_queue.py`: approval gate, ML spam score, quality flags, audit trail.
-11. `interests.py`: recursive taxonomy expansion.
+1. `matcher.py`: hard filters and transparent scoring.
+2. `access.py`: starting-line simulation.
+3. `sender.py` plus `review_queue.py`: demand to submission to approval.
+4. One advanced depth module:
+   - `spam_model.py`: adaptive Naive Bayes spam-risk classifier, or
+   - `graph_rank.py`: PageRank-style hidden opportunity discovery.
+
+Say:
+
+> The advanced features are not random menu items. They are layers around one product loop: discovery, access transparency, sender supply, and trust.
+
+Mention, without live-demoing:
+
+- `career_model.py`: career-readiness impact model.
+- `pathway.py`: prerequisite-aware career pathway planner.
+- `search_index.py`: SQLite FTS5 search with TF-IDF fallback.
+- `interests.py`: recursive taxonomy expansion.
+- tracker, calendar export, digest, guides, and importer as polish.
 
 Closing line:
 
-> This project uses only standard-library Python: classes, lists, dictionaries, File I/O, recursion, tests, and transparent logic. The impressive part is not a library. It is the model of the problem.
+> This project uses only standard-library Python: classes, dictionaries, File I/O, recursion, graph algorithms, statistics-style scoring, tests, and transparent logic. The impressive part is not a library. It is the model of the problem.
 
 ## Segment 4 - Q&A, 2 min
 
@@ -216,11 +181,11 @@ Yes. We do not claim neutrality. We make a deliberate, visible access choice and
 
 **Why not use a web app or database?**
 
-The brief rewards polished, explainable Python. We keep the product in Python and use JSON instead of adding a web layer. The review queue shows how deployment logic can still be modeled with standard-library Python. The next standard-library step would be SQLite.
+The brief rewards polished, explainable Python. We keep the product in Python and use JSON as the visible source of truth. The next standard-library step would be SQLite.
 
-**Does sender mode prove real organizers will post?**
+**Are the advanced features random extras?**
 
-No. It proves the product can connect student demand to organizer action. The next step is piloting it with real teachers, CCAs, or programme leads.
+No. They are supporting layers. The core product loop is student demand to sender supply to reviewed publishing. GraphRank, career pathways, spam detection, and search make that loop smarter and safer.
 
 **Does the career model predict jobs?**
 
@@ -242,9 +207,7 @@ Every module is readable and explainable. Ask us about any file.
 
 - Run `python -m unittest discover -s tests`.
 - Run `python main.py`.
-- Rehearse both modes: student search, starting-line simulation, sender demand radar.
-- Rehearse submitting and approving one demo opportunity.
-- Optional: submit a spammy title like `Guaranteed Scholarship Prize Click Now` to show the ML spam blocker.
-- Rehearse options `14` and `15` in Student mode.
+- Rehearse the core arc: demo student, ranked feed, starting-line simulation, sender demand radar, submit, review, approve.
+- Keep advanced features ready for Q&A, especially Career intelligence lab and Reviewer diagnostics.
 - Prepare a backup screenshot or recording.
 - Submit the public GitHub link by Thursday 19 June 2026, 23:59.
