@@ -16,3 +16,9 @@ data/submissions.json
 .planning/
 run_out.txt
 run_err.txt
+
+_ai_reference_code/
+
+.DS_Store
+
+webscrapers/.DS_Store
