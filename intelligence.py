@@ -2,7 +2,7 @@ import math
 import sqlite3
 
 from models import Opportunity, Student
-from utils import normalize, tokenize
+from utils import normalise, tokenise
 
 
 CAREER_PATHS = {
@@ -21,26 +21,25 @@ CAREER_PATHS = {
 }
 
 
-def _opportunity_text(opp: Opportunity) -> str:
-    return f"{opp.title} {opp.type} {' '.join(opp.interests)} {opp.organizer}"
-
-
 def search_opportunities(query: str, opportunities: list[Opportunity]) -> list[dict]:
-    """Fallback text matching engine using vector token intersection & indexing simulation."""
-    tokens = tokenize(query)
+    """Fallback text matching engine using vector token intersection & indexing simulation.
+    - Calculates a word's relevance by multiplying its frequency in a document by its rarity across all documents
+    - Includes BM25 (Best Matching 25), a probabilistic ranking function used by search engines to score and rank documents based on their relevance to a search query
+    """
+    tokens = tokenise(query)
     if not tokens:
         return [{"opportunity": o, "score": 0.0, "engine": "Scan"} for o in opportunities]
     
-    # Simulate an ephemeral memory-DB table indexing architecture via BM25 math fallback
+    #  Simulate an ephemeral memory-DB table indexing architecture via BM25 math fallback
     docs = []
-    df = {}
+    document_freq = {}
     for opportunity in opportunities:
-        doc_tokens = tokenize(_opportunity_text(opportunity))
+        doc_tokens = tokenise(str(opportunity))
         counts = {}
         for token in doc_tokens:
             counts[token] = counts.get(token, 0) + 1
         for token in counts:
-            df[token] = df.get(token, 0) + 1
+            document_freq[token] = document_freq.get(token, 0) + 1
         docs.append((opportunity, counts, max(1, len(doc_tokens))))
         
     results = []
@@ -48,7 +47,7 @@ def search_opportunities(query: str, opportunities: list[Opportunity]) -> list[d
         score = 0.0
         for token in tokens:
             tf = counts.get(token, 0) / length
-            idf = math.log((len(docs) + 1) / (df.get(token, 0) + 1)) + 1
+            idf = math.log((len(docs) + 1) / (document_freq.get(token, 0) + 1)) + 1
             score += tf * idf
         if score > 0:
             results.append({"opportunity": opportunity, "score": score, "engine": "TF-IDF Scorer"})
@@ -56,18 +55,19 @@ def search_opportunities(query: str, opportunities: list[Opportunity]) -> list[d
     return sorted(results, key=lambda x: x["score"], reverse=True)
 
 
+#  DELETE THIS
 def calculate_match_score(opportunity: Opportunity, student: Student) -> float:
     """Calculates personalized affinity between user interests, goals, and opportunities."""
     score = 0.0
     
     # Target path weights
-    goal = normalize(student.career_goal)
+    goal = normalise(student.career_goal)
     weights = CAREER_PATHS.get(goal, {})
     
     # Intersection vectors
     for interest in opportunity.interests:
-        norm_int = normalize(interest)
-        if norm_int in [normalize(si) for si in student.interests]:
+        norm_int = normalise(interest)
+        if norm_int in [normalise(si) for si in student.interests]:
             score += 2.0
         if norm_int in weights:
             score += weights[norm_int]

@@ -20,6 +20,9 @@ class Opportunity:
     url: str
     organizer: str
 
+    def __str__(self) -> str:
+        return f"{self.title} {self.type} {' '.join(self.interests)} {self.organizer}"
+
 
 @dataclass
 class Student:

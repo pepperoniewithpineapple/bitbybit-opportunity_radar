@@ -5,12 +5,12 @@ from datetime import datetime, date
 ACADEMIC_LEVELS: tuple[str] = ("Secondary", "JC", "Poly", "University")
 
 
-def normalize(text: str) -> str:
+def normalise(text: str) -> str:
     """Lowercase, strip, and sanitize string tokens."""
     return text.strip().lower()
 
 
-def tokenize(text: str) -> list[str]:
+def tokenise(text: str) -> list[str]:
     """Regex split text into alphabetic search terms."""
     return [t for t in re.findall(r'[a-z0-9]+', text.lower()) if len(t) > 1]
 

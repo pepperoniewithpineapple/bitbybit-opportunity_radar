@@ -78,7 +78,7 @@ def parse_cordy_html_page(html_content: str, current_total: int) -> list[Opportu
     return opportunities
 
 
-def scrape_entire_cordy_catalog() -> list[Opportunity]:
+async def scrape_cordy() -> list[Opportunity]:
     """
     Loops sequentially through paginated parameters to extract all opportunities
     without triggering full selenium browser execution instances.
@@ -146,7 +146,7 @@ def scrape_entire_cordy_catalog() -> list[Opportunity]:
     return all_opportunities
 
 if __name__ == "__main__":
-    catalog = scrape_entire_cordy_catalog()
+    catalog = scrape_cordy()
     if catalog:
         print(f"\nSample payload from index array [Total entries: {len(catalog)}]:")
         for idx, item in enumerate(catalog[:3]):

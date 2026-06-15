@@ -64,7 +64,8 @@ def parse_devpost_api_response(api_json: dict, total_scraped_so_far: int) -> lis
         
     return opportunities
 
-if __name__ == "__main__":
+
+async def scrape_devpost() -> list[Opportunity]:
     #  Target the API endpoint directly
     api_url = "https://devpost.com/api/hackathons"
     
@@ -102,7 +103,7 @@ if __name__ == "__main__":
             page_opportunities = parse_devpost_api_response(api_data, len(all_scraped_opportunities))
             all_scraped_opportunities.extend(page_opportunities)
             
-            print(f"  Processed {len(page_opportunities)} hackathons from page {page}.")
+            print(f"Processed {len(page_opportunities)} hackathons from page {page}.")
             page += 1
             
             #  Polite rate-limiting delay between requests
@@ -116,3 +117,14 @@ if __name__ == "__main__":
             break
 
     print(f"\nSuccessfully captured a total of {len(all_scraped_opportunities)} hackathons.")
+    return all_scraped_opportunities
+    
+
+if __name__ == "__main__":
+    opportunities = scrape_devpost()
+    if opportunities:
+        print(f"\nSample payload from index array [Total entries: {len(opportunities)}]:")
+        for idx, item in enumerate(opportunities[:3]):
+            print(f"{idx+1}. {item.title} by {item.organizer} (Deadline: {item.deadline})")
+
+    

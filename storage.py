@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+from datetime import datetime
 
 from models import Opportunity, Student, Application
 
@@ -96,3 +97,13 @@ def add_submission(submission: dict) -> None:
     data.append(submission)
     with open(SUBMISSIONS_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
+
+
+def load_last_updated_timestamp() -> float:
+    with open(".last_pulled_timestamp", "r", encoding="utf-8") as f:
+        return float(f.read() or 0)
+
+
+def save_last_updated_timestamp() -> None:
+    with open(".last_pulled_timestamp", "w") as f:
+        f.write(str(datetime.now().timestamp()))

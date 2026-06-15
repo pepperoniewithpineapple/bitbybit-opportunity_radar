@@ -1,396 +1,2863 @@
 [
-  {
-    "id": "opp-001",
-    "title": "DSTA BrainHack Cyber Defenders Discovery Camp",
-    "type": "workshop",
-    "interests": [
-      "cybersecurity",
-      "coding",
-      "defence tech"
-    ],
-    "eligible_levels": [
-      "JC",
-      "Poly",
-      "University"
-    ],
-    "cost": "free",
-    "beginner_friendly": true,
-    "deadline": "2026-06-18",
-    "url": "https://www.dsta.gov.sg/brainhack",
-    "organizer": "DSTA"
-  },
-  {
-    "id": "opp-002",
-    "title": "IMDA Youth Tech Hackathon",
-    "type": "hackathon",
-    "interests": [
-      "AI",
-      "coding",
-      "public good"
-    ],
-    "eligible_levels": [
-      "Secondary",
-      "JC",
-      "Poly"
-    ],
-    "cost": "free",
-    "beginner_friendly": true,
-    "deadline": "2026-06-22",
-    "url": "https://www.imda.gov.sg/",
-    "organizer": "IMDA"
-  },
-  {
-    "id": "opp-003",
-    "title": "NUS Computing Summer AI Challenge",
-    "type": "competition",
-    "interests": [
-      "AI",
-      "coding",
-      "data science"
-    ],
-    "eligible_levels": [
-      "JC",
-      "Poly",
-      "University"
-    ],
-    "cost": "free",
-    "beginner_friendly": false,
-    "deadline": "2026-06-29",
-    "url": "https://www.comp.nus.edu.sg/",
-    "organizer": "NUS"
-  },
-  {
-    "id": "opp-004",
-    "title": "A*STAR Science Award Briefing and Application",
-    "type": "scholarship",
-    "interests": [
-      "research",
-      "science",
-      "biotech"
-    ],
-    "eligible_levels": [
-      "JC",
-      "Poly"
-    ],
-    "cost": "free",
-    "beginner_friendly": true,
-    "deadline": "2026-07-02",
-    "url": "https://www.a-star.edu.sg/Scholarships",
-    "organizer": "A*STAR"
-  },
-  {
-    "id": "opp-005",
-    "title": "NTU Sustainability Innovation Challenge",
-    "type": "competition",
-    "interests": [
-      "sustainability",
-      "engineering",
-      "entrepreneurship"
-    ],
-    "eligible_levels": [
-      "JC",
-      "Poly",
-      "University"
-    ],
-    "cost": "free",
-    "beginner_friendly": true,
-    "deadline": "2026-07-08",
-    "url": "https://www.ntu.edu.sg/",
-    "organizer": "NTU"
-  },
-  {
-    "id": "opp-006",
-    "title": "SMU Youth Social Impact Case Competition",
-    "type": "competition",
-    "interests": [
-      "business",
-      "public good",
-      "entrepreneurship"
-    ],
-    "eligible_levels": [
-      "JC",
-      "Poly",
-      "University"
-    ],
-    "cost": "paid",
-    "beginner_friendly": true,
-    "deadline": "2026-07-12",
-    "url": "https://www.smu.edu.sg/",
-    "organizer": "SMU"
-  },
-  {
-    "id": "opp-007",
-    "title": "SUTD Design Thinking and Robotics Bootcamp",
-    "type": "workshop",
-    "interests": [
-      "robotics",
-      "design",
-      "engineering"
-    ],
-    "eligible_levels": [
-      "Secondary",
-      "JC",
-      "Poly"
-    ],
-    "cost": "free",
-    "beginner_friendly": true,
-    "deadline": "2026-07-18",
-    "url": "https://www.sutd.edu.sg/",
-    "organizer": "SUTD"
-  },
-  {
-    "id": "opp-008",
-    "title": "Singapore Mathematical Olympiad Training Clinic",
-    "type": "olympiad",
-    "interests": [
-      "math",
-      "problem solving",
-      "olympiad"
-    ],
-    "eligible_levels": [
-      "Secondary",
-      "JC"
-    ],
-    "cost": "paid",
-    "beginner_friendly": false,
-    "deadline": "2026-07-21",
-    "url": "https://sms.math.nus.edu.sg/",
-    "organizer": "Singapore Mathematical Society"
-  },
-  {
-    "id": "opp-009",
-    "title": "National Olympiad in Informatics Selection Workshop",
-    "type": "olympiad",
-    "interests": [
-      "coding",
-      "algorithms",
-      "problem solving"
-    ],
-    "eligible_levels": [
-      "Secondary",
-      "JC"
-    ],
-    "cost": "free",
-    "beginner_friendly": false,
-    "deadline": "2026-07-24",
-    "url": "https://noisg.comp.nus.edu.sg/",
-    "organizer": "NUS"
-  },
-  {
-    "id": "opp-010",
-    "title": "Science Centre Singapore Youth STEM Fair",
-    "type": "competition",
-    "interests": [
-      "science",
-      "research",
-      "presentation"
-    ],
-    "eligible_levels": [
-      "Secondary",
-      "JC",
-      "Poly"
-    ],
-    "cost": "free",
-    "beginner_friendly": true,
-    "deadline": "2026-07-29",
-    "url": "https://www.science.edu.sg/",
-    "organizer": "Science Centre Singapore"
-  },
-  {
-    "id": "opp-011",
-    "title": "PolyFinTech 100 API Hackathon",
-    "type": "hackathon",
-    "interests": [
-      "fintech",
-      "coding",
-      "business"
-    ],
-    "eligible_levels": [
-      "Poly",
-      "University"
-    ],
-    "cost": "free",
-    "beginner_friendly": true,
-    "deadline": "2026-08-03",
-    "url": "https://www.polyfintech100hackathon.sg/",
-    "organizer": "Singapore FinTech Association"
-  },
-  {
-    "id": "opp-012",
-    "title": "NTU CN Yang Scholars Programme Outreach",
-    "type": "scholarship",
-    "interests": [
-      "science",
-      "engineering",
-      "research"
-    ],
-    "eligible_levels": [
-      "JC",
-      "Poly"
-    ],
-    "cost": "free",
-    "beginner_friendly": false,
-    "deadline": "2026-08-06",
-    "url": "https://www.ntu.edu.sg/cnyang-scholars",
-    "organizer": "NTU"
-  },
-  {
-    "id": "opp-013",
-    "title": "SMU Data Analytics for Good Workshop",
-    "type": "workshop",
-    "interests": [
-      "data science",
-      "public good",
-      "business"
-    ],
-    "eligible_levels": [
-      "JC",
-      "Poly",
-      "University"
-    ],
-    "cost": "free",
-    "beginner_friendly": true,
-    "deadline": "2026-08-10",
-    "url": "https://scis.smu.edu.sg/",
-    "organizer": "SMU"
-  },
-  {
-    "id": "opp-014",
-    "title": "A*STAR Research Attachment Programme Preview",
-    "type": "workshop",
-    "interests": [
-      "research",
-      "science",
-      "AI"
-    ],
-    "eligible_levels": [
-      "JC",
-      "Poly",
-      "University"
-    ],
-    "cost": "free",
-    "beginner_friendly": false,
-    "deadline": "2026-08-12",
-    "url": "https://www.a-star.edu.sg/",
-    "organizer": "A*STAR"
-  },
-  {
-    "id": "opp-015",
-    "title": "SUTD What The Hack Design Sprint",
-    "type": "hackathon",
-    "interests": [
-      "design",
-      "coding",
-      "entrepreneurship"
-    ],
-    "eligible_levels": [
-      "Secondary",
-      "JC",
-      "Poly",
-      "University"
-    ],
-    "cost": "paid",
-    "beginner_friendly": true,
-    "deadline": "2026-06-01",
-    "url": "https://www.sutd.edu.sg/",
-    "organizer": "SUTD"
-  },
-  {
-    "id": "opp-016",
-    "title": "IMDA Digital for Life Student Challenge",
-    "type": "competition",
-    "interests": [
-      "public good",
-      "coding",
-      "media"
-    ],
-    "eligible_levels": [
-      "Secondary",
-      "JC",
-      "Poly"
-    ],
-    "cost": "free",
-    "beginner_friendly": true,
-    "deadline": "2026-05-25",
-    "url": "https://www.imda.gov.sg/digitalforlife",
-    "organizer": "IMDA"
-  },
-  {
-    "id": "opp-017",
-    "title": "National Cybersecurity Olympiad (NCO)",
-    "type": "competition",
-    "interests": [
-      "cybersecurity",
-      "coding",
-      "problem solving"
-    ],
-    "eligible_levels": [
-      "Secondary",
-      "JC"
-    ],
-    "cost": "free",
-    "beginner_friendly": true,
-    "deadline": "2026-07-15",
-    "url": "https://www.comp.nus.edu.sg/programmes/cence/nco/",
-    "organizer": "NUS Computing / CeNCE"
-  },
-  {
-    "id": "opp-018",
-    "title": "Hult Prize On-Campus Programme \u2014 Social Enterprise Challenge",
-    "type": "competition",
-    "interests": [
-      "entrepreneurship",
-      "social impact",
-      "public good"
-    ],
-    "eligible_levels": [
-      "JC",
-      "Poly",
-      "University"
-    ],
-    "cost": "free",
-    "beginner_friendly": true,
-    "deadline": "2026-07-31",
-    "url": "https://www.hultprize.org/",
-    "organizer": "Hult Prize Foundation"
-  },
-  {
-    "id": "opp-019",
-    "title": "IMDA TechSkills Accelerator (TeSA) Student Internship Track",
-    "type": "workshop",
-    "interests": [
-      "coding",
-      "AI",
-      "data science"
-    ],
-    "eligible_levels": [
-      "Poly",
-      "University"
-    ],
-    "cost": "free",
-    "beginner_friendly": false,
-    "deadline": "2026-08-15",
-    "url": "https://www.imda.gov.sg/imtalent/tesa",
-    "organizer": "IMDA"
-  },
-  {
-    "id": "opp-020",
-    "title": "NUS School of Computing Open House Research Showcase",
-    "type": "workshop",
-    "interests": [
-      "coding",
-      "research",
-      "AI"
-    ],
-    "eligible_levels": [
-      "Secondary",
-      "JC",
-      "Poly"
-    ],
-    "cost": "free",
-    "beginner_friendly": true,
-    "deadline": "2026-07-05",
-    "url": "https://www.comp.nus.edu.sg/",
-    "organizer": "NUS Computing"
-  }
+    {
+        "id": "cordy-dom-3",
+        "title": "Data Research Volunteer",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/data-research-volunteer",
+        "organizer": "Zooniverse"
+    },
+    {
+        "id": "cordy-dom-5",
+        "title": "Project Eleur Organising Team Recruitment",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/project-eleur-organising-team-recruitment-",
+        "organizer": "Project Eleur x REACH SG"
+    },
+    {
+        "id": "cordy-dom-6",
+        "title": "Youth Liberty Prize 2026",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-01",
+        "url": "https://app.cordy.sg/opportunities/youth-liberty-prize-2026-2026-07-01",
+        "organizer": "Fundación Jesús Huerta de Soto"
+    },
+    {
+        "id": "cordy-dom-7",
+        "title": "UltraTech IndiaNext 2026",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-15",
+        "url": "https://app.cordy.sg/opportunities/last-date-of-submission-15th-july-2026",
+        "organizer": "UltraTech"
+    },
+    {
+        "id": "cordy-dom-8",
+        "title": "Microsoft Build //localhost: Singapore 2026",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-22",
+        "url": "https://app.cordy.sg/opportunities/meetup-3",
+        "organizer": "Global AI Singapore"
+    },
+    {
+        "id": "cordy-dom-9",
+        "title": "Illustration Arts Festival (IAF) 2026",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-03",
+        "url": "https://app.cordy.sg/opportunities/illustration-arts-festival-iaf-2026",
+        "organizer": "Thirtytwocm"
+    },
+    {
+        "id": "cordy-dom-10",
+        "title": "Art Competitions 2025 | Online & Abstract Art Contests | Ten Moir Gallery – The Moir Collectors Catalogs",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-08-15",
+        "url": "https://app.cordy.sg/opportunities/art-competitions-2025-online-abstract-art-contests-ten-moir-gallery-the-moir-col",
+        "organizer": "Cash awards for top selections."
+    },
+    {
+        "id": "cordy-dom-11",
+        "title": "AWS User Group Meetup June 2026",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-17",
+        "url": "https://app.cordy.sg/opportunities/meetup",
+        "organizer": "AWS User Group Singapore"
+    },
+    {
+        "id": "cordy-dom-12",
+        "title": "SG Youth Forum 2026",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-25",
+        "url": "https://app.cordy.sg/opportunities/sg-youth-forum-2026",
+        "organizer": "National Youth Council"
+    },
+    {
+        "id": "cordy-dom-13",
+        "title": "AMP: Aspiring Musicians Programme",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-20",
+        "url": "https://app.cordy.sg/opportunities/amp-aspiring-musicians-programme",
+        "organizer": "*SCAPE Singapore"
+    },
+    {
+        "id": "cordy-dom-14",
+        "title": "Singapore National Scrabble Championship 2026",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-04",
+        "url": "https://app.cordy.sg/opportunities/singapore-national-scrabble-championship-2026",
+        "organizer": "Scrabble Association, Singapore"
+    },
+    {
+        "id": "cordy-dom-15",
+        "title": "Sentosa Nature Photography Competition",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-30",
+        "url": "https://app.cordy.sg/opportunities/sentosa-nature-photography-competition-2026-06-30",
+        "organizer": "Sentosa Development Corporation"
+    },
+    {
+        "id": "cordy-dom-16",
+        "title": "Radical Innovation",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-08-03",
+        "url": "https://app.cordy.sg/opportunities/radical-innovation",
+        "organizer": "Radical Innovation Foundation"
+    },
+    {
+        "id": "cordy-dom-17",
+        "title": "One Punggol - Esports Arena 2026",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-20",
+        "url": "https://app.cordy.sg/opportunities/one-punggol-esports-arena-2026",
+        "organizer": "C2E4"
+    },
+    {
+        "id": "cordy-dom-18",
+        "title": "Tech Exploration Programme for Girls",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-19",
+        "url": "https://app.cordy.sg/opportunities/tech-exploration-programme-for-girls",
+        "organizer": "EOS initiative"
+    },
+    {
+        "id": "cordy-dom-22",
+        "title": "THEFIRST SPARK ✨ June 27 | Singapore.",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-27",
+        "url": "https://app.cordy.sg/opportunities/thefirst-spark-✨-june-27-singapore",
+        "organizer": "Wavesparks"
+    },
+    {
+        "id": "cordy-dom-23",
+        "title": "Joyful Connections",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-06",
+        "url": "https://app.cordy.sg/opportunities/joyful-connections-2026-07-06",
+        "organizer": "Singapore General Hospital"
+    },
+    {
+        "id": "cordy-dom-24",
+        "title": "Google I/O Extended Singapore 2026",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-27",
+        "url": "https://app.cordy.sg/opportunities/google-i-o-extended-singapore-2026-2026-06-27",
+        "organizer": "GDG Singapore"
+    },
+    {
+        "id": "cordy-dom-25",
+        "title": "Education Trust Fund (ETF) - Mosque Donation Drive",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-06",
+        "url": "https://app.cordy.sg/opportunities/education-trust-fund-etf-mosque-donation-drive-2026-07-06",
+        "organizer": "Yayasan MENDAKI"
+    },
+    {
+        "id": "cordy-dom-26",
+        "title": "National Family Festival @ Northshore Plaza",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-22",
+        "url": "https://app.cordy.sg/opportunities/national-family-festival-northshore-plaza-2026-06-22",
+        "organizer": "Families for Life"
+    },
+    {
+        "id": "cordy-dom-27",
+        "title": "Work Simulation Program (WSP)",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-19",
+        "url": "https://app.cordy.sg/opportunities/work-simulation-program-wsp-2026-06-19",
+        "organizer": "TalentGeist"
+    },
+    {
+        "id": "cordy-dom-28",
+        "title": "TISC 2026 Challenge Submissions",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-05",
+        "url": "https://app.cordy.sg/opportunities/tisc-2026-challenge-submissions-2026-07-05",
+        "organizer": "CSIT"
+    },
+    {
+        "id": "cordy-dom-29",
+        "title": "JETS Job Expo '36",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-04",
+        "url": "https://app.cordy.sg/opportunities/jets-job-expo-36-2026-07-04",
+        "organizer": "NHG Health"
+    },
+    {
+        "id": "cordy-dom-30",
+        "title": "*SCAPE Street Show [Special Stage]",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-20",
+        "url": "https://app.cordy.sg/opportunities/scape-street-show-special-stage-2026-06-20",
+        "organizer": "*SCAPE Singapore"
+    },
+    {
+        "id": "cordy-dom-31",
+        "title": "Move and Play",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-08",
+        "url": "https://app.cordy.sg/opportunities/move-and-play-2026-07-08",
+        "organizer": "Singapore General Hospital"
+    },
+    {
+        "id": "cordy-dom-32",
+        "title": "DDAS Youth Day Celebration",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-04",
+        "url": "https://app.cordy.sg/opportunities/ddas-youth-day-celebration-2026-07-04",
+        "organizer": "Digital Defence Alliance Singapore"
+    },
+    {
+        "id": "cordy-dom-33",
+        "title": "SGLaw200: Why Law Matters Student Competition",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-30",
+        "url": "https://app.cordy.sg/opportunities/sglaw200-why-law-matters-student-competition-1779884810826",
+        "organizer": "Ministry of Law Singapore"
+    },
+    {
+        "id": "cordy-dom-34",
+        "title": "Youth Experience Programme (YEP) 2026: Empowering Your Future at Mandai Bird Paradise",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-17",
+        "url": "https://app.cordy.sg/opportunities/youth-experience-programme-2026-2026-07-17",
+        "organizer": "Tripartite Collective"
+    },
+    {
+        "id": "cordy-dom-35",
+        "title": "Voyage Beyond SIT FSSD Lab",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-27",
+        "url": "https://app.cordy.sg/opportunities/voyage-beyond-sit-fssd-lab-2026-06-27",
+        "organizer": "Maritime and Port Authority of Singapore"
+    },
+    {
+        "id": "cordy-dom-36",
+        "title": "Work Simulation Program (earn paid internships)",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-18",
+        "url": "https://app.cordy.sg/opportunities/work-simulation-program-earn-paid-internships",
+        "organizer": "TalentGeist"
+    },
+    {
+        "id": "cordy-dom-37",
+        "title": "Discover Clinical Research Coordination",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-08-12",
+        "url": "https://app.cordy.sg/opportunities/micro-job-taster-discover-clinical-research-coordination-2026-08-12",
+        "organizer": "Bold At Work Pte Ltd"
+    },
+    {
+        "id": "cordy-dom-38",
+        "title": "Character Building Using The Outdoors The OBS Instructor",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-24",
+        "url": "https://app.cordy.sg/opportunities/character-building-using-the-outdoors-the-obs-instructor-2026-06-24",
+        "organizer": "National Youth Council Singapore"
+    },
+    {
+        "id": "cordy-dom-39",
+        "title": "Singapore Defense Tech Hackathon",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-09-27",
+        "url": "https://app.cordy.sg/opportunities/singapore-defense-tech-hackathon-2026-09-27",
+        "organizer": "European Defense Tech Hub"
+    },
+    {
+        "id": "cordy-dom-40",
+        "title": "SCDF EMS Bootcamp",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-04",
+        "url": "https://app.cordy.sg/opportunities/scdf-ems-bootcamp-2026-07-04",
+        "organizer": "Singapore Civil Defence Force"
+    },
+    {
+        "id": "cordy-dom-41",
+        "title": "Voyage Beyond Maritime Youth Day",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-20",
+        "url": "https://app.cordy.sg/opportunities/voyage-beyond-maritime-youth-day-2026-06-20",
+        "organizer": "Maritime and Port Authority of Singapore (MPA)"
+    },
+    {
+        "id": "cordy-dom-42",
+        "title": "SCAPE Pixel.Ate Creator Mentorship Programme",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-10-08",
+        "url": "https://app.cordy.sg/opportunities/scape-pixel-ate-creator-mentorship-programme-2026-10-08",
+        "organizer": "SCAPE"
+    },
+    {
+        "id": "cordy-dom-43",
+        "title": "Behind the Scenes at the Climate Youth Development Programme Run 2",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-03",
+        "url": "https://app.cordy.sg/opportunities/nyc-job-taster-behind-the-scenes-at-the-climate-youth-development-programme-run-2-2026-07-03",
+        "organizer": "National Youth Council Singapore"
+    },
+    {
+        "id": "cordy-dom-44",
+        "title": "Inside Community Religious Engagement",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-04",
+        "url": "https://app.cordy.sg/opportunities/microjob-taster-inside-community-religious-engagement-2026-07-04",
+        "organizer": "Ministry of Culture, Community and Youth"
+    },
+    {
+        "id": "cordy-dom-45",
+        "title": "Julia Wood History Essay Prize 2026",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-22",
+        "url": "https://app.cordy.sg/opportunities/julia-wood-history-essay-prize-2026-2026-07-22",
+        "organizer": "St Hugh's College Oxford"
+    },
+    {
+        "id": "cordy-dom-46",
+        "title": "International Mock Trial Virtual Competitions",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2027-04-29",
+        "url": "https://app.cordy.sg/opportunities/international-mock-trial-virtual-competitions-2027-04-29",
+        "organizer": "International Mock Trial"
+    },
+    {
+        "id": "cordy-dom-47",
+        "title": "Taiwan International Student Design Competition",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-06",
+        "url": "https://app.cordy.sg/opportunities/taiwan-international-student-design-competition-2026-07-06",
+        "organizer": "TISDC"
+    },
+    {
+        "id": "cordy-dom-48",
+        "title": "Gen Gala x Fashion Parade Jalan Besar",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-08-27",
+        "url": "https://app.cordy.sg/opportunities/gen-gala-x-fashion-parade-jalan-besar-2026-08-27",
+        "organizer": "Care Corner Singapore Ltd"
+    },
+    {
+        "id": "cordy-dom-49",
+        "title": "National Sustainability Economics Championship (NSEC)",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-07-13",
+        "url": "https://app.cordy.sg/opportunities/national-sustainability-economics-championship-nsec-2026-07-13",
+        "organizer": "ecomeet SG in collaboration with SMU and PAYM"
+    },
+    {
+        "id": "cordy-dom-50",
+        "title": "Young Stars MAD Competition 2026",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-08-28",
+        "url": "https://app.cordy.sg/opportunities/young-stars-mad-competition-2026-2026-08-28",
+        "organizer": "MAD Stars"
+    },
+    {
+        "id": "cordy-dom-52",
+        "title": "FIRST Global Challenge - Singapore",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-10-07",
+        "url": "https://app.cordy.sg/opportunities/first-global-challenge-singapore-2026-10-07",
+        "organizer": "FIRST Global / Singapore representative body"
+    },
+    {
+        "id": "cordy-dom-53",
+        "title": "Basics of Sewing and Upcycling | Sew & Steady Starter",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-11-10",
+        "url": "https://app.cordy.sg/opportunities/basics-of-sewing-and-upcycling-sew-steady-starter-2026-11-10",
+        "organizer": "Sew & Steady"
+    },
+    {
+        "id": "cordy-dom-54",
+        "title": "Globalminds Singapore Recruitment",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/globalminds-singapore-recruitment",
+        "organizer": "Globalminds Singapore"
+    },
+    {
+        "id": "cordy-dom-56",
+        "title": "PUBLIC TOUR | THE ALBATROSS FILE",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-06-20",
+        "url": "https://app.cordy.sg/opportunities/public-tour-the-albatross-file-2026-06-20",
+        "organizer": "National Library Board"
+    },
+    {
+        "id": "cordy-dom-57",
+        "title": "Once Upon a Tide: Singapore's Journey from Settlement to Global City",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-10-09",
+        "url": "https://app.cordy.sg/opportunities/once-upon-a-tide-singapore-s-journey-from-settlement-to-global-city",
+        "organizer": "National Museum of Singapore"
+    },
+    {
+        "id": "cordy-dom-56",
+        "title": "Project Obscura Volunteer Recruitment",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/project-obscura-volunteer-recruitment",
+        "organizer": "Project Obscura"
+    },
+    {
+        "id": "cordy-dom-58",
+        "title": "Google Digital Garage - Courses",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/google-digital-garage-courses",
+        "organizer": "Google"
+    },
+    {
+        "id": "cordy-dom-59",
+        "title": "PeacePod - Mental Health Collective for the Community!",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/peacepod-mental-health-collective-for-the-community-",
+        "organizer": "PeacePod"
+    },
+    {
+        "id": "cordy-dom-60",
+        "title": "Access Facilitator Recruitment",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/access-facilitator-recruitment",
+        "organizer": "Access Singapore"
+    },
+    {
+        "id": "cordy-dom-61",
+        "title": "Deep Dive into Modern Web Development",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/deep-dive-into-modern-web-development",
+        "organizer": "Full Stack Open"
+    },
+    {
+        "id": "cordy-dom-62",
+        "title": "Singapore Youth Flying Club",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/singapore-youth-flying-club",
+        "organizer": "Singapore Youth Flying Club"
+    },
+    {
+        "id": "cordy-dom-63",
+        "title": "HubSpot Academy",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/hubspot-academy",
+        "organizer": "HubSpot"
+    },
+    {
+        "id": "cordy-dom-64",
+        "title": "Map of the Money",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/map-of-the-money",
+        "organizer": "Map of the Money"
+    },
+    {
+        "id": "cordy-dom-65",
+        "title": "StartUP Youths Membership Recruitment",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/startup-youths-membership-recruitment",
+        "organizer": "StartUP Youths"
+    },
+    {
+        "id": "cordy-dom-66",
+        "title": "Learn to Code | FreeCodeCamp",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/learn-to-code-freecodecamp",
+        "organizer": "FreeCodeCamp"
+    },
+    {
+        "id": "cordy-dom-67",
+        "title": "Techstars Entrepreneurs' Toolkit",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/techstars-entrepreneurs-toolkit",
+        "organizer": "Techstars"
+    },
+    {
+        "id": "cordy-dom-67",
+        "title": "GitHub Student Developer Pack",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/github-student-developer-pack",
+        "organizer": "GitHub"
+    },
+    {
+        "id": "cordy-dom-68",
+        "title": "Environment Fund (For IHLs)",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/environment-fund-for-ihls",
+        "organizer": "Clean & Green Singapore"
+    },
+    {
+        "id": "cordy-dom-69",
+        "title": "Seed Kindness Fund (SKF)",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/seed-kindness-fund-skf",
+        "organizer": "Singapore Kindness Movement"
+    },
+    {
+        "id": "cordy-dom-70",
+        "title": "Health Ambassador",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/health-ambassador",
+        "organizer": "Health Promotion Board"
+    },
+    {
+        "id": "cordy-dom-71",
+        "title": "Active Citizen Grant",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/active-citizen-grant",
+        "organizer": "Sport Singapore"
+    },
+    {
+        "id": "cordy-dom-72",
+        "title": "Daily UI Challenge",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/daily-ui-challenge",
+        "organizer": "Daily UI"
+    },
+    {
+        "id": "cordy-dom-73",
+        "title": "EduHopeSG Volunteer Recruitment",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/nationwide-volunteer-mentoring-opportunities",
+        "organizer": "EduHopeSG"
+    },
+    {
+        "id": "cordy-dom-74",
+        "title": "Storytelling for Change - Course",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/storytelling-for-change-course",
+        "organizer": "Acumen Academy"
+    },
+    {
+        "id": "cordy-dom-75",
+        "title": "SDG Academy",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/sdg-academy",
+        "organizer": "Sustainable Development Solutions Network"
+    },
+    {
+        "id": "cordy-dom-76",
+        "title": "Young ChangeMakers (YCM)",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/young-changemakers-ycm",
+        "organizer": "National Youth Council"
+    },
+    {
+        "id": "cordy-dom-77",
+        "title": "RecycledOilSG",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/recycledoilsg",
+        "organizer": "RecycledOilSG"
+    },
+    {
+        "id": "cordy-dom-78",
+        "title": "National Youth Fund (Research Grant)",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/national-youth-fund-research-grant",
+        "organizer": "National Youth Council"
+    },
+    {
+        "id": "cordy-dom-79",
+        "title": "Web Development Course | The Odin Project",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/web-development-course-the-odin-project",
+        "organizer": "The Odin Project"
+    },
+    {
+        "id": "cordy-dom-80",
+        "title": "Startup School",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/startup-school",
+        "organizer": "Y Combinator"
+    },
+    {
+        "id": "cordy-dom-81",
+        "title": "Kids Learn Code Volunteer Recruitment",
+        "type": "Competition",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "cost": 0,
+        "beginner_friendly": true,
+        "deadline": "2026-12-31",
+        "url": "https://app.cordy.sg/opportunities/kids-learn-code-volunteer-recruitment",
+        "organizer": "Kids Learn Code"
+    },
+    {
+        "id": "devpost_0_1781541634",
+        "title": "Build with Gemini XPRIZE",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Machine Learning/AI",
+            "Education",
+            "Productivity"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://xprize.devpost.com/",
+        "organizer": "XPRIZE"
+    },
+    {
+        "id": "devpost_1_1781541634",
+        "title": "USAII® Global AI Hackathon 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Machine Learning/AI",
+            "Social Good"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://usaii-global-ai-hackathon-2026.devpost.com/",
+        "organizer": "USAII"
+    },
+    {
+        "id": "devpost_2_1781541634",
+        "title": "H0: Hack the Zero Stack with Vercel v0 and AWS Databases",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Databases",
+            "Open Ended",
+            "Web"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://h01.devpost.com/",
+        "organizer": "Amazon"
+    },
+    {
+        "id": "devpost_3_1781541634",
+        "title": "FIND EVIL!",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Cybersecurity",
+            "Machine Learning/AI",
+            "Beginner Friendly"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://findevil.devpost.com/",
+        "organizer": "sans"
+    },
+    {
+        "id": "devpost_4_1781541634",
+        "title": "Global AI Hackathon Series with Qwen Cloud",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Machine Learning/AI",
+            "Design",
+            "Productivity"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://qwencloud-hackathon.devpost.com/",
+        "organizer": "Alibaba Cloud"
+    },
+    {
+        "id": "devpost_5_1781541634",
+        "title": "UiPath AgentHack",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Enterprise",
+            "Machine Learning/AI",
+            "Robotic Process Automation"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://uipath-agenthack.devpost.com/",
+        "organizer": "UiPath"
+    },
+    {
+        "id": "devpost_6_1781541634",
+        "title": "Slack Agent Builder Challenge",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Enterprise",
+            "Low/No Code"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://slackhack.devpost.com/",
+        "organizer": "Salesforce"
+    },
+    {
+        "id": "devpost_7_1781541634",
+        "title": "Mind the Product presents World Product Day: Everyone Ships Now",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Machine Learning/AI",
+            "Low/No Code"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://mindtheproduct.devpost.com/",
+        "organizer": "Mind the Product"
+    },
+    {
+        "id": "devpost_8_1781541634",
+        "title": "DSH Hacks V1",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Social Good",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://dsh-hacks-v1.devpost.com/",
+        "organizer": "DreamWeave"
+    },
+    {
+        "id": "devpost_9_1781541637",
+        "title": "NextGenHacks",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Open Ended",
+            "Social Good"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://nextgenhacks.devpost.com/",
+        "organizer": "NextGenHacks"
+    },
+    {
+        "id": "devpost_10_1781541637",
+        "title": "GitLab Transcend Hackathon",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Machine Learning/AI",
+            "DevOps",
+            "Productivity"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://gitlab-transcend.devpost.com/",
+        "organizer": "GitLab"
+    },
+    {
+        "id": "devpost_11_1781541637",
+        "title": "Arm Create: AI Optimization Challenge",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://arm-ai-optimization-challenge.devpost.com/",
+        "organizer": "arm"
+    },
+    {
+        "id": "devpost_12_1781541637",
+        "title": "ML Empowerment Build Challenge",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Education",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://ml-empowerment-build-challenge.devpost.com/",
+        "organizer": "ML Empowerment Foundation"
+    },
+    {
+        "id": "devpost_13_1781541637",
+        "title": "LUMA Hackathon (July 3rd - 10th)",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Machine Learning/AI",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://luma-hackathon-500.devpost.com/",
+        "organizer": "LUMA"
+    },
+    {
+        "id": "devpost_14_1781541637",
+        "title": "Creator Colosseum Startup Competition: Student Founders. Real Startups.",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Low/No Code",
+            "Social Good"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": true,
+        "deadline": "2026-06-30",
+        "url": "https://creatorcolosseum.devpost.com/",
+        "organizer": "Creator Colosseum"
+    },
+    {
+        "id": "devpost_15_1781541637",
+        "title": "PhysTech 2026: Physical Activity and Technology Hack Day",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Education",
+            "Health",
+            "IoT"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://phystech-2026.devpost.com/",
+        "organizer": "Binnovative"
+    },
+    {
+        "id": "devpost_16_1781541637",
+        "title": "Github readme generation",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Education",
+            "Low/No Code"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://github-readme-generation.devpost.com/",
+        "organizer": "presentme"
+    },
+    {
+        "id": "devpost_17_1781541637",
+        "title": "Build the Future with AI — From Code to No-Code",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Low/No Code",
+            "Machine Learning/AI",
+            "Web"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://build-the-future-with-ai.devpost.com/",
+        "organizer": "Innovation Hacks"
+    },
+    {
+        "id": "devpost_18_1781541640",
+        "title": "Hoobit Hacks 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Machine Learning/AI",
+            "Social Good"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://hoobit-hacks-2026.devpost.com/",
+        "organizer": "Hoobit"
+    },
+    {
+        "id": "devpost_19_1781541640",
+        "title": "Play with Purpose Hackathon presented by Cox Enterprises",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Social Good"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://play-with-purpose-hackathon.devpost.com/",
+        "organizer": "Cox Enterprises"
+    },
+    {
+        "id": "devpost_20_1781541640",
+        "title": "FutureAI Global Hackathon 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Machine Learning/AI",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://futureai-global-hackthon.devpost.com/",
+        "organizer": "Innovation Hacks"
+    },
+    {
+        "id": "devpost_21_1781541640",
+        "title": "HackMars 3.0: NEON",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Education",
+            "Machine Learning/AI",
+            "Productivity"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://hackmars-3-0-neon.devpost.com/",
+        "organizer": "HackMars"
+    },
+    {
+        "id": "devpost_22_1781541640",
+        "title": "Kaya AI IIT India Hackathon 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "IoT",
+            "Machine Learning/AI",
+            "Enterprise"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://kaya-ai-iit-hackathon-2026.devpost.com/",
+        "organizer": "Kaya"
+    },
+    {
+        "id": "devpost_23_1781541640",
+        "title": "AI for Civic Innovation Hackathon",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Social Good",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://ai-for-civic-innovation.devpost.com/",
+        "organizer": "Code for Pakistan"
+    },
+    {
+        "id": "devpost_24_1781541640",
+        "title": "CodeStorm",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Blockchain",
+            "Machine Learning/AI",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://codestorm.devpost.com/",
+        "organizer": "Arya College Old Campus"
+    },
+    {
+        "id": "devpost_25_1781541640",
+        "title": "Global Tech Innovation 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Cybersecurity",
+            "IoT",
+            "Web"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://global-tech-innovation-2026.devpost.com/",
+        "organizer": "Innovation Hacks"
+    },
+    {
+        "id": "devpost_26_1781541640",
+        "title": "VoltHacks",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "IoT",
+            "Machine Learning/AI",
+            "Beginner Friendly"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://volthacks.devpost.com/",
+        "organizer": "Dialogate"
+    },
+    {
+        "id": "devpost_27_1781541642",
+        "title": "Assistive Innovation Challenge 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Health",
+            "Social Good"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://assistive-innovation-challenge.devpost.com/",
+        "organizer": "Student Innovators Without Borders"
+    },
+    {
+        "id": "devpost_28_1781541642",
+        "title": "Agentic AI Build Week 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://agentic-ai-build-week-2026.devpost.com/",
+        "organizer": "GenAI Fund"
+    },
+    {
+        "id": "devpost_29_1781541642",
+        "title": "Built with Python Hackathon",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Education",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://built-with-python-hackathon.devpost.com/",
+        "organizer": "CS4Everyone"
+    },
+    {
+        "id": "devpost_30_1781541642",
+        "title": "GLITCHED GAMES",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Gaming",
+            "Mobile",
+            "Web"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://glitch-to-win-games.devpost.com/",
+        "organizer": "GB3-Productions"
+    },
+    {
+        "id": "devpost_31_1781541642",
+        "title": "GenZ Can Hack 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Education",
+            "Machine Learning/AI",
+            "Robotic Process Automation"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://genz-can-hack-2026.devpost.com/",
+        "organizer": "Kids for Kids Toronto Coding Club"
+    },
+    {
+        "id": "devpost_32_1781541642",
+        "title": "DevSoc Starlight 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Mobile",
+            "Web"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://devsoc-starlight-2026.devpost.com/",
+        "organizer": "DevSoc"
+    },
+    {
+        "id": "devpost_33_1781541642",
+        "title": "Moonshot Hackathon",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Machine Learning/AI",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://moonshot-aethra.devpost.com/",
+        "organizer": "Aethra"
+    },
+    {
+        "id": "devpost_34_1781541642",
+        "title": "HACKFEST'26",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Fintech",
+            "Health",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://hackfest-26.devpost.com/",
+        "organizer": "Student Council"
+    },
+    {
+        "id": "devpost_35_1781541642",
+        "title": "SNS Bold.ai",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Machine Learning/AI",
+            "Robotic Process Automation"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://sns-bold-ai.devpost.com/",
+        "organizer": "SNS Institutions"
+    },
+    {
+        "id": "devpost_36_1781541645",
+        "title": "Brainwave",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "AR/VR",
+            "Blockchain",
+            "Communication"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://brainwaves.devpost.com/",
+        "organizer": "ACT House"
+    },
+    {
+        "id": "devpost_37_1781541645",
+        "title": "Build with Gemini",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Education",
+            "Web"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://build-with-gemini-0.devpost.com/",
+        "organizer": "MLH"
+    },
+    {
+        "id": "devpost_38_1781541645",
+        "title": "InnovatorsX: Startup Sprint",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Design",
+            "E-commerce/Retail"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://innovatorsx.devpost.com/",
+        "organizer": "InnovatorsX"
+    },
+    {
+        "id": "devpost_39_1781541645",
+        "title": "Far Away",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://faraway.devpost.com/",
+        "organizer": "zuup"
+    },
+    {
+        "id": "devpost_40_1781541645",
+        "title": "1st Nature's Blueprint Ideathon 2026 !!",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Education",
+            "Social Good"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://naturesblueprint.devpost.com/",
+        "organizer": "Yaod Multifaceted Company"
+    },
+    {
+        "id": "devpost_41_1781541645",
+        "title": "Hack Days Unnao",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Education",
+            "Low/No Code"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://hack-days-unnao.devpost.com/",
+        "organizer": "AITD EVENTS"
+    },
+    {
+        "id": "devpost_42_1781541645",
+        "title": "Ventura Challenge",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Design",
+            "E-commerce/Retail"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://ventura-challenge.devpost.com/",
+        "organizer": "Student Council"
+    },
+    {
+        "id": "devpost_43_1781541645",
+        "title": "Hack Begin",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Blockchain",
+            "Machine Learning/AI",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://hack-begin.devpost.com/",
+        "organizer": "Shankara Institute of Technology"
+    },
+    {
+        "id": "devpost_44_1781541645",
+        "title": "V1TROUS Hackathon",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Education",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://v1trous-hackathon-30125.devpost.com/",
+        "organizer": "V1 Initiative"
+    },
+    {
+        "id": "devpost_45_1781541647",
+        "title": "India High School Exoplanet Data Challenge",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Low/No Code",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://celesta-exoplanet-challenge.devpost.com/",
+        "organizer": "Celesta"
+    },
+    {
+        "id": "devpost_46_1781541647",
+        "title": "SunnyHacks June 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://sunnyhacks-june-2026.devpost.com/",
+        "organizer": "SunnyHacks"
+    },
+    {
+        "id": "devpost_47_1781541647",
+        "title": "AI for Learning & Development Build Challenge — AI Collective HR + Regent",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Education",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://ai-challenge-regent-aichr.devpost.com/",
+        "organizer": "AI Collective"
+    },
+    {
+        "id": "devpost_48_1781541647",
+        "title": "Vortexa",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Blockchain",
+            "Cybersecurity",
+            "Fintech"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://vortexa.devpost.com/",
+        "organizer": "hackhere"
+    },
+    {
+        "id": "devpost_49_1781541647",
+        "title": "Hyperbloom Summer Hackathon",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Education",
+            "Open Ended",
+            "Social Good"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://hyperbloom-summer-hackathon.devpost.com/",
+        "organizer": "hyperbloom hacks"
+    },
+    {
+        "id": "devpost_50_1781541647",
+        "title": "DEMOKHE",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Education",
+            "IoT",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://demokhe.devpost.com/",
+        "organizer": "HacKSU"
+    },
+    {
+        "id": "devpost_51_1781541647",
+        "title": "Cyber_Coders",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Cybersecurity",
+            "Web"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://cybercoders2026.devpost.com/",
+        "organizer": "Idustries"
+    },
+    {
+        "id": "devpost_52_1781541647",
+        "title": "305 HackShells Edition June 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Lifehacks",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://305hackshellsjune2026.devpost.com/",
+        "organizer": "Swift at FIU"
+    },
+    {
+        "id": "devpost_53_1781541647",
+        "title": "AQX Sports Analytics Hackathon",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Databases",
+            "Gaming"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://aqxanalytics.devpost.com/",
+        "organizer": "James Logan High School"
+    },
+    {
+        "id": "devpost_54_1781541650",
+        "title": "Tech Titans Hackathon",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Enterprise",
+            "Fintech"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://tech-titans-hackathon.devpost.com/",
+        "organizer": "Tech Titans Hack"
+    },
+    {
+        "id": "devpost_55_1781541650",
+        "title": "Your idea vs 1,000 other marketers. Let’s see where you actually stand.",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Design",
+            "Open Ended",
+            "Productivity"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://idea-vs-1000-marketers.devpost.com/",
+        "organizer": "ConnectsBlue"
+    },
+    {
+        "id": "devpost_56_1781541650",
+        "title": "AceSAT Education AI-Agent",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Education",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://acesat-ai-agent.devpost.com/",
+        "organizer": "AceSAT"
+    },
+    {
+        "id": "devpost_57_1781541650",
+        "title": "Sparks Summer Challenge",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Enterprise",
+            "Fintech",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://sparks-summer-challenge.devpost.com/",
+        "organizer": "Sparks Tech Hack"
+    },
+    {
+        "id": "devpost_58_1781541650",
+        "title": "Hack Verse",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Blockchain",
+            "Machine Learning/AI",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://hack-verse-30325.devpost.com/",
+        "organizer": "HackersUnity"
+    },
+    {
+        "id": "devpost_59_1781541650",
+        "title": "Next Byte Hacks V3",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Open Ended",
+            "Social Good"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://next-byte-hacks-v3.devpost.com/",
+        "organizer": "Next Bytes"
+    },
+    {
+        "id": "devpost_60_1781541650",
+        "title": "HackNova",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Blockchain",
+            "Machine Learning/AI",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://hacknova-30322.devpost.com/",
+        "organizer": "HackersUnity"
+    },
+    {
+        "id": "devpost_61_1781541650",
+        "title": "Girls Got Game Jam",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Education",
+            "Gaming"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://girls-got-game-jam-3.devpost.com/",
+        "organizer": "Girls Got Game"
+    },
+    {
+        "id": "devpost_62_1781541650",
+        "title": "Hack Verse",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Blockchain",
+            "Machine Learning/AI",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://hack-verse-30300.devpost.com/",
+        "organizer": "Hackers Unity"
+    },
+    {
+        "id": "devpost_63_1781541653",
+        "title": "The Fusion Cup",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Enterprise",
+            "Fintech",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://the-fusion-cup.devpost.com/",
+        "organizer": "The Fusion"
+    },
+    {
+        "id": "devpost_64_1781541653",
+        "title": "Hack Munch",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Blockchain",
+            "Machine Learning/AI",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://hack-munch-30312.devpost.com/",
+        "organizer": "Hackers Unity"
+    },
+    {
+        "id": "devpost_65_1781541653",
+        "title": "Hack-Vserse",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Blockchain",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://hack-vserse.devpost.com/",
+        "organizer": "Hacker's Unity"
+    },
+    {
+        "id": "devpost_66_1781541653",
+        "title": "IntelliShift Hackathon",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Machine Learning/AI",
+            "Web"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://intellishift-hackathon.devpost.com/",
+        "organizer": "Cairo University"
+    },
+    {
+        "id": "devpost_67_1781541653",
+        "title": "Impact Creation",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Blockchain",
+            "Machine Learning/AI",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://impact-creation.devpost.com/",
+        "organizer": "TrainzexAI"
+    },
+    {
+        "id": "devpost_68_1781541653",
+        "title": "AnimalHack 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Open Ended",
+            "Social Good"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://animalhack2026.devpost.com/",
+        "organizer": "Binnovative"
+    }
 ]

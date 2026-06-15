@@ -1,4 +1,11 @@
-from nicegui import ui
+import asyncio
+
+from typing import Literal
+from datetime import datetime
+from dataclasses import dataclass
+
+from humanize import naturaltime
+from nicegui import ui, app
 
 import core
 import utils
@@ -7,44 +14,84 @@ import storage
 import intelligence
 
 from theme import *
+from webscrapers.cordy import scrape_cordy
+from webscrapers.devpost import scrape_devpost
 
-#  Mock data representing database collections
-SAMPLE_OPPORTUNITIES = [
-    models.Opportunity(id="1", title="AI Research Assistant", type="research", interests=["ai", "research"], eligible_levels=["undergraduate", "masters"], cost="free", beginner_friendly=False, deadline="2026-07-01", url="http://example.com/ai-research", organizer="National Lab"),
-    models.Opportunity(id="2", title="Global Hackathon 2026", type="hackathon", interests=["tech", "coding"], eligible_levels=["high school", "undergraduate"], cost="300", beginner_friendly=True, deadline="2026-08-15", url="http://example.com/hackathon", organizer="Tech Corp"),
-    models.Opportunity(id="3", title="UI/UX Design Intensive", type="workshop", interests=["design", "ui/ux"], eligible_levels=["undergraduate", "postgraduate"], cost="free", beginner_friendly=True, deadline="2026-06-30", url="http://example.com/ux-workshop", organizer="Design Studio")
-]
-opportunities = SAMPLE_OPPORTUNITIES
+
+async def pull_opportunities() -> list[models.Opportunity]:
+    await asyncio.to_thread(storage.save_last_updated_timestamp)
+
+    results = await asyncio.gather(
+        asyncio.to_thread(asyncio.run, scrape_cordy()),
+        asyncio.to_thread(asyncio.run, scrape_devpost())
+    )
+
+    opportunities = []
+    for result in results:
+        opportunities.extend(result)
+
+    await asyncio.to_thread(storage.save_opportunities, opportunities)
+    return opportunities
 
 
 SEARCH_DEBOUNCE = 400 #  milliseconds
+SORT_OPTIONS = ("Deadline (Soonest)", "Alphabetical (A-Z)", "Type")
+SortOptions = Literal[*SORT_OPTIONS]
+CACHE_EXPIRATION_HOURS = 3 #  When to run scrapers automatically
 
 
+@dataclass
+class AppState:
+    def __init__(self) -> None:
+        is_empty = not storage.load_opportunities()
+        cache_expired = (datetime.now().timestamp() - storage.load_last_updated_timestamp()) > CACHE_EXPIRATION_HOURS*60*60
+        
+        if is_empty or cache_expired:
+            self.status: Literal["booting", "ready"] = "booting"
+        else:
+            self.status: Literal["booting", "ready"] = "ready"
+        self.is_refreshing = False
+        self.opportunities: list[models.Opportunity] = storage.load_opportunities()
+
+
+@dataclass
 class SearchState:
     def __init__(self) -> None:
         self.query = ""
-        self.sort_by = "Alphabetical (A-Z)"
+        self.sort_by: SortOptions = "Alphabetical (A-Z)"
 
 
+app_state = AppState()
 state = SearchState()
 
 
-def filter_opportunities(query: str, sort_by: str) -> list[models.Opportunity]:
-    # TODO: Replace with actual filtering logic.
-    return opportunities
+def sort_opportunities(opportunities: list[models.Opportunity], sort_by: SortOptions) -> list[models.Opportunity]:
+    match sort_by:
+        case "Deadline (Soonest)":
+            return sorted(opportunities, key=lambda x: x.deadline) #  Since deadline is formatted as YYYY-MM-DD, this works
+        case "Alphabetical (A-Z)":
+            return sorted(opportunities, key=lambda x: x.title)
+        case "Type":
+            return sorted(opportunities, key=lambda x: x.type)
+        case _:
+            return opportunities
 
 
 @ui.refreshable
 def render_opportunities():
-    filtered_list = filter_opportunities(state.query, state.sort_by)
-
     #  Search check
-    if state.query.strip(): #  Search query is not empty
-        search_token = state.query.lower().strip()
-        #  TODO
+
+    query = state.query or ""
+
+    if query.strip(): #  Search query is not empty
+        opportunities = [x["opportunity"] for x in intelligence.search_opportunities(query, app_state.opportunities)]
+    else:
+        opportunities = app_state.opportunities
+
+    opportunities = sort_opportunities(opportunities, state.sort_by)
 
     with ui.row().classes("w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2"):
-        for opp in filtered_list:
+        for opp in opportunities:
             render_opportunity_card(opp)
 
 
@@ -59,7 +106,7 @@ def create_profile_dialog(student_profile: models.Student) -> ui.dialog:
             value=student_profile.name
         ).classes("w-full").props("outlined dense color=brown")
         level_select = ui.select(
-            options=list(utils.ACADEMIC_LEVELS), label="Acadmic Level",
+            options=list(utils.ACADEMIC_LEVELS), label="Academic Level",
             value=student_profile.level
         ).classes("w-full").props("outlined dense color=brown")
         interests_input = ui.input(
@@ -82,6 +129,7 @@ def create_profile_dialog(student_profile: models.Student) -> ui.dialog:
     return dialog
 
 
+@app.on_connect
 def apply_custom_styles():
     #  Inject system-wide design specs matching your theme.py layer
     ui.add_head_html("""
@@ -117,14 +165,58 @@ def render_opportunity_card(opp: models.Opportunity):
             )
             
         ui.element("q-separator").props("color=amber-2").classes("my-1")
+
+        #  Reformat deadline date
+        date_obj = datetime.strptime(opp.deadline, "%Y-%m-%d")
+        formatted_date = date_obj.strftime("%d %B %Y")
         
         with ui.row().classes("w-full justify-between items-center mt-2"):
-            ui.label(f"Deadline: {opp.deadline}").classes(f"text-xs font-bold text-[{DEADLINE}]")
+            ui.label(f"Deadline: {formatted_date}").classes(f"text-xs font-bold text-[{DEADLINE}]")
             ui.button("View Details", icon="arrow_forward", on_click=lambda: ui.navigate.to(opp.url, new_tab=True)).props("flat color=brown").classes("text-xs font-bold")
+
+
+def refresh(refresh_button: ui.button) -> None:
+    if app_state.is_refreshing: #  Ignore multiple requests if one is already processing
+        return
+
+    app_state.is_refreshing = True
+    refresh_button.classes("animate-spin")
+    asyncio.create_task(refresh_task(refresh_button))
+
+
+async def refresh_task(refresh_button: ui.button):
+    try:
+        app_state.opportunities = await pull_opportunities()
+    finally:
+        app_state.is_refreshing = False
+        refresh_button.classes(remove="animate-spin")
+        render_opportunities.refresh()
+        main.refresh()
+
+
+async def init_app():
+    if app_state.status == "booting":
+        app_state.opportunities = await pull_opportunities()
+    app_state.status = "ready"
+    main.refresh()
 
 
 @ui.refreshable
 def main() -> None:
+    #  Initial fetch
+    if app_state.status == "booting":
+        with ui.column().classes('w-full items-center justify-center q-pa-xl').style('min-height: 80vh'):
+            ui.spinner(size='lg', color='primary')
+            
+            # This timer updates the text on screen every 200ms to show scraper progress
+            ui.label("Fetching data...").classes('text-lg text-grey-7 mt-4 font-medium')
+            
+            # ui.markdown('*Fetching data...*').classes('text-xs text-grey-5 mt-2')
+        
+        return
+
+    #  Main display
+
     #  Load student profile
     profile = storage.load_student()
     if profile is None:
@@ -146,33 +238,40 @@ def main() -> None:
             
         with ui.row().classes(f"w-full items-center justify-between gap-4 bg-[{CARD}] p-4 rounded-xl border border-[{CARD_BORDER}]"):
             #  Search input with Quasar native text entry debounce configuration (500ms delay)
-            ui.input(
+            search_input = ui.input(
                 label="Search Opportunities", 
-                placeholder="Type to filter..."
-            ).bind_value_to(state, "query").on(
-                "value-change", render_opportunities.refresh
-            ).classes("w-full md:w-128").props(f"outlined dense clearable color=brown text-sm debounce={SEARCH_DEBOUNCE}")
+                placeholder="Type to filter...",
+                on_change=render_opportunities.refresh
+            ).bind_value_to(state, "query").classes("w-full md:w-128").props(f"outlined dense clearable color=brown text-sm debounce={SEARCH_DEBOUNCE}")
             
             #  Sorting parameter criteria dropdown selector
             ui.select(
-                options=["Deadline (Soonest)", "Alphabetical (A-Z)", "Type"], 
+                options=list(SORT_OPTIONS), 
                 value=state.sort_by,
-                label="Sort By"
-            ).bind_value_to(state, "sort_by").on(
-                "value-change", render_opportunities.refresh
-            ).classes("w-full md:w-48").props("outlined dense color=brown text-sm")
+                label="Sort By",
+                on_change=render_opportunities.refresh
+            ).bind_value_to(state, "sort_by").classes("w-full md:w-48").props("outlined dense color=brown text-sm")
 
-            ui.button(
+            last_updated_timestamp = storage.load_last_updated_timestamp()
+            ui.label(f"Last updated: {naturaltime(datetime.now()-datetime.fromtimestamp(last_updated_timestamp))}").classes(f"text-sm text-[{SUBTEXT}]")
+            refresh_button = ui.button(
                 icon="refresh", 
-                on_click=render_opportunities.refresh
+                on_click=lambda: refresh(refresh_button)
             ).props("outlined color=brown square").classes("h-[40px] w-[40px] shadow-none bg-transparent text-[#bd5d3a] border-[#e9dcc7]")
+            refresh_button.tooltip("Pull fresh opportunities listings")
 
         render_opportunities()
 
 
-if __name__ in {"__main__", "__mp_main__"}:
-    apply_custom_styles()
-
+@ui.page('/')
+def index_page() -> None:
     main()
+
+    if app_state.status == "booting":
+        asyncio.create_task(init_app())
+
+
+if __name__ in {"__main__", "__mp_main__"}:
+    # app.on_startup(init_app)
 
     ui.run(title="Opportunity Tracker")

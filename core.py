@@ -8,11 +8,24 @@ from models import Opportunity, Student, Application
 
 
 DIGEST_PATH = storage.ROOT / "weekly_digest.txt"
-CALENDAR_PATH = storage.ROOT / "calendar_export.ics"
 
 
 def score_opportunity(opportunity: Opportunity, student: Student | None) -> dict:
-    """Combines match logic matrix with status checks into uniform layout outputs."""
+    """
+    Combines match logic matrix with status checks into uniform layout outputs.
+
+    Args:
+        opportunity (Opportunity)
+        student (Student | None)
+
+    Returns:
+        dict: {
+            "opportunity": Opportunity,
+            "score": float,
+            "eligible": bool,
+            "reason": str
+        }
+    """
     if not student:
         return {"opportunity": opportunity, "score": 0.0, "eligible": True, "reason": "No student profile"}
         
@@ -31,6 +44,7 @@ def score_opportunity(opportunity: Opportunity, student: Student | None) -> dict
     }
 
 
+#  >>?????????
 def generate_weekly_digest(student: Student, opportunities: list[Opportunity]) -> Path:
     """Builds and writes a personalized text-digest summary report file."""
     lines = [f"WEEKLY DIGEST FOR {student.name.upper()}", f"Generated: {dt.date.today()}", ""]
@@ -55,6 +69,7 @@ def generate_weekly_digest(student: Student, opportunities: list[Opportunity]) -
     return DIGEST_PATH
 
 
+#  TO DELETE
 def export_calendar_ics(opportunities: list[Opportunity]) -> Path:
     """Creates individual calendar data events inside a structural iCalendar payload."""
     lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//OpportunityRadar//Scheduler//EN"]
