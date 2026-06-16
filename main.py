@@ -37,7 +37,7 @@ async def pull_opportunities() -> list[models.Opportunity]:
 SEARCH_DEBOUNCE = 400 #  milliseconds
 SORT_OPTIONS = ("Deadline (Soonest)", "Alphabetical (A-Z)", "Type")
 SortOptions = Literal[*SORT_OPTIONS]
-CACHE_EXPIRATION_HOURS = 3 #  When to run scrapers automatically
+CACHE_EXPIRATION_HOURS = 12 #  When to run scrapers automatically
 
 
 @dataclass
@@ -51,7 +51,12 @@ class AppState:
         else:
             self.status: Literal["booting", "ready"] = "ready"
         self.is_refreshing = False
+
         self.opportunities: list[models.Opportunity] = storage.load_opportunities()
+
+        self.profile = storage.load_student()
+        if self.profile is None:
+            self.profile = models.Student(name="", level="", interests=[], career_goals=[], applied_for=[])
 
 
 @dataclass
@@ -152,6 +157,30 @@ def apply_custom_styles():
     """.format(canvas=CANVAS, card=CARD, card_border=CARD_BORDER))
 
 def render_opportunity_card(opp: models.Opportunity):
+    #  Handles the opportunity Apply button functions
+    def apply_opportunity():
+        if opp.id not in app_state.profile.applied_for:
+            app_state.profile.applied_for.append(opp.id)
+            ui.notify("Labelled as Applied!", type="positive")
+            applying_button.props("color=green icon=check")
+            applying_button.text = "Applied!"
+        else:
+            app_state.profile.applied_for.remove(opp.id)
+            ui.notify("Removed from Applications!", type="negative")
+            applying_button.props("color=blue", remove="icon")
+            applying_button.text = "I'm Applying!"
+
+        storage.save_student(app_state.profile)
+
+    def apply_button_hover(is_hovered: bool):
+        if opp.id in app_state.profile.applied_for:
+            if is_hovered:
+                applying_button.props("color=red icon=close")
+                applying_button.text = "Undo"
+            else:
+                applying_button.props("color=green icon=check")
+                applying_button.text = "Applied!"
+
     #  Encapsulate single element rendering logic
     with ui.card().classes("opp-card p-6 w-full gap-2").props("flat"):
         with ui.row().classes("w-full justify-between items-start"):
@@ -163,6 +192,7 @@ def render_opportunity_card(opp: models.Opportunity):
             ui.label(opp.type.upper()).classes(
                 f"text-xs font-bold tracking-wider px-2 py-1 rounded bg-[{TAG}] text-[{TAG_TEXT}]"
             )
+            ui.button("View Details", icon="arrow_forward", on_click=lambda: ui.navigate.to(opp.url, new_tab=True)).props("flat color=brown").classes("text-xs font-bold")
             
         ui.element("q-separator").props("color=amber-2").classes("my-1")
 
@@ -170,9 +200,18 @@ def render_opportunity_card(opp: models.Opportunity):
         date_obj = datetime.strptime(opp.deadline, "%Y-%m-%d")
         formatted_date = date_obj.strftime("%d %B %Y")
         
+        #  Deadline and Apply button
         with ui.row().classes("w-full justify-between items-center mt-2"):
             ui.label(f"Deadline: {formatted_date}").classes(f"text-xs font-bold text-[{DEADLINE}]")
-            ui.button("View Details", icon="arrow_forward", on_click=lambda: ui.navigate.to(opp.url, new_tab=True)).props("flat color=brown").classes("text-xs font-bold")
+
+            applying_button = ui.button("I'm Applying!", on_click=apply_opportunity).props("color=blue").classes(f"w-32 text-xs font-bold !text-[{GOLD}] transition-colors duration-200 ease-in-out")
+            if opp.id in app_state.profile.applied_for:
+                applying_button.props("color=green icon=check")
+                applying_button.text = "Applied!"
+            applying_button.on("mouseenter", lambda: apply_button_hover(True))
+            applying_button.on("mouseleave", lambda: apply_button_hover(False))
+
+
 
 
 def refresh(refresh_button: ui.button) -> None:
@@ -215,12 +254,10 @@ def main() -> None:
         
         return
 
-    #  Main display
+    # Main display
 
     #  Load student profile
-    profile = storage.load_student()
-    if profile is None:
-        profile = models.Student(name="", level="", interests=[])
+    profile = app_state.profile
 
     profile_modal = create_profile_dialog(profile)
 
@@ -238,7 +275,7 @@ def main() -> None:
             
         with ui.row().classes(f"w-full items-center justify-between gap-4 bg-[{CARD}] p-4 rounded-xl border border-[{CARD_BORDER}]"):
             #  Search input with Quasar native text entry debounce configuration (500ms delay)
-            search_input = ui.input(
+            ui.input(
                 label="Search Opportunities", 
                 placeholder="Type to filter...",
                 on_change=render_opportunities.refresh
@@ -257,7 +294,7 @@ def main() -> None:
             refresh_button = ui.button(
                 icon="refresh", 
                 on_click=lambda: refresh(refresh_button)
-            ).props("outlined color=brown square").classes("h-[40px] w-[40px] shadow-none bg-transparent text-[#bd5d3a] border-[#e9dcc7]")
+            ).props("outlined color=brown square").classes("h-[40px] w-[40px] shadow-none bg-transparent")
             refresh_button.tooltip("Pull fresh opportunities listings")
 
         render_opportunities()

@@ -24,11 +24,14 @@ class Opportunity:
         return f"{self.title} {self.type} {' '.join(self.interests)} {self.organizer}"
 
 
+type OpportunityID = str
 @dataclass
 class Student:
     name: str
     level: AcademicLevel
     interests: list[str]
+    career_goals: list[str]
+    applied_for: list[OpportunityID]
 
 
 @dataclass

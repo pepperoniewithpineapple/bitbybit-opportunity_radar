@@ -1425,7 +1425,7 @@
         "organizer": "Kids Learn Code"
     },
     {
-        "id": "devpost_0_1781541634",
+        "id": "devpost_0_1781592176",
         "title": "Build with Gemini XPRIZE",
         "type": "Hackathon",
         "interests": [
@@ -1446,28 +1446,7 @@
         "organizer": "XPRIZE"
     },
     {
-        "id": "devpost_1_1781541634",
-        "title": "USAII® Global AI Hackathon 2026",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Beginner Friendly",
-            "Machine Learning/AI",
-            "Social Good"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://usaii-global-ai-hackathon-2026.devpost.com/",
-        "organizer": "USAII"
-    },
-    {
-        "id": "devpost_2_1781541634",
+        "id": "devpost_1_1781592176",
         "title": "H0: Hack the Zero Stack with Vercel v0 and AWS Databases",
         "type": "Hackathon",
         "interests": [
@@ -1488,15 +1467,15 @@
         "organizer": "Amazon"
     },
     {
-        "id": "devpost_3_1781541634",
-        "title": "FIND EVIL!",
+        "id": "devpost_2_1781592176",
+        "title": "USAII® Global AI Hackathon 2026",
         "type": "Hackathon",
         "interests": [
             "Hackathon",
             "Technology",
-            "Cybersecurity",
+            "Beginner Friendly",
             "Machine Learning/AI",
-            "Beginner Friendly"
+            "Social Good"
         ],
         "eligible_levels": [
             "University",
@@ -1505,11 +1484,11 @@
         "cost": "Free",
         "beginner_friendly": false,
         "deadline": "2026-06-30",
-        "url": "https://findevil.devpost.com/",
-        "organizer": "sans"
+        "url": "https://usaii-global-ai-hackathon-2026.devpost.com/",
+        "organizer": "USAII"
     },
     {
-        "id": "devpost_4_1781541634",
+        "id": "devpost_3_1781592176",
         "title": "Global AI Hackathon Series with Qwen Cloud",
         "type": "Hackathon",
         "interests": [
@@ -1530,7 +1509,7 @@
         "organizer": "Alibaba Cloud"
     },
     {
-        "id": "devpost_5_1781541634",
+        "id": "devpost_4_1781592176",
         "title": "UiPath AgentHack",
         "type": "Hackathon",
         "interests": [
@@ -1551,7 +1530,7 @@
         "organizer": "UiPath"
     },
     {
-        "id": "devpost_6_1781541634",
+        "id": "devpost_5_1781592176",
         "title": "Slack Agent Builder Challenge",
         "type": "Hackathon",
         "interests": [
@@ -1572,7 +1551,7 @@
         "organizer": "Salesforce"
     },
     {
-        "id": "devpost_7_1781541634",
+        "id": "devpost_6_1781592176",
         "title": "Mind the Product presents World Product Day: Everyone Ships Now",
         "type": "Hackathon",
         "interests": [
@@ -1593,49 +1572,7 @@
         "organizer": "Mind the Product"
     },
     {
-        "id": "devpost_8_1781541634",
-        "title": "DSH Hacks V1",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Beginner Friendly",
-            "Social Good",
-            "Machine Learning/AI"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://dsh-hacks-v1.devpost.com/",
-        "organizer": "DreamWeave"
-    },
-    {
-        "id": "devpost_9_1781541637",
-        "title": "NextGenHacks",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Beginner Friendly",
-            "Open Ended",
-            "Social Good"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://nextgenhacks.devpost.com/",
-        "organizer": "NextGenHacks"
-    },
-    {
-        "id": "devpost_10_1781541637",
+        "id": "devpost_7_1781592176",
         "title": "GitLab Transcend Hackathon",
         "type": "Hackathon",
         "interests": [
@@ -1656,13 +1593,15 @@
         "organizer": "GitLab"
     },
     {
-        "id": "devpost_11_1781541637",
-        "title": "Arm Create: AI Optimization Challenge",
+        "id": "devpost_8_1781592176",
+        "title": "NextGenHacks",
         "type": "Hackathon",
         "interests": [
             "Hackathon",
             "Technology",
-            "Machine Learning/AI"
+            "Beginner Friendly",
+            "Open Ended",
+            "Social Good"
         ],
         "eligible_levels": [
             "University",
@@ -1671,11 +1610,11 @@
         "cost": "Free",
         "beginner_friendly": false,
         "deadline": "2026-06-30",
-        "url": "https://arm-ai-optimization-challenge.devpost.com/",
-        "organizer": "arm"
+        "url": "https://nextgenhacks.devpost.com/",
+        "organizer": "NextGenHacks"
     },
     {
-        "id": "devpost_12_1781541637",
+        "id": "devpost_9_1781592179",
         "title": "ML Empowerment Build Challenge",
         "type": "Hackathon",
         "interests": [
@@ -1696,7 +1635,7 @@
         "organizer": "ML Empowerment Foundation"
     },
     {
-        "id": "devpost_13_1781541637",
+        "id": "devpost_10_1781592179",
         "title": "LUMA Hackathon (July 3rd - 10th)",
         "type": "Hackathon",
         "interests": [
@@ -1717,7 +1656,26 @@
         "organizer": "LUMA"
     },
     {
-        "id": "devpost_14_1781541637",
+        "id": "devpost_11_1781592179",
+        "title": "Arm Create: AI Optimization Challenge",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://arm-ai-optimization-challenge.devpost.com/",
+        "organizer": "arm"
+    },
+    {
+        "id": "devpost_12_1781592179",
         "title": "Creator Colosseum Startup Competition: Student Founders. Real Startups.",
         "type": "Hackathon",
         "interests": [
@@ -1738,7 +1696,7 @@
         "organizer": "Creator Colosseum"
     },
     {
-        "id": "devpost_15_1781541637",
+        "id": "devpost_13_1781592179",
         "title": "PhysTech 2026: Physical Activity and Technology Hack Day",
         "type": "Hackathon",
         "interests": [
@@ -1759,7 +1717,7 @@
         "organizer": "Binnovative"
     },
     {
-        "id": "devpost_16_1781541637",
+        "id": "devpost_14_1781592179",
         "title": "Github readme generation",
         "type": "Hackathon",
         "interests": [
@@ -1780,7 +1738,7 @@
         "organizer": "presentme"
     },
     {
-        "id": "devpost_17_1781541637",
+        "id": "devpost_15_1781592179",
         "title": "Build the Future with AI — From Code to No-Code",
         "type": "Hackathon",
         "interests": [
@@ -1801,7 +1759,7 @@
         "organizer": "Innovation Hacks"
     },
     {
-        "id": "devpost_18_1781541640",
+        "id": "devpost_16_1781592179",
         "title": "Hoobit Hacks 2026",
         "type": "Hackathon",
         "interests": [
@@ -1822,7 +1780,7 @@
         "organizer": "Hoobit"
     },
     {
-        "id": "devpost_19_1781541640",
+        "id": "devpost_17_1781592179",
         "title": "Play with Purpose Hackathon presented by Cox Enterprises",
         "type": "Hackathon",
         "interests": [
@@ -1842,7 +1800,7 @@
         "organizer": "Cox Enterprises"
     },
     {
-        "id": "devpost_20_1781541640",
+        "id": "devpost_18_1781592182",
         "title": "FutureAI Global Hackathon 2026",
         "type": "Hackathon",
         "interests": [
@@ -1863,49 +1821,7 @@
         "organizer": "Innovation Hacks"
     },
     {
-        "id": "devpost_21_1781541640",
-        "title": "HackMars 3.0: NEON",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Education",
-            "Machine Learning/AI",
-            "Productivity"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://hackmars-3-0-neon.devpost.com/",
-        "organizer": "HackMars"
-    },
-    {
-        "id": "devpost_22_1781541640",
-        "title": "Kaya AI IIT India Hackathon 2026",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "IoT",
-            "Machine Learning/AI",
-            "Enterprise"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://kaya-ai-iit-hackathon-2026.devpost.com/",
-        "organizer": "Kaya"
-    },
-    {
-        "id": "devpost_23_1781541640",
+        "id": "devpost_19_1781592182",
         "title": "AI for Civic Innovation Hackathon",
         "type": "Hackathon",
         "interests": [
@@ -1925,28 +1841,7 @@
         "organizer": "Code for Pakistan"
     },
     {
-        "id": "devpost_24_1781541640",
-        "title": "CodeStorm",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Blockchain",
-            "Machine Learning/AI",
-            "Open Ended"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://codestorm.devpost.com/",
-        "organizer": "Arya College Old Campus"
-    },
-    {
-        "id": "devpost_25_1781541640",
+        "id": "devpost_20_1781592182",
         "title": "Global Tech Innovation 2026",
         "type": "Hackathon",
         "interests": [
@@ -1967,7 +1862,68 @@
         "organizer": "Innovation Hacks"
     },
     {
-        "id": "devpost_26_1781541640",
+        "id": "devpost_21_1781592182",
+        "title": "Kaya AI IIT India Hackathon 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "IoT",
+            "Machine Learning/AI",
+            "Enterprise"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://kaya-ai-iit-hackathon-2026.devpost.com/",
+        "organizer": "Kaya"
+    },
+    {
+        "id": "devpost_22_1781592182",
+        "title": "CodeStorm",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Blockchain",
+            "Machine Learning/AI",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://codestorm.devpost.com/",
+        "organizer": "Arya College Old Campus"
+    },
+    {
+        "id": "devpost_23_1781592182",
+        "title": "Agentic AI Build Week 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://agentic-ai-build-week-2026.devpost.com/",
+        "organizer": "GenAI Fund"
+    },
+    {
+        "id": "devpost_24_1781592182",
         "title": "VoltHacks",
         "type": "Hackathon",
         "interests": [
@@ -1988,7 +1944,7 @@
         "organizer": "Dialogate"
     },
     {
-        "id": "devpost_27_1781541642",
+        "id": "devpost_25_1781592182",
         "title": "Assistive Innovation Challenge 2026",
         "type": "Hackathon",
         "interests": [
@@ -2009,26 +1965,7 @@
         "organizer": "Student Innovators Without Borders"
     },
     {
-        "id": "devpost_28_1781541642",
-        "title": "Agentic AI Build Week 2026",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Machine Learning/AI"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://agentic-ai-build-week-2026.devpost.com/",
-        "organizer": "GenAI Fund"
-    },
-    {
-        "id": "devpost_29_1781541642",
+        "id": "devpost_26_1781592182",
         "title": "Built with Python Hackathon",
         "type": "Hackathon",
         "interests": [
@@ -2049,70 +1986,7 @@
         "organizer": "CS4Everyone"
     },
     {
-        "id": "devpost_30_1781541642",
-        "title": "GLITCHED GAMES",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Gaming",
-            "Mobile",
-            "Web"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://glitch-to-win-games.devpost.com/",
-        "organizer": "GB3-Productions"
-    },
-    {
-        "id": "devpost_31_1781541642",
-        "title": "GenZ Can Hack 2026",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Education",
-            "Machine Learning/AI",
-            "Robotic Process Automation"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://genz-can-hack-2026.devpost.com/",
-        "organizer": "Kids for Kids Toronto Coding Club"
-    },
-    {
-        "id": "devpost_32_1781541642",
-        "title": "DevSoc Starlight 2026",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Beginner Friendly",
-            "Mobile",
-            "Web"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://devsoc-starlight-2026.devpost.com/",
-        "organizer": "DevSoc"
-    },
-    {
-        "id": "devpost_33_1781541642",
+        "id": "devpost_27_1781592184",
         "title": "Moonshot Hackathon",
         "type": "Hackathon",
         "interests": [
@@ -2133,7 +2007,70 @@
         "organizer": "Aethra"
     },
     {
-        "id": "devpost_34_1781541642",
+        "id": "devpost_28_1781592184",
+        "title": "GLITCHED GAMES",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Gaming",
+            "Mobile",
+            "Web"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://glitch-to-win-games.devpost.com/",
+        "organizer": "GB3-Productions"
+    },
+    {
+        "id": "devpost_29_1781592184",
+        "title": "GenZ Can Hack 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Education",
+            "Machine Learning/AI",
+            "Robotic Process Automation"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://genz-can-hack-2026.devpost.com/",
+        "organizer": "Kids for Kids Toronto Coding Club"
+    },
+    {
+        "id": "devpost_30_1781592184",
+        "title": "DevSoc Starlight 2026",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Mobile",
+            "Web"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://devsoc-starlight-2026.devpost.com/",
+        "organizer": "DevSoc"
+    },
+    {
+        "id": "devpost_31_1781592184",
         "title": "HACKFEST'26",
         "type": "Hackathon",
         "interests": [
@@ -2154,7 +2091,7 @@
         "organizer": "Student Council"
     },
     {
-        "id": "devpost_35_1781541642",
+        "id": "devpost_32_1781592184",
         "title": "SNS Bold.ai",
         "type": "Hackathon",
         "interests": [
@@ -2174,7 +2111,7 @@
         "organizer": "SNS Institutions"
     },
     {
-        "id": "devpost_36_1781541645",
+        "id": "devpost_33_1781592184",
         "title": "Brainwave",
         "type": "Hackathon",
         "interests": [
@@ -2195,7 +2132,7 @@
         "organizer": "ACT House"
     },
     {
-        "id": "devpost_37_1781541645",
+        "id": "devpost_34_1781592184",
         "title": "Build with Gemini",
         "type": "Hackathon",
         "interests": [
@@ -2216,7 +2153,7 @@
         "organizer": "MLH"
     },
     {
-        "id": "devpost_38_1781541645",
+        "id": "devpost_35_1781592184",
         "title": "InnovatorsX: Startup Sprint",
         "type": "Hackathon",
         "interests": [
@@ -2237,7 +2174,7 @@
         "organizer": "InnovatorsX"
     },
     {
-        "id": "devpost_39_1781541645",
+        "id": "devpost_36_1781592187",
         "title": "Far Away",
         "type": "Hackathon",
         "interests": [
@@ -2256,7 +2193,7 @@
         "organizer": "zuup"
     },
     {
-        "id": "devpost_40_1781541645",
+        "id": "devpost_37_1781592187",
         "title": "1st Nature's Blueprint Ideathon 2026 !!",
         "type": "Hackathon",
         "interests": [
@@ -2277,7 +2214,7 @@
         "organizer": "Yaod Multifaceted Company"
     },
     {
-        "id": "devpost_41_1781541645",
+        "id": "devpost_38_1781592187",
         "title": "Hack Days Unnao",
         "type": "Hackathon",
         "interests": [
@@ -2298,7 +2235,7 @@
         "organizer": "AITD EVENTS"
     },
     {
-        "id": "devpost_42_1781541645",
+        "id": "devpost_39_1781592187",
         "title": "Ventura Challenge",
         "type": "Hackathon",
         "interests": [
@@ -2319,7 +2256,7 @@
         "organizer": "Student Council"
     },
     {
-        "id": "devpost_43_1781541645",
+        "id": "devpost_40_1781592187",
         "title": "Hack Begin",
         "type": "Hackathon",
         "interests": [
@@ -2340,28 +2277,7 @@
         "organizer": "Shankara Institute of Technology"
     },
     {
-        "id": "devpost_44_1781541645",
-        "title": "V1TROUS Hackathon",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Beginner Friendly",
-            "Education",
-            "Open Ended"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://v1trous-hackathon-30125.devpost.com/",
-        "organizer": "V1 Initiative"
-    },
-    {
-        "id": "devpost_45_1781541647",
+        "id": "devpost_41_1781592187",
         "title": "India High School Exoplanet Data Challenge",
         "type": "Hackathon",
         "interests": [
@@ -2382,7 +2298,28 @@
         "organizer": "Celesta"
     },
     {
-        "id": "devpost_46_1781541647",
+        "id": "devpost_42_1781592187",
+        "title": "V1TROUS Hackathon",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Beginner Friendly",
+            "Education",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://v1trous-hackathon-30125.devpost.com/",
+        "organizer": "V1 Initiative"
+    },
+    {
+        "id": "devpost_43_1781592187",
         "title": "SunnyHacks June 2026",
         "type": "Hackathon",
         "interests": [
@@ -2402,7 +2339,7 @@
         "organizer": "SunnyHacks"
     },
     {
-        "id": "devpost_47_1781541647",
+        "id": "devpost_44_1781592187",
         "title": "AI for Learning & Development Build Challenge — AI Collective HR + Regent",
         "type": "Hackathon",
         "interests": [
@@ -2423,28 +2360,7 @@
         "organizer": "AI Collective"
     },
     {
-        "id": "devpost_48_1781541647",
-        "title": "Vortexa",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Blockchain",
-            "Cybersecurity",
-            "Fintech"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://vortexa.devpost.com/",
-        "organizer": "hackhere"
-    },
-    {
-        "id": "devpost_49_1781541647",
+        "id": "devpost_45_1781592189",
         "title": "Hyperbloom Summer Hackathon",
         "type": "Hackathon",
         "interests": [
@@ -2465,7 +2381,48 @@
         "organizer": "hyperbloom hacks"
     },
     {
-        "id": "devpost_50_1781541647",
+        "id": "devpost_46_1781592189",
+        "title": "Cyber_Coders",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Cybersecurity",
+            "Web"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://cybercoders2026.devpost.com/",
+        "organizer": "Idustries"
+    },
+    {
+        "id": "devpost_47_1781592189",
+        "title": "Vortexa",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Blockchain",
+            "Cybersecurity",
+            "Fintech"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://vortexa.devpost.com/",
+        "organizer": "hackhere"
+    },
+    {
+        "id": "devpost_48_1781592189",
         "title": "DEMOKHE",
         "type": "Hackathon",
         "interests": [
@@ -2486,27 +2443,7 @@
         "organizer": "HacKSU"
     },
     {
-        "id": "devpost_51_1781541647",
-        "title": "Cyber_Coders",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Cybersecurity",
-            "Web"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://cybercoders2026.devpost.com/",
-        "organizer": "Idustries"
-    },
-    {
-        "id": "devpost_52_1781541647",
+        "id": "devpost_49_1781592189",
         "title": "305 HackShells Edition June 2026",
         "type": "Hackathon",
         "interests": [
@@ -2527,7 +2464,7 @@
         "organizer": "Swift at FIU"
     },
     {
-        "id": "devpost_53_1781541647",
+        "id": "devpost_50_1781592189",
         "title": "AQX Sports Analytics Hackathon",
         "type": "Hackathon",
         "interests": [
@@ -2548,111 +2485,7 @@
         "organizer": "James Logan High School"
     },
     {
-        "id": "devpost_54_1781541650",
-        "title": "Tech Titans Hackathon",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Beginner Friendly",
-            "Enterprise",
-            "Fintech"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://tech-titans-hackathon.devpost.com/",
-        "organizer": "Tech Titans Hack"
-    },
-    {
-        "id": "devpost_55_1781541650",
-        "title": "Your idea vs 1,000 other marketers. Let’s see where you actually stand.",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Design",
-            "Open Ended",
-            "Productivity"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://idea-vs-1000-marketers.devpost.com/",
-        "organizer": "ConnectsBlue"
-    },
-    {
-        "id": "devpost_56_1781541650",
-        "title": "AceSAT Education AI-Agent",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Education",
-            "Machine Learning/AI"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://acesat-ai-agent.devpost.com/",
-        "organizer": "AceSAT"
-    },
-    {
-        "id": "devpost_57_1781541650",
-        "title": "Sparks Summer Challenge",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Enterprise",
-            "Fintech",
-            "Machine Learning/AI"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://sparks-summer-challenge.devpost.com/",
-        "organizer": "Sparks Tech Hack"
-    },
-    {
-        "id": "devpost_58_1781541650",
-        "title": "Hack Verse",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Blockchain",
-            "Machine Learning/AI",
-            "Open Ended"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://hack-verse-30325.devpost.com/",
-        "organizer": "HackersUnity"
-    },
-    {
-        "id": "devpost_59_1781541650",
+        "id": "devpost_51_1781592189",
         "title": "Next Byte Hacks V3",
         "type": "Hackathon",
         "interests": [
@@ -2673,8 +2506,49 @@
         "organizer": "Next Bytes"
     },
     {
-        "id": "devpost_60_1781541650",
-        "title": "HackNova",
+        "id": "devpost_52_1781592189",
+        "title": "Your idea vs 1,000 other marketers. Let’s see where you actually stand.",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Design",
+            "Open Ended",
+            "Productivity"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://idea-vs-1000-marketers.devpost.com/",
+        "organizer": "ConnectsBlue"
+    },
+    {
+        "id": "devpost_53_1781592189",
+        "title": "AceSAT Education AI-Agent",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Education",
+            "Machine Learning/AI"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://acesat-ai-agent.devpost.com/",
+        "organizer": "AceSAT"
+    },
+    {
+        "id": "devpost_54_1781592192",
+        "title": "Hack Verse",
         "type": "Hackathon",
         "interests": [
             "Hackathon",
@@ -2690,11 +2564,11 @@
         "cost": "Free",
         "beginner_friendly": false,
         "deadline": "2026-06-30",
-        "url": "https://hacknova-30322.devpost.com/",
+        "url": "https://hack-verse-30325.devpost.com/",
         "organizer": "HackersUnity"
     },
     {
-        "id": "devpost_61_1781541650",
+        "id": "devpost_55_1781592192",
         "title": "Girls Got Game Jam",
         "type": "Hackathon",
         "interests": [
@@ -2715,7 +2589,28 @@
         "organizer": "Girls Got Game"
     },
     {
-        "id": "devpost_62_1781541650",
+        "id": "devpost_56_1781592192",
+        "title": "HackNova",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Blockchain",
+            "Machine Learning/AI",
+            "Open Ended"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://hacknova-30322.devpost.com/",
+        "organizer": "HackersUnity"
+    },
+    {
+        "id": "devpost_57_1781592192",
         "title": "Hack Verse",
         "type": "Hackathon",
         "interests": [
@@ -2736,28 +2631,7 @@
         "organizer": "Hackers Unity"
     },
     {
-        "id": "devpost_63_1781541653",
-        "title": "The Fusion Cup",
-        "type": "Hackathon",
-        "interests": [
-            "Hackathon",
-            "Technology",
-            "Enterprise",
-            "Fintech",
-            "Machine Learning/AI"
-        ],
-        "eligible_levels": [
-            "University",
-            "Open"
-        ],
-        "cost": "Free",
-        "beginner_friendly": false,
-        "deadline": "2026-06-30",
-        "url": "https://the-fusion-cup.devpost.com/",
-        "organizer": "The Fusion"
-    },
-    {
-        "id": "devpost_64_1781541653",
+        "id": "devpost_58_1781592192",
         "title": "Hack Munch",
         "type": "Hackathon",
         "interests": [
@@ -2778,7 +2652,7 @@
         "organizer": "Hackers Unity"
     },
     {
-        "id": "devpost_65_1781541653",
+        "id": "devpost_59_1781592192",
         "title": "Hack-Vserse",
         "type": "Hackathon",
         "interests": [
@@ -2798,7 +2672,7 @@
         "organizer": "Hacker's Unity"
     },
     {
-        "id": "devpost_66_1781541653",
+        "id": "devpost_60_1781592192",
         "title": "IntelliShift Hackathon",
         "type": "Hackathon",
         "interests": [
@@ -2819,7 +2693,7 @@
         "organizer": "Cairo University"
     },
     {
-        "id": "devpost_67_1781541653",
+        "id": "devpost_61_1781592192",
         "title": "Impact Creation",
         "type": "Hackathon",
         "interests": [
@@ -2840,7 +2714,7 @@
         "organizer": "TrainzexAI"
     },
     {
-        "id": "devpost_68_1781541653",
+        "id": "devpost_62_1781592192",
         "title": "AnimalHack 2026",
         "type": "Hackathon",
         "interests": [
@@ -2859,5 +2733,26 @@
         "deadline": "2026-06-30",
         "url": "https://animalhack2026.devpost.com/",
         "organizer": "Binnovative"
+    },
+    {
+        "id": "devpost_63_1781592195",
+        "title": "Web Champ",
+        "type": "Hackathon",
+        "interests": [
+            "Hackathon",
+            "Technology",
+            "Design",
+            "E-commerce/Retail",
+            "Web"
+        ],
+        "eligible_levels": [
+            "University",
+            "Open"
+        ],
+        "cost": "Free",
+        "beginner_friendly": false,
+        "deadline": "2026-06-30",
+        "url": "https://web-champ.devpost.com/",
+        "organizer": "The Fusion"
     }
 ]

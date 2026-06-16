@@ -12,6 +12,8 @@ data/applications.json
 data/searches.json
 data/student.json
 data/submissions.json
+data/opportunities.json
+.last_pulled_timestamp
 
 .planning/
 run_out.txt
@@ -22,3 +24,5 @@ _ai_reference_code/
 .DS_Store
 
 webscrapers/.DS_Store
+
+.vscode/

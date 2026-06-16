@@ -17,4 +17,18 @@ OVERVIEW: Connected scraper to frontend, implemented search and sort.
 - Manual refresh button added to asynchronously fetch data from scrapers
 - TODO:
     - Portfolio portion
+    - Upgrade personalisation algorithm
     - Decide whether to add feature to allow users to create applications to post opportunities
+
+# 16/6/26: 6.25pm
+- Added career_goals: list[str] to Student model and applied_for: list[OpportunityID]
+- Added "I'm applying" button to opportunity cards that marks the application as applied
+- TODO:
+    - My Opportunities page (opportunities tracker)
+        - Implement sorting (oldest, deadline passed) and state management (Applied, In Progress, Completed) in the tracker
+    - My Portfolio page
+        - Create schemas for VJC portal-style fields (Competitions, VIA, etc.)
+        - Implement portfolio
+        - Build the "My Portfolio" board layout
+    - Update the web scraper to support dynamic opportunity types
+    - Implement the personalisation algorithm and market intelligence features
