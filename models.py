@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, Optional
 
 from utils import ACADEMIC_LEVELS
 
@@ -14,14 +14,19 @@ class Opportunity:
     type: str
     interests: list[str]
     eligible_levels: list[AcademicLevel]
-    cost: str
     beginner_friendly: bool
     deadline: str
     url: str
-    organizer: str
+    organiser: str
+    personalisation_score: Optional[float] = 1.0
 
     def __str__(self) -> str:
-        return f"{self.title} {self.type} {' '.join(self.interests)} {self.organizer}"
+        return f"{self.title} {self.type} {' '.join(self.interests)} {self.organiser} " + ("beginner_friendly" if self.beginner_friendly else "not_beginner_friendly")
+
+    def to_dict(self) -> dict: #  For storage
+        selfdict = self.__dict__
+        del selfdict["personalisation_score"]
+        return selfdict
 
 
 type OpportunityID = str
@@ -32,6 +37,7 @@ class Student:
     interests: list[str]
     career_goals: list[str]
     applied_for: list[OpportunityID]
+    personalisation_profile: str = ""
 
 
 @dataclass

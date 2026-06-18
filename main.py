@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from humanize import naturaltime
 from nicegui import ui, app
 
-import core
 import utils
 import models
 import storage
@@ -16,6 +15,10 @@ import intelligence
 from theme import *
 from webscrapers.cordy import scrape_cordy
 from webscrapers.devpost import scrape_devpost
+from personalisation import interest_matcher, InteractionManager
+
+
+interaction_manager = InteractionManager()
 
 
 async def pull_opportunities() -> list[models.Opportunity]:
@@ -31,11 +34,12 @@ async def pull_opportunities() -> list[models.Opportunity]:
         opportunities.extend(result)
 
     await asyncio.to_thread(storage.save_opportunities, opportunities)
-    return opportunities
+
+    return interest_matcher.score_opportunities(opportunities)
 
 
 SEARCH_DEBOUNCE = 400 #  milliseconds
-SORT_OPTIONS = ("Deadline (Soonest)", "Alphabetical (A-Z)", "Type")
+SORT_OPTIONS = ("Recommended", "Deadline (Soonest)", "Alphabetical (A-Z)", "Type")
 SortOptions = Literal[*SORT_OPTIONS]
 CACHE_EXPIRATION_HOURS = 12 #  When to run scrapers automatically
 
@@ -56,18 +60,18 @@ class AppState:
 
         self.profile = storage.load_student()
         if self.profile is None:
-            self.profile = models.Student(name="", level="", interests=[], career_goals=[], applied_for=[])
+            self.profile = models.Student(name="John Smith", level="JC", interests=[], career_goals=[], applied_for=[])
 
 
 @dataclass
 class SearchState:
     def __init__(self) -> None:
         self.query = ""
-        self.sort_by: SortOptions = "Alphabetical (A-Z)"
+        self.sort_by: SortOptions = "Recommended"
 
 
 app_state = AppState()
-state = SearchState()
+search_state = SearchState()
 
 
 def sort_opportunities(opportunities: list[models.Opportunity], sort_by: SortOptions) -> list[models.Opportunity]:
@@ -78,6 +82,8 @@ def sort_opportunities(opportunities: list[models.Opportunity], sort_by: SortOpt
             return sorted(opportunities, key=lambda x: x.title)
         case "Type":
             return sorted(opportunities, key=lambda x: x.type)
+        case "Recommended":
+            return interest_matcher.score_opportunities(opportunities)
         case _:
             return opportunities
 
@@ -85,15 +91,14 @@ def sort_opportunities(opportunities: list[models.Opportunity], sort_by: SortOpt
 @ui.refreshable
 def render_opportunities():
     #  Search check
-
-    query = state.query or ""
+    query = search_state.query or ""
 
     if query.strip(): #  Search query is not empty
         opportunities = [x["opportunity"] for x in intelligence.search_opportunities(query, app_state.opportunities)]
     else:
         opportunities = app_state.opportunities
 
-    opportunities = sort_opportunities(opportunities, state.sort_by)
+    opportunities = sort_opportunities(opportunities, search_state.sort_by)
 
     with ui.row().classes("w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2"):
         for opp in opportunities:
@@ -126,6 +131,7 @@ def create_profile_dialog(student_profile: models.Student) -> ui.dialog:
             storage.save_student(student_profile)
             dialog.close()
             ui.notify("Profile updated", type="positive")
+            interaction_manager.log_profile(student_profile)
             main.refresh()
             
         with ui.row().classes("w-full justify-end gap-2 mt-4"):
@@ -156,16 +162,34 @@ def apply_custom_styles():
         </style>
     """.format(canvas=CANVAS, card=CARD, card_border=CARD_BORDER))
 
-def render_opportunity_card(opp: models.Opportunity):
+
+def view_details(opportunity: models.Opportunity) -> None:
+    ui.navigate.to(opportunity.url, new_tab=True)
+    interaction_manager.log_view(opportunity)
+    
+
+def get_score_classes(score: float) -> str:
+    if score >= 70:
+        return "bg-green-100 text-green-800"
+    elif score >= 40:
+        return "bg-amber-100 text-amber-800"
+    else:
+        return "bg-red-100 text-red-800"
+    
+
+def render_opportunity_card(opportunity: models.Opportunity):
     #  Handles the opportunity Apply button functions
     def apply_opportunity():
-        if opp.id not in app_state.profile.applied_for:
-            app_state.profile.applied_for.append(opp.id)
+        if opportunity.id not in app_state.profile.applied_for:
+            app_state.profile.applied_for.append(opportunity.id)
             ui.notify("Labelled as Applied!", type="positive")
             applying_button.props("color=green icon=check")
             applying_button.text = "Applied!"
+
+            #  Log interaction
+            interaction_manager.log_apply(opportunity)
         else:
-            app_state.profile.applied_for.remove(opp.id)
+            app_state.profile.applied_for.remove(opportunity.id)
             ui.notify("Removed from Applications!", type="negative")
             applying_button.props("color=blue", remove="icon")
             applying_button.text = "I'm Applying!"
@@ -173,7 +197,7 @@ def render_opportunity_card(opp: models.Opportunity):
         storage.save_student(app_state.profile)
 
     def apply_button_hover(is_hovered: bool):
-        if opp.id in app_state.profile.applied_for:
+        if opportunity.id in app_state.profile.applied_for:
             if is_hovered:
                 applying_button.props("color=red icon=close")
                 applying_button.text = "Undo"
@@ -185,19 +209,35 @@ def render_opportunity_card(opp: models.Opportunity):
     with ui.card().classes("opp-card p-6 w-full gap-2").props("flat"):
         with ui.row().classes("w-full justify-between items-start"):
             with ui.column().classes("gap-0"):
-                ui.label(opp.title).classes(f"text-lg font-bold text-[{TITLE_TEXT}]")
-                ui.label(opp.organizer).classes(f"text-sm text-[{SUBTEXT}]")
-            
-            #  Badge treatment
-            ui.label(opp.type.upper()).classes(
-                f"text-xs font-bold tracking-wider px-2 py-1 rounded bg-[{TAG}] text-[{TAG_TEXT}]"
-            )
-            ui.button("View Details", icon="arrow_forward", on_click=lambda: ui.navigate.to(opp.url, new_tab=True)).props("flat color=brown").classes("text-xs font-bold")
-            
-        ui.element("q-separator").props("color=amber-2").classes("my-1")
+                ui.label(opportunity.title).classes(f"text-lg font-bold text-[{TITLE_TEXT}]")
+                ui.label(opportunity.organiser).classes(f"text-sm text-[{SUBTEXT}]")
+            if search_state.sort_by == "Recommended":
+                colour = get_score_classes(opportunity.personalisation_score*100)
+                ui.label(f"{opportunity.personalisation_score * 100:.1f}").classes(
+                    f"text-xs font-bold tracking-wider px-2 py-1 rounded {colour}"
+                )
 
+        with ui.row().classes("items-start").tooltip("Categories"):
+            ui.icon("tips_and_updates").classes(f"mt-[0.2rem] ml-1 text-[{CAT_TEXT}]")
+            for interest in opportunity.interests:
+                ui.label(interest).classes(
+                    f"text-[11px] font-bold px-2 py-0.5 rounded-full bg-[{CAT_BG}] text-[{CAT_TEXT}]"
+                )
+            
+        with ui.row().classes("w-full justify-between items-center"):
+            #  Badge treatment
+            if opportunity.type in TYPE_STYLES:
+                type_bg, type_text = TYPE_STYLES[opportunity.type]
+            else:
+                type_bg, type_text = DEFAULT_TYPE_STYLE
+
+            ui.label(opportunity.type.upper()).classes(
+                f"text-xs font-bold tracking-wider px-2 py-1 rounded bg-[{type_bg}] text-[{type_text}]"
+            )
+            ui.button("View Details", icon="arrow_forward", on_click=lambda: view_details(opportunity)).props("flat color=brown").classes("text-xs font-bold")
+            
         #  Reformat deadline date
-        date_obj = datetime.strptime(opp.deadline, "%Y-%m-%d")
+        date_obj = datetime.strptime(opportunity.deadline, "%Y-%m-%d")
         formatted_date = date_obj.strftime("%d %B %Y")
         
         #  Deadline and Apply button
@@ -205,13 +245,11 @@ def render_opportunity_card(opp: models.Opportunity):
             ui.label(f"Deadline: {formatted_date}").classes(f"text-xs font-bold text-[{DEADLINE}]")
 
             applying_button = ui.button("I'm Applying!", on_click=apply_opportunity).props("color=blue").classes(f"w-32 text-xs font-bold !text-[{GOLD}] transition-colors duration-200 ease-in-out")
-            if opp.id in app_state.profile.applied_for:
+            if opportunity.id in app_state.profile.applied_for:
                 applying_button.props("color=green icon=check")
                 applying_button.text = "Applied!"
             applying_button.on("mouseenter", lambda: apply_button_hover(True))
             applying_button.on("mouseleave", lambda: apply_button_hover(False))
-
-
 
 
 def refresh(refresh_button: ui.button) -> None:
@@ -238,6 +276,12 @@ async def init_app():
         app_state.opportunities = await pull_opportunities()
     app_state.status = "ready"
     main.refresh()
+
+
+def log_search():
+    query = (search_state.query or "").strip()
+    if len(query) >= 3:
+        interaction_manager.log_search(query)
 
 
 @ui.refreshable
@@ -279,15 +323,17 @@ def main() -> None:
                 label="Search Opportunities", 
                 placeholder="Type to filter...",
                 on_change=render_opportunities.refresh
-            ).bind_value_to(state, "query").classes("w-full md:w-128").props(f"outlined dense clearable color=brown text-sm debounce={SEARCH_DEBOUNCE}")
+            ).bind_value_to(search_state, "query").classes("w-full md:w-128").props(f"outlined dense clearable color=brown text-sm debounce={SEARCH_DEBOUNCE}").on(
+                "blur", log_search
+            )
             
             #  Sorting parameter criteria dropdown selector
             ui.select(
                 options=list(SORT_OPTIONS), 
-                value=state.sort_by,
+                value=search_state.sort_by,
                 label="Sort By",
                 on_change=render_opportunities.refresh
-            ).bind_value_to(state, "sort_by").classes("w-full md:w-48").props("outlined dense color=brown text-sm")
+            ).bind_value_to(search_state, "sort_by").classes("w-full md:w-48").props("outlined dense color=brown text-sm")
 
             last_updated_timestamp = storage.load_last_updated_timestamp()
             ui.label(f"Last updated: {naturaltime(datetime.now()-datetime.fromtimestamp(last_updated_timestamp))}").classes(f"text-sm text-[{SUBTEXT}]")
@@ -302,6 +348,7 @@ def main() -> None:
 
 @ui.page('/')
 def index_page() -> None:
+    app_state.opportunities = interest_matcher.score_opportunities(app_state.opportunities)
     main()
 
     if app_state.status == "booting":
@@ -309,6 +356,4 @@ def index_page() -> None:
 
 
 if __name__ in {"__main__", "__mp_main__"}:
-    # app.on_startup(init_app)
-
     ui.run(title="Opportunity Tracker")

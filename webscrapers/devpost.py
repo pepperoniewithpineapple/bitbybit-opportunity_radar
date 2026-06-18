@@ -19,8 +19,8 @@ def parse_devpost_api_response(api_json: dict, total_scraped_so_far: int) -> lis
             
         #  Extract fields cleanly from JSON keys
         url = hackathon.get('public_url') or hackathon.get('url') or "https://devpost.com/hackathons"
-        organizer = hackathon.get('organization_name') or hackathon.get('host') or "Devpost Host"
-        organizer = organizer.strip()
+        organiser = hackathon.get('organization_name') or hackathon.get('host') or "Devpost Host"
+        organiser = organiser.strip()
         
         #  Calculate deadline from text descriptor (e.g., "5 days left")
         status_text = hackathon.get('submission_period_description', '').lower()
@@ -54,11 +54,10 @@ def parse_devpost_api_response(api_json: dict, total_scraped_so_far: int) -> lis
             type="Hackathon",
             interests=interests,
             eligible_levels=["University", "Open"],
-            cost="Free",
             beginner_friendly="beginner" in title.lower() or "student" in title.lower(),
             deadline=deadline,
             url=url,
-            organizer=organizer
+            organiser=organiser
         )
         opportunities.append(opportunity)
         
@@ -125,6 +124,6 @@ if __name__ == "__main__":
     if opportunities:
         print(f"\nSample payload from index array [Total entries: {len(opportunities)}]:")
         for idx, item in enumerate(opportunities[:3]):
-            print(f"{idx+1}. {item.title} by {item.organizer} (Deadline: {item.deadline})")
+            print(f"{idx+1}. {item.title} by {item.organiser} (Deadline: {item.deadline})")
 
     

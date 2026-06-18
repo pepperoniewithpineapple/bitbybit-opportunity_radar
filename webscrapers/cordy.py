@@ -3,8 +3,8 @@ Web scraper for app.cordy.sg
 -> returns Opportunity objects
 """
 import re
-import json
 import time
+import asyncio
 import datetime
 import requests
 from bs4 import BeautifulSoup
@@ -12,12 +12,26 @@ from bs4 import BeautifulSoup
 from models import Opportunity
 
 
-def clean_json_string(raw_str: str) -> str:
-    if not raw_str:
-        return ""
-    if raw_str.startswith("$n") or raw_str.startswith("$D"):
-        raw_str = raw_str[2:]
-    return raw_str.strip()
+OPPORTUNITY_TYPE_PRIORITY = {
+    "Competition": 10,
+    "Internship": 10,
+    "Volunteer": 10,
+    "Conference": 8,
+    "Seminar": 7,
+    "Exhibition": 6,
+    "Convention": 5,
+    "Hackathon": 3,
+    "Fellowship": 2,
+    "Leadership Programme": 2,
+    "Leadership": 2,
+    "Mentorship": 2,
+    "Workshop": 1,
+    "Resource": 1,
+    "Grant": 1,
+}
+
+
+seen_opportunities = set()
 
 
 def parse_cordy_html_page(html_content: str, current_total: int) -> list[Opportunity]:
@@ -36,16 +50,66 @@ def parse_cordy_html_page(html_content: str, current_total: int) -> list[Opportu
         for idx, card in enumerate(cards):
             parent_container = card.find_parent('div', class_=re.compile(r'(group|relative)')) or card.parent #  Container of the card
 
+            #  -- Title and organiser --
             title_node = parent_container.find('h2') #  Finding the label (i.e. the title) of the card
             if not title_node: #  Invalid
                 continue
             
             title = title_node.get_text().strip()
-            organizer = "CORDY Host"
+            organiser = "CORDY Host"
             org_node = title_node.find_next('p')
             if org_node:
-                organizer = org_node.get_text().strip()
+                organiser = org_node.get_text().strip()
+
+            if f"{title}-{organiser}" in seen_opportunities:
+                continue
+
+            seen_opportunities.add(f"{title}-{organiser}")
+
+            # -- Opportunity type & Interests --
             
+            target_container = parent_container.select_one('div.md\:flex') #  Extract div containing types and interests
+            #  In this container there are multiple spans:
+            #  - spans with whitespace-nowrap contains the opportunity types
+            #  - spans with an aria-label contains the interests in the aria-labels
+            # print(target_container) #  DEBUG
+            
+            types = []
+            interests = []
+            # print(f"\n{title}: {organiser}") #  DEBUG
+            
+            #  Extract all types listed
+            if target_container:
+                #  Opportunity types
+                type_nodes = target_container.find_all('span', class_=re.compile(r'whitespace-nowrap'))
+                # print("type_nodes:", type_nodes) #  DEBUG
+                for node in type_nodes:
+                    if "/" in (node_type := node.get_text().strip()):
+                        types.extend([t.strip() for t in node_type.split("/")])
+                    else:
+                        types.append(node_type)
+
+                #  Sort types based on priority to label it as its main type
+                types = sorted(types, key=lambda x: OPPORTUNITY_TYPE_PRIORITY.get(x, 0), reverse=True)
+
+                #  Interests
+                interest_nodes = target_container.find_all('span', attrs={"aria-label": True})
+                for node in interest_nodes:
+                    interest_text = node["aria-label"].strip()
+                    if interest_text: #  Fail-safe if for some reason aria-label is empty
+                        interests.append(interest_text)
+
+            #  Cordy has a featured section that are duplicates and also appear different in the html so let's just exclude them
+            if not types or not interests:
+                continue
+            # print("TYPES:", types) #  DEBUG
+            # print("INTERESTS:", interests) #  DEBUG
+            
+            opportunity_type = types[0]
+            # print("CHOSEN OPP TYPE:", opportunity_type) #  DEBUG
+            
+            #  -- Opportunity deadline --
+
             href = card.get('href', '')
             url = f"https://app.cordy.sg{href}" if href.startswith('/') else href
 
@@ -61,17 +125,17 @@ def parse_cordy_html_page(html_content: str, current_total: int) -> list[Opportu
                     days_left = int(match.group(1))
                     deadline_str = (datetime.date.today() + datetime.timedelta(days=days_left)).strftime("%Y-%m-%d")
             
+            #  Consolidate
             opp = Opportunity(
                 id=f"cordy-dom-{current_total + idx}",
                 title=title,
-                type="Competition",
-                interests=["Science & Tech"],
+                type=opportunity_type,
+                interests=interests,
                 eligible_levels=["Secondary", "JC", "Polytechnic", "University"],
-                cost=0,
-                beginner_friendly=True, #  TODO
+                beginner_friendly=True,
                 deadline=deadline_str,
                 url=url,
-                organizer=organizer
+                organiser=organiser
             )
             opportunities.append(opp)
             
@@ -92,7 +156,6 @@ async def scrape_cordy() -> list[Opportunity]:
     }
     
     all_opportunities = []
-    seen_titles = set()
     page = 1
     max_empty_pages = 1
     empty_page_count = 0
@@ -100,13 +163,13 @@ async def scrape_cordy() -> list[Opportunity]:
     print("Initializing complete Cordy multi-page data stream extraction...")
     
     while True:
-        # Append the specific index query argument targeting pagination nodes
+        #  Append the specific index query argument targeting pagination nodes
         params = {"page": page}
         try:
             print(f"Requesting data matrix chunk from page {page}...")
             response = requests.get(base_url, headers=headers, params=params, timeout=12)
             
-            # If a page returns an error state or doesn't exist, we've broken the catalog barrier
+            #  If a page returns an error state or doesn't exist, we've broken the catalog barrier
             if response.status_code != 200:
                 print(f"➔ Received status code {response.status_code}. Breaking iterator loop.")
                 break
@@ -114,20 +177,13 @@ async def scrape_cordy() -> list[Opportunity]:
             response.raise_for_status()
             
             page_items = parse_cordy_html_page(response.text, len(all_opportunities))
+            all_opportunities.extend(page_items)
             
-            # Filter and deduplicate items discovered in this specific pass loop
-            new_items_found = 0
-            for item in page_items:
-                title_key = item.title.lower().strip()
-                if title_key not in seen_titles:
-                    seen_titles.add(title_key)
-                    all_opportunities.append(item)
-                    new_items_found += 1
             
-            print(f"-> Processed page {page}. Discovered {len(page_items)} listings ({new_items_found} new records).")
+            print(f"-> Processed page {page}. Discovered {len(page_items)} listings.")
             
             # If an entire step yields zero brand-new updates, terminate pagination safely
-            if new_items_found == 0:
+            if len(page_items) == 0:
                 empty_page_count += 1
                 if empty_page_count >= max_empty_pages:
                     print("-> No novel records discovered on recent sequences. Catalog extraction complete.")
@@ -146,8 +202,8 @@ async def scrape_cordy() -> list[Opportunity]:
     return all_opportunities
 
 if __name__ == "__main__":
-    catalog = scrape_cordy()
+    catalog = asyncio.run(scrape_cordy())
     if catalog:
         print(f"\nSample payload from index array [Total entries: {len(catalog)}]:")
-        for idx, item in enumerate(catalog[:3]):
-            print(f"{idx+1}. {item.title} by {item.organizer} (Deadline: {item.deadline})")
+        for idx, item in enumerate(catalog[:10]):
+            print(f"{idx+1}. {item.title} by {item.organiser} (Deadline: {item.deadline}, Type: {item.type}, Interests: {', '.join(item.interests)})")

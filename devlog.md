@@ -32,3 +32,10 @@ OVERVIEW: Connected scraper to frontend, implemented search and sort.
         - Build the "My Portfolio" board layout
     - Update the web scraper to support dynamic opportunity types
     - Implement the personalisation algorithm and market intelligence features
+
+# 18/6/26: 8.52pm
+- Updated cordy scraper to find the opportunity types and interests
+- Finished the personalisation algorithm
+    - Uses Groq to get a summary of the user's profile based on the user's set profile and interactions
+    - Then, uses TF-IDF to score the opportunities based on the profile summary
+- Some UI changes, including showing the personalisation scoring when sorted by Recommended and shows the interests of the opportunities as 'Categories' tags in the opportunities
