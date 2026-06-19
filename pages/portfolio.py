@@ -105,7 +105,7 @@ def ensure_date_format(s: str) -> tuple[None | str, str]:
 
 def render_item_card(item: models.PortfolioItem):
     def upload_certificate(e) -> None:
-        destination = os.path.join(CERTIFICATES_PATH, e.name)
+        destination = os.path.join(CERTIFICATES_PATH, e.file.name)
         with open(destination, "wb") as f:
             f.write(e.content.read())
 
@@ -113,14 +113,14 @@ def render_item_card(item: models.PortfolioItem):
         storage.edit_portfolio_item(item.id, "certificate_path", abs_path)
         render_portfolio.refresh()
 
-        ui.notify(f"Saved {e.name} at {abs_path}")
+        ui.notify(f"Saved {e.file.name} at {abs_path}")
 
     def edit_field(e, attr: Literal["title", "organiser", "type", "dates", "role", "hours", "awards"]) -> None:
         value = e.sender.value
         if attr == "awards":
             value = [x.strip() for x in value.split(",")]
 
-        elif attr == "dates":
+        if attr == "dates":
             if not validate_dates(value):
                 ui.notify(f"Invalid date format. Use 'YYYY-MM-DD' or 'YYYY-MM-DD - YYYY-MM-DD'", type="negative")
                 return
