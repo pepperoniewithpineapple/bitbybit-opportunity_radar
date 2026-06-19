@@ -1,21 +1,20 @@
 import asyncio
-
-from typing import Literal
-from datetime import datetime
-from dataclasses import dataclass
-
-from humanize import naturaltime
-from nicegui import ui, app
-
 import utils
 import models
 import storage
-import intelligence
 
-from theme import *
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Literal
+
+from nicegui import ui
+
 from webscrapers.cordy import scrape_cordy
 from webscrapers.devpost import scrape_devpost
+from pages.explore import explore
+from pages.applied_opportunities import my_opportunities, render_my_opportunities
 from personalisation import interest_matcher, InteractionManager
+from theme import *
 
 
 interaction_manager = InteractionManager()
@@ -60,7 +59,7 @@ class AppState:
 
         self.profile = storage.load_student()
         if self.profile is None:
-            self.profile = models.Student(name="John Smith", level="JC", interests=[], career_goals=[], applied_for=[])
+            self.profile = models.Student(name="John Smith", level="JC", interests=[], career_goals=[])
 
 
 @dataclass
@@ -72,37 +71,6 @@ class SearchState:
 
 app_state = AppState()
 search_state = SearchState()
-
-
-def sort_opportunities(opportunities: list[models.Opportunity], sort_by: SortOptions) -> list[models.Opportunity]:
-    match sort_by:
-        case "Deadline (Soonest)":
-            return sorted(opportunities, key=lambda x: x.deadline) #  Since deadline is formatted as YYYY-MM-DD, this works
-        case "Alphabetical (A-Z)":
-            return sorted(opportunities, key=lambda x: x.title)
-        case "Type":
-            return sorted(opportunities, key=lambda x: x.type)
-        case "Recommended":
-            return interest_matcher.score_opportunities(opportunities)
-        case _:
-            return opportunities
-
-
-@ui.refreshable
-def render_opportunities():
-    #  Search check
-    query = search_state.query or ""
-
-    if query.strip(): #  Search query is not empty
-        opportunities = [x["opportunity"] for x in intelligence.search_opportunities(query, app_state.opportunities)]
-    else:
-        opportunities = app_state.opportunities
-
-    opportunities = sort_opportunities(opportunities, search_state.sort_by)
-
-    with ui.row().classes("w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2"):
-        for opp in opportunities:
-            render_opportunity_card(opp)
 
 
 def create_profile_dialog(student_profile: models.Student) -> ui.dialog:
@@ -140,148 +108,11 @@ def create_profile_dialog(student_profile: models.Student) -> ui.dialog:
     return dialog
 
 
-@app.on_connect
-def apply_custom_styles():
-    #  Inject system-wide design specs matching your theme.py layer
-    ui.add_head_html("""
-        <style>
-            body {{ 
-                background-color: {canvas}; 
-                font-family: 'DM Sans', sans-serif;
-            }}
-            .opp-card {{
-                background-color: {card};
-                border: 1px solid {card_border};
-                border-radius: 12px;
-                transition: transform 0.2s, box-shadow 0.2s;
-            }}
-            .opp-card:hover {{
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(140, 123, 105, 0.1);
-            }}
-        </style>
-    """.format(canvas=CANVAS, card=CARD, card_border=CARD_BORDER))
-
-
-def view_details(opportunity: models.Opportunity) -> None:
-    ui.navigate.to(opportunity.url, new_tab=True)
-    interaction_manager.log_view(opportunity)
-    
-
-def get_score_classes(score: float) -> str:
-    if score >= 70:
-        return "bg-green-100 text-green-800"
-    elif score >= 40:
-        return "bg-amber-100 text-amber-800"
-    else:
-        return "bg-red-100 text-red-800"
-    
-
-def render_opportunity_card(opportunity: models.Opportunity):
-    #  Handles the opportunity Apply button functions
-    def apply_opportunity():
-        if opportunity.id not in app_state.profile.applied_for:
-            app_state.profile.applied_for.append(opportunity.id)
-            ui.notify("Labelled as Applied!", type="positive")
-            applying_button.props("color=green icon=check")
-            applying_button.text = "Applied!"
-
-            #  Log interaction
-            interaction_manager.log_apply(opportunity)
-        else:
-            app_state.profile.applied_for.remove(opportunity.id)
-            ui.notify("Removed from Applications!", type="negative")
-            applying_button.props("color=blue", remove="icon")
-            applying_button.text = "I'm Applying!"
-
-        storage.save_student(app_state.profile)
-
-    def apply_button_hover(is_hovered: bool):
-        if opportunity.id in app_state.profile.applied_for:
-            if is_hovered:
-                applying_button.props("color=red icon=close")
-                applying_button.text = "Undo"
-            else:
-                applying_button.props("color=green icon=check")
-                applying_button.text = "Applied!"
-
-    #  Encapsulate single element rendering logic
-    with ui.card().classes("opp-card p-6 w-full gap-2").props("flat"):
-        with ui.row().classes("w-full justify-between items-start"):
-            with ui.column().classes("gap-0"):
-                ui.label(opportunity.title).classes(f"text-lg font-bold text-[{TITLE_TEXT}]")
-                ui.label(opportunity.organiser).classes(f"text-sm text-[{SUBTEXT}]")
-            if search_state.sort_by == "Recommended":
-                colour = get_score_classes(opportunity.personalisation_score*100)
-                ui.label(f"{opportunity.personalisation_score * 100:.1f}").classes(
-                    f"text-xs font-bold tracking-wider px-2 py-1 rounded {colour}"
-                )
-
-        with ui.row().classes("items-start").tooltip("Categories"):
-            ui.icon("tips_and_updates").classes(f"mt-[0.2rem] ml-1 text-[{CAT_TEXT}]")
-            for interest in opportunity.interests:
-                ui.label(interest).classes(
-                    f"text-[11px] font-bold px-2 py-0.5 rounded-full bg-[{CAT_BG}] text-[{CAT_TEXT}]"
-                )
-            
-        with ui.row().classes("w-full justify-between items-center"):
-            #  Badge treatment
-            if opportunity.type in TYPE_STYLES:
-                type_bg, type_text = TYPE_STYLES[opportunity.type]
-            else:
-                type_bg, type_text = DEFAULT_TYPE_STYLE
-
-            ui.label(opportunity.type.upper()).classes(
-                f"text-xs font-bold tracking-wider px-2 py-1 rounded bg-[{type_bg}] text-[{type_text}]"
-            )
-            ui.button("View Details", icon="arrow_forward", on_click=lambda: view_details(opportunity)).props("flat color=brown").classes("text-xs font-bold")
-            
-        #  Reformat deadline date
-        date_obj = datetime.strptime(opportunity.deadline, "%Y-%m-%d")
-        formatted_date = date_obj.strftime("%d %B %Y")
-        
-        #  Deadline and Apply button
-        with ui.row().classes("w-full justify-between items-center mt-2"):
-            ui.label(f"Deadline: {formatted_date}").classes(f"text-xs font-bold text-[{DEADLINE}]")
-
-            applying_button = ui.button("I'm Applying!", on_click=apply_opportunity).props("color=blue").classes(f"w-32 text-xs font-bold !text-[{GOLD}] transition-colors duration-200 ease-in-out")
-            if opportunity.id in app_state.profile.applied_for:
-                applying_button.props("color=green icon=check")
-                applying_button.text = "Applied!"
-            applying_button.on("mouseenter", lambda: apply_button_hover(True))
-            applying_button.on("mouseleave", lambda: apply_button_hover(False))
-
-
-def refresh(refresh_button: ui.button) -> None:
-    if app_state.is_refreshing: #  Ignore multiple requests if one is already processing
-        return
-
-    app_state.is_refreshing = True
-    refresh_button.classes("animate-spin")
-    asyncio.create_task(refresh_task(refresh_button))
-
-
-async def refresh_task(refresh_button: ui.button):
-    try:
-        app_state.opportunities = await pull_opportunities()
-    finally:
-        app_state.is_refreshing = False
-        refresh_button.classes(remove="animate-spin")
-        render_opportunities.refresh()
-        main.refresh()
-
-
 async def init_app():
     if app_state.status == "booting":
         app_state.opportunities = await pull_opportunities()
     app_state.status = "ready"
     main.refresh()
-
-
-def log_search():
-    query = (search_state.query or "").strip()
-    if len(query) >= 3:
-        interaction_manager.log_search(query)
 
 
 @ui.refreshable
@@ -291,68 +122,56 @@ def main() -> None:
         with ui.column().classes('w-full items-center justify-center q-pa-xl').style('min-height: 80vh'):
             ui.spinner(size='lg', color='primary')
             
-            # This timer updates the text on screen every 200ms to show scraper progress
             ui.label("Fetching data...").classes('text-lg text-grey-7 mt-4 font-medium')
-            
-            # ui.markdown('*Fetching data...*').classes('text-xs text-grey-5 mt-2')
-        
+                    
         return
 
     # Main display
-
     #  Load student profile
     profile = app_state.profile
 
     profile_modal = create_profile_dialog(profile)
 
+    #  Different pages
+    with ui.tabs().classes(f"w-full rounded-xl") as tabs:
+        ui.tab("explore", label="Discover", icon="travel_explore")
+        ui.tab("tracker", label="My Opportunities", icon="fact_check")
+        ui.tab("portfolio", label="My Portfolio", icon="dashboard_customize")
+        ui.tab("post", label="Post", icon="campaign")
 
     with ui.column().classes("max-w-6xl mx-auto px-4 py-8 w-full gap-6"):
         with ui.row().classes("w-full items-center justify-between"):
             with ui.column().classes("gap-1"):
-                ui.label("Explore Opportunities").classes(f"text-3xl font-serif font-bold text-[{TITLE_TEXT}]")
-                ui.label("Personalized pipeline matching current demand vectors.").classes(f"text-sm text-[{SUBTEXT}]")
+                ui.label("Explore Opportunities").classes(f"text-4xl font-serif font-bold text-[{TITLE_TEXT}]")
+                ui.label("Portfolio building made easy.").classes(f"text-sm text-[{SUBTEXT}]")
 
             with ui.column().classes("gap-1 items-start"):
                 ui.button(f"Profile: {profile.name or 'Not set'}", icon="person", on_click=profile_modal.open).props("flat color=brown").classes("font-bold")
                 ui.html(f"- <b>Academic Level</b>: {profile.level or 'Not set'}").classes(f"text-sm text-[{SUBTEXT}] ml-6")
                 ui.html(f"- <b>Interests</b>: {', '.join(profile.interests) or 'Not set'}").classes(f"text-sm text-[{SUBTEXT}] ml-6")
-            
-        with ui.row().classes(f"w-full items-center justify-between gap-4 bg-[{CARD}] p-4 rounded-xl border border-[{CARD_BORDER}]"):
-            #  Search input with Quasar native text entry debounce configuration (500ms delay)
-            ui.input(
-                label="Search Opportunities", 
-                placeholder="Type to filter...",
-                on_change=render_opportunities.refresh
-            ).bind_value_to(search_state, "query").classes("w-full md:w-128").props(f"outlined dense clearable color=brown text-sm debounce={SEARCH_DEBOUNCE}").on(
-                "blur", log_search
-            )
-            
-            #  Sorting parameter criteria dropdown selector
-            ui.select(
-                options=list(SORT_OPTIONS), 
-                value=search_state.sort_by,
-                label="Sort By",
-                on_change=render_opportunities.refresh
-            ).bind_value_to(search_state, "sort_by").classes("w-full md:w-48").props("outlined dense color=brown text-sm")
 
-            last_updated_timestamp = storage.load_last_updated_timestamp()
-            ui.label(f"Last updated: {naturaltime(datetime.now()-datetime.fromtimestamp(last_updated_timestamp))}").classes(f"text-sm text-[{SUBTEXT}]")
-            refresh_button = ui.button(
-                icon="refresh", 
-                on_click=lambda: refresh(refresh_button)
-            ).props("outlined color=brown square").classes("h-[40px] w-[40px] shadow-none bg-transparent")
-            refresh_button.tooltip("Pull fresh opportunities listings")
-
-        render_opportunities()
+    with ui.tab_panels(tabs, value="explore").classes("w-full"):
+        with ui.tab_panel("explore").classes("w-full"):
+            app_state.opportunities = interest_matcher.score_opportunities(app_state.opportunities)
+            explore(app_state, on_apply_change=render_my_opportunities.refresh)
+        with ui.tab_panel("tracker").classes("w-full"):
+            render_my_opportunities.refresh()
+            my_opportunities(app_state)
+        # with ui.tab_panel("portfolio").classes("w-full"):
+        #     portfolio()
+        # with ui.tab_panel("post").classes("w-full"):
+        #     post()
+            
 
 
 @ui.page('/')
 def index_page() -> None:
-    app_state.opportunities = interest_matcher.score_opportunities(app_state.opportunities)
     main()
 
     if app_state.status == "booting":
         asyncio.create_task(init_app())
+    else:
+        app_state.opportunities = interest_matcher.score_opportunities(app_state.opportunities)
 
 
 if __name__ in {"__main__", "__mp_main__"}:

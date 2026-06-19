@@ -25,7 +25,8 @@ class Opportunity:
 
     def to_dict(self) -> dict: #  For storage
         selfdict = self.__dict__
-        del selfdict["personalisation_score"]
+        if "personalisation_score" in selfdict:
+            del selfdict["personalisation_score"]
         return selfdict
 
 
@@ -36,12 +37,20 @@ class Student:
     level: AcademicLevel
     interests: list[str]
     career_goals: list[str]
-    applied_for: list[OpportunityID]
     personalisation_profile: str = ""
 
 
 @dataclass
-class Application:
-    opp_id: str
-    status: Literal["pending", "approved", "rejected"]
+class AppliedOpportunity(Opportunity):
+    status: Literal["pending", "approved", "rejected", "ongoing", "completed"] = "pending"
     notes: str = ""
+
+
+@dataclass
+class PortfolioItem:
+    title: str
+    organiser: str
+    role: str
+    dates: str
+    hours: Optional[float] = None
+    awards: Optional[list[str]] = None

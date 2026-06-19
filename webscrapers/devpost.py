@@ -2,13 +2,14 @@
 Web scraper for devpost.com/hackathons
 -> returns Opportunity objects
 """
+import time
+import uuid
 import datetime
 import requests
-import time
 from models import Opportunity
 
 
-def parse_devpost_api_response(api_json: dict, total_scraped_so_far: int) -> list[Opportunity]:
+def parse_devpost_api_response(api_json: dict) -> list[Opportunity]:
     opportunities = []
     hackathons = api_json.get('hackathons', [])
     
@@ -46,10 +47,8 @@ def parse_devpost_api_response(api_json: dict, total_scraped_so_far: int) -> lis
             if tag_name and tag_name not in interests:
                 interests.append(tag_name)
                 
-        opp_id = f"devpost_{total_scraped_so_far + idx}_{int(datetime.datetime.now().timestamp())}"
-        
         opportunity = Opportunity(
-            id=opp_id,
+            id=f"devpost_{str(uuid.uuid4())}",
             title=title,
             type="Hackathon",
             interests=interests,
@@ -99,7 +98,7 @@ async def scrape_devpost() -> list[Opportunity]:
                 print(f"-> Page {page} returned 0 results. Reached the end of the live catalog.")
                 break
                 
-            page_opportunities = parse_devpost_api_response(api_data, len(all_scraped_opportunities))
+            page_opportunities = parse_devpost_api_response(api_data)
             all_scraped_opportunities.extend(page_opportunities)
             
             print(f"Processed {len(page_opportunities)} hackathons from page {page}.")

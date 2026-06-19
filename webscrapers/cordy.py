@@ -4,6 +4,7 @@ Web scraper for app.cordy.sg
 """
 import re
 import time
+import uuid
 import asyncio
 import datetime
 import requests
@@ -34,7 +35,7 @@ OPPORTUNITY_TYPE_PRIORITY = {
 seen_opportunities = set()
 
 
-def parse_cordy_html_page(html_content: str, current_total: int) -> list[Opportunity]:
+def parse_cordy_html_page(html_content: str) -> list[Opportunity]:
     """
     Parses a single HTML payload chunk from Cordy, utilizing regex-targeted 
     JSON hydration parsing alongside DOM selectors.
@@ -127,7 +128,7 @@ def parse_cordy_html_page(html_content: str, current_total: int) -> list[Opportu
             
             #  Consolidate
             opp = Opportunity(
-                id=f"cordy-dom-{current_total + idx}",
+                id=f"cordy-dom-{str(uuid.uuid4())}",
                 title=title,
                 type=opportunity_type,
                 interests=interests,
@@ -176,7 +177,7 @@ async def scrape_cordy() -> list[Opportunity]:
                 
             response.raise_for_status()
             
-            page_items = parse_cordy_html_page(response.text, len(all_opportunities))
+            page_items = parse_cordy_html_page(response.text)
             all_opportunities.extend(page_items)
             
             

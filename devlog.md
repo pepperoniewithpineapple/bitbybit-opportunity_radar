@@ -39,3 +39,8 @@ OVERVIEW: Connected scraper to frontend, implemented search and sort.
     - Uses Groq to get a summary of the user's profile based on the user's set profile and interactions
     - Then, uses TF-IDF to score the opportunities based on the profile summary
 - Some UI changes, including showing the personalisation scoring when sorted by Recommended and shows the interests of the opportunities as 'Categories' tags in the opportunities
+
+# 19/6/25: 6.19pm
+- Changed the way student.json and opportunities.json are saved such that student.applied_for stores the opportunities and personalisation_score is only stored in RAM
+- Changed the way data was stored in the jsons for better handling
+- Added My Opportunities page

@@ -172,7 +172,6 @@ class InteractionManager:
         
     def log_profile(self, student: models.Student) -> None:
         """ User updated their profile """
-        print("lorogiejr")
         self._append_payload(
             type_key="profile",
             content=(
