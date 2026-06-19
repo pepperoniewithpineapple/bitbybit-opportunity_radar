@@ -1,14 +1,14 @@
+import uuid
 import json
 from datetime import datetime
+from typing import Any, Literal
 
 from models import Opportunity, Student, AppliedOpportunity, PortfolioItem, OpportunityID
-
 
 OPPORTUNITIES_PATH = "data/" + "opportunities.json"
 STUDENT_PATH = "data/" + "student.json"
 MY_OPPORTUNITIES_PATH = "data/" + "my_opportunities.json"
-SEARCHES_PATH = "data/" + "searches.json"
-SUBMISSIONS_PATH = "data/" + "submissions.json"
+PORTFOLIO_PATH = "data/" + "portfolio.json"
 
 
 def load_opportunities() -> list[Opportunity]:
@@ -116,24 +116,71 @@ def set_applied_status(opp_id: OpportunityID, status: str) -> None:
             app.status = status
             if status in {"rejected", "competed"}:
                 my_opportunities.pop(i)
+            if status == "completed":
+                item = PortfolioItem(
+                    id=str(uuid.uuid4),
+                    title=app.title,
+                    organiser=app.organiser,
+                    type=app.type
+                )
+                add_portfolio_item(item)
+                
             break
     save_my_opportunities(my_opportunities)
 
 
-def load_submissions() -> list[dict]:
-    if not SUBMISSIONS_PATH.exists():
-        return []
-    with open(SUBMISSIONS_PATH, "r", encoding="utf-8") as f:
-        try: return json.load(f)
-        except json.JSONDecodeError: return []
+def set_notes(opp_id: OpportunityID, notes: str) -> None:
+    my_opportunities = load_my_opportunities()
+    for i, app in enumerate(my_opportunities):
+        if app.id == opp_id:
+            app.notes = notes
+            break
+    save_my_opportunities(my_opportunities)
 
 
-def add_submission(submission: dict) -> None:
-    data = load_submissions()
-    data.append(submission)
-    with open(SUBMISSIONS_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
+def load_portfolio() -> list[PortfolioItem]:
+    with open(PORTFOLIO_PATH, "r", encoding="utf-8") as f:
+        try:
+            data = json.load(f)
+            return [PortfolioItem(id=k, **v) for k, v in data.items()]
+        except json.JSONDecodeError:
+            return []
 
+
+def add_portfolio_item(item: PortfolioItem) -> None:
+    portfolio = load_portfolio()
+    portfolio.append(item)
+    save_portfolio(portfolio)
+
+
+def save_portfolio(portfolio: list[PortfolioItem]) -> None:
+    with open(PORTFOLIO_PATH, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                item.id: {
+                    "title": item.title,
+                    "organiser": item.organiser,
+                    "type": item.type,
+                    "role": item.role,
+                    "start_date": item.start_date,
+                    "end_date": item.end_date,
+                    "hours": item.hours,
+                    "awards": item.awards,
+                    "certificate_path": item.certificate_path
+                }
+                for item in portfolio
+            }, 
+            f, indent=4, ensure_ascii=False
+        )
+
+    
+def edit_portfolio_item(portfolio_id: str, attr: Literal["title", "organiser", "start_date", "end_date" "type", "role", "certificate_path", "hours", "awards"], attr_value: Any):
+    portfolio = load_portfolio()
+    for i, item in enumerate(portfolio):
+        if item.id == portfolio_id:
+            setattr(item, attr, attr_value)
+            break
+    save_portfolio(portfolio)
 
 def load_last_updated_timestamp() -> float:
     with open(".last_pulled_timestamp", "r", encoding="utf-8") as f:

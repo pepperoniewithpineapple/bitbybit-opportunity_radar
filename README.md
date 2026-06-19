@@ -1,42 +1,53 @@
 # Opportunity Radar
 
-Opportunity Radar is a Python + NiceGUI app that helps students find opportunities and helps organizers submit better ones. It is built as a clean dashboard instead of a long terminal menu.
+Opportunity Radar is a Python + NiceGUI app that helps students find opportunities and consolidate their portfolio. It is built as a clean dashboard instead of a long terminal menu.
+Note: This project is Singapore-based.
 
-## What It Does
+## Features
+### Discover
+Browse opportunities ranging from competitions, programs, events, and more, scraped from across the web.
 
-- **Student discovery:** profile-based ranking, transparent scoring, deadline filters, application tracking, weekly digest, and calendar export.
-- **Sender supply loop:** demand gap radar, opportunity submission, manual review, live announcements, and duplicate/deadline checks.
-- **Trust and safety:** adaptive spam-risk model trained from seed examples plus reviewer history before submissions reach manual review.
-- **Advanced intelligence:** career impact simulator, graph-based hidden opportunity discovery, equity audit, and career pathway planner.
+Search opportunities via **TF-IDF search** to find opportunities catored to you.
 
-## How To Run
+Don't know what to search for? After browsing for a while, the system uses LLM and TF-IDF to recommend you opportunities it thinks you will be interested in - just sort by Recommeneded.
 
-```bash
-python -m pip install -r requirements.txt
-python main.py
+There's even a manual **Refresh** button to stay up to date with the opportunities out there.
+
+Clicking "I'm Applying!" puts these opportunities in the **My Opportunities** page.
+
+### My Opportunities
+After labelling some opportunities as you're applying, they are consolidated in this tab, where you can see if you're trying too hard to portfolio farm and manage your time.
+
+You can edit the status of these opportunities, whether it is Pending, Rejected, Ongoing or Completed.
+
+Marking opportunities as Completed automatically brings them to the **My Portfolio** page.
+
+### My Portfolio
+My Portfolio isn't just a list. It is an easy board view to see all that you have done. This creates the Opportunity Radar pipeline:
+```
+[Browse] -> [Apply] -> [Send to Portfolio]
 ```
 
-Then open:
+---
 
-```text
-http://127.0.0.1:8080
+## Quick Start
+**Python Version**: 3.12+
+
+1. Download the files:
+```
+git clone https://github.com/pepperoniewithpineapple/bitbybit-opportunity_radar
 ```
 
-## How To Test
-
-```bash
-python -m unittest discover -s tests
-python -m py_compile main.py core.py intelligence.py tests/test_app.py
+2. Install dependencies
+```
+pip install -r requirements.txt
 ```
 
-## File Structure
+3. Run the app with `python main.py`
 
-```text
-main.py              NiceGUI interface
-core.py              data, ranking, tracker, review workflow
-intelligence.py      spam model, graph discovery, equity, career planning
-tests/test_app.py    focused regression tests
-data/                JSON source of truth
-```
+4. Edit your profile
+Running the program should have opened a window with the app. If not, navigate to http://127.0.0.1:8000 in your browser. In the top right corner, click on Profile and edit your profile.
 
-JSON stays as the main database. NiceGUI is the only app dependency.
+5. Start Browsing!
+
+---

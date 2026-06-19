@@ -48,9 +48,16 @@ class AppliedOpportunity(Opportunity):
 
 @dataclass
 class PortfolioItem:
+    id: str
     title: str
     organiser: str
-    role: str
-    dates: str
+    type: str
+    role: str = ""
+    end_date: str = ""#  If single date, only put end_date
+    start_date: Optional[str] = None
     hours: Optional[float] = None
-    awards: Optional[list[str]] = None
+    awards: Optional[list[str]] = ""
+    certificate_path: str = None
+
+    def __str__(self) -> str:
+        return f"{self.title} {self.organiser} {self.type} {self.role} {self.start_date} {self.end_date}"

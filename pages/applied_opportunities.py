@@ -3,43 +3,12 @@ import asyncio
 from typing import Literal
 from datetime import datetime
 
-from humanize import naturaltime
 from nicegui import ui, app
 
 import models
 import storage
-import intelligence
 
 from theme import *
-from webscrapers.cordy import scrape_cordy
-from webscrapers.devpost import scrape_devpost
-from personalisation import interest_matcher, InteractionManager
-
-
-interaction_manager = InteractionManager()
-
-
-async def pull_opportunities() -> list[models.Opportunity]:
-    await asyncio.to_thread(storage.save_last_updated_timestamp)
-
-    results = await asyncio.gather(
-        asyncio.to_thread(asyncio.run, scrape_cordy()),
-        asyncio.to_thread(asyncio.run, scrape_devpost())
-    )
-
-    opportunities = []
-    for result in results:
-        opportunities.extend(result)
-
-    await asyncio.to_thread(storage.save_opportunities, opportunities)
-
-    return interest_matcher.score_opportunities(opportunities)
-
-
-SEARCH_DEBOUNCE = 400 #  milliseconds
-SORT_OPTIONS = ("Recommended", "Deadline (Soonest)", "Alphabetical (A-Z)", "Type")
-SortOptions = Literal[*SORT_OPTIONS]
-CACHE_EXPIRATION_HOURS = 12 #  When to run scrapers automatically
 
 
 app_state = None #  Set once my_opportunities is called
@@ -78,7 +47,6 @@ def apply_custom_styles():
 
 def view_details(opportunity: models.Opportunity) -> None:
     ui.navigate.to(opportunity.url, new_tab=True)
-    interaction_manager.log_view(opportunity)
 
 
 def get_status_classes(status: Literal["pending", "rejected", "ongoing", "completed"]) -> str:
@@ -100,6 +68,10 @@ def render_opportunity_card(opportunity: models.AppliedOpportunity):
         storage.set_applied_status(opportunity.id, status)
         status_select.classes(replace=f"w-50 {get_status_classes(status)} rounded-full px-4 border-none")
         ui.notify(f"Status updated to {status.title()}")
+
+    def set_notes():
+        storage.set_notes(opportunity.id, notes_input.value)
+        ui.notify("Notes updated")
 
     with ui.card().classes("opp-card p-5 w-full gap-5").props("flat"):
         with ui.row().classes("w-full justify-between items-start gap-4"):
@@ -142,37 +114,11 @@ def render_opportunity_card(opportunity: models.AppliedOpportunity):
                 on_change=lambda e: set_opportunity_status(e.value.lower())
             ).classes(f"w-50 {get_status_classes(opportunity.status)} rounded-full px-4 border-none")
 
-
-def refresh(refresh_button: ui.button) -> None:
-    if app_state.is_refreshing: #  Ignore multiple requests if one is already processing
-        return
-
-    app_state.is_refreshing = True
-    refresh_button.classes("animate-spin")
-    asyncio.create_task(refresh_task(refresh_button))
-
-
-async def refresh_task(refresh_button: ui.button):
-    try:
-        app_state.opportunities = await pull_opportunities()
-    finally:
-        app_state.is_refreshing = False
-        refresh_button.classes(remove="animate-spin")
-        render_opportunities.refresh()
-        my_opportunities.refresh()
-
-
-async def init_app():
-    if app_state.status == "booting":
-        app_state.opportunities = await pull_opportunities()
-    app_state.status = "ready"
-    my_opportunities.refresh()
-
-
-def log_search():
-    query = (search_state.query or "").strip()
-    if len(query) >= 3:
-        interaction_manager.log_search(query)
+        notes_input = ui.input(label="Notes", value=opportunity.notes).classes("w-full").on(
+            "blur", set_notes
+        ).on(
+            'keydown.enter', set_notes
+        )
 
 
 @ui.page("/my_opportunities")
@@ -180,16 +126,3 @@ def my_opportunities(app_state_) -> None:
     global app_state
     app_state = app_state_
     render_my_opportunities()
-
-
-# @ui.page('/')
-# def index_page() -> None:
-#     app_state.opportunities = interest_matcher.score_opportunities(app_state.opportunities)
-#     my_opportunities()
-
-#     if app_state.status == "booting":
-#         asyncio.create_task(init_app())
-
-
-# if __name__ in {"__my_opportunities__", "__mp_my_opportunities__"}:
-#     ui.run(title="Opportunity Tracker")

@@ -1,0 +1,24 @@
+{
+    "<function uuid4 at 0x100e55bc0>": {
+        "title": "Art Competitions 2025 | Online & Abstract Art Contests | Ten Moir Gallery – The Moir Collectors Catalogs",
+        "organiser": "Cash awards for top selections.",
+        "type": "Competition",
+        "role": "",
+        "start_date": null,
+        "end_date": "",
+        "hours": null,
+        "awards": "",
+        "certificate_path": null
+    },
+    "84ba1f2f-bdcf-4617-b2e4-3565db7c9595": {
+        "title": "Bit-by-Bit Coding Hackathon 2026",
+        "organiser": "Bit-by-Bit",
+        "type": "competition",
+        "role": "Participant",
+        "start_date": "2026-6-6",
+        "end_date": "2026-6-20",
+        "hours": null,
+        "awards": "",
+        "certificate_path": null
+    }
+}

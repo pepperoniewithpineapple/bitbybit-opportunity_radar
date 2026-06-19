@@ -7,12 +7,13 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal
 
-from nicegui import ui
+from nicegui import ui, app
 
 from webscrapers.cordy import scrape_cordy
 from webscrapers.devpost import scrape_devpost
 from pages.explore import explore
 from pages.applied_opportunities import my_opportunities, render_my_opportunities
+from pages.portfolio import portfolio, render_portfolio
 from personalisation import interest_matcher, InteractionManager
 from theme import *
 
@@ -137,12 +138,11 @@ def main() -> None:
         ui.tab("explore", label="Discover", icon="travel_explore")
         ui.tab("tracker", label="My Opportunities", icon="fact_check")
         ui.tab("portfolio", label="My Portfolio", icon="dashboard_customize")
-        ui.tab("post", label="Post", icon="campaign")
 
     with ui.column().classes("max-w-6xl mx-auto px-4 py-8 w-full gap-6"):
         with ui.row().classes("w-full items-center justify-between"):
             with ui.column().classes("gap-1"):
-                ui.label("Explore Opportunities").classes(f"text-4xl font-serif font-bold text-[{TITLE_TEXT}]")
+                ui.label("Opportunity Radar").classes(f"text-4xl font-serif font-bold text-[{TITLE_TEXT}]")
                 ui.label("Portfolio building made easy.").classes(f"text-sm text-[{SUBTEXT}]")
 
             with ui.column().classes("gap-1 items-start"):
@@ -157,10 +157,9 @@ def main() -> None:
         with ui.tab_panel("tracker").classes("w-full"):
             render_my_opportunities.refresh()
             my_opportunities(app_state)
-        # with ui.tab_panel("portfolio").classes("w-full"):
-        #     portfolio()
-        # with ui.tab_panel("post").classes("w-full"):
-        #     post()
+        with ui.tab_panel("portfolio").classes("w-full"):
+            render_portfolio.refresh()
+            portfolio(app_state)
             
 
 
@@ -175,4 +174,4 @@ def index_page() -> None:
 
 
 if __name__ in {"__main__", "__mp_main__"}:
-    ui.run(title="Opportunity Tracker")
+    ui.run(title="Opportunity Radar", native=True, window_size=(1920, 1080))

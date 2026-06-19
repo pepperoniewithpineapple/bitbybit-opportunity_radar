@@ -219,13 +219,6 @@ async def refresh_task(refresh_button: ui.button):
         explore.refresh()
 
 
-async def init_app():
-    if app_state.status == "booting":
-        app_state.opportunities = await pull_opportunities()
-    app_state.status = "ready"
-    explore.refresh()
-
-
 def log_search():
     query = (search_state.query or "").strip()
     if len(query) >= 3:
@@ -264,15 +257,3 @@ def explore(app_state_, on_apply_change: Optional[Callable] = None) -> None:
 
     render_opportunities(on_apply_change)
 
-
-# @ui.page('/')
-# def index_page() -> None:
-#     app_state.opportunities = interest_matcher.score_opportunities(app_state.opportunities)
-#     explore()
-
-#     if app_state.status == "booting":
-#         asyncio.create_task(init_app())
-
-
-# if __name__ in {"__explore__", "__mp_explore__"}:
-#     ui.run(title="Opportunity Tracker")

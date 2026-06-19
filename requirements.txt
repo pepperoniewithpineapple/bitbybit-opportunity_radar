@@ -7,3 +7,4 @@ langchain-groq
 langchain-core
 python-dotenv
 scikit-learn
+pywebview
