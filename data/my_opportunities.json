@@ -37,5 +37,43 @@
         "organiser": "Cash awards for top selections.",
         "status": "completed",
         "notes": "workieYEsss"
+    },
+    "cordy-dom-c5a48a7b-9813-447b-a38a-f0de5f579ba5": {
+        "title": "Taiwan International Student Design Competition",
+        "type": "Competition",
+        "interests": [
+            "Design"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "beginner_friendly": true,
+        "deadline": "2026-07-06",
+        "url": "https://app.cordy.sg/opportunities/taiwan-international-student-design-competition-2026-07-06",
+        "organiser": "TISDC",
+        "status": "completed",
+        "notes": "Im winning ts shit"
+    },
+    "cordy-dom-277d5068-0239-46ac-a700-517b424c13bb": {
+        "title": "Tech Exploration For Girls",
+        "type": "Mentorship",
+        "interests": [
+            "Science & Tech"
+        ],
+        "eligible_levels": [
+            "Secondary",
+            "JC",
+            "Polytechnic",
+            "University"
+        ],
+        "beginner_friendly": true,
+        "deadline": "2026-06-21",
+        "url": "https://app.cordy.sg/opportunities/tech-exploration-for-girls",
+        "organiser": "EOS Initiative",
+        "status": "completed",
+        "notes": ""
     }
 }

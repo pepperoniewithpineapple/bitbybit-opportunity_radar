@@ -13,10 +13,32 @@
     "84ba1f2f-bdcf-4617-b2e4-3565db7c9595": {
         "title": "Bit-by-Bit Coding Hackathon 2026",
         "organiser": "Bit-by-Bit",
-        "type": "competition",
+        "type": "Competition",
         "role": "Participant",
         "start_date": "2026-6-6",
         "end_date": "2026-6-20",
+        "hours": null,
+        "awards": "",
+        "certificate_path": null
+    },
+    "<function uuid4 at 0x1029065c0>": {
+        "title": "Taiwan International Student Design Competition",
+        "organiser": "TISDC",
+        "type": "Competition",
+        "role": "",
+        "start_date": null,
+        "end_date": "",
+        "hours": null,
+        "awards": "",
+        "certificate_path": null
+    },
+    "<function uuid4 at 0x1069865c0>": {
+        "title": "Tech Exploration For Girls",
+        "organiser": "EOS Initiative",
+        "type": "Mentorship",
+        "role": "",
+        "start_date": null,
+        "end_date": "",
         "hours": null,
         "awards": "",
         "certificate_path": null

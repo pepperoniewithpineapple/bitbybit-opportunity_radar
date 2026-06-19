@@ -54,7 +54,7 @@ GROQ_API_KEY={your_api_key}
 4. Run the app with `python main.py`
 
 5. Edit your profile
-Running the program should have opened a window with the app. If not, navigate to http://127.0.0.1:8000 in your browser. In the top right corner, click on Profile and edit your profile.
+Navigate to http://127.0.0.1:8000 in your browser. In the top right corner, click on Profile and edit your profile.
 
 6. Start Browsing!
 

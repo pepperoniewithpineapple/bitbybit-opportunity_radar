@@ -15,11 +15,11 @@ app_state = None #  Set once my_opportunities is called
 
 
 @ui.refreshable
-def render_my_opportunities():
+def render_my_opportunities(on_complete=None):
     # with ui.row().classes("w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2"):
     my_opportunities = storage.load_my_opportunities()
     for opp in sorted(my_opportunities, key=lambda x: x.deadline):
-        render_opportunity_card(opp)
+        render_opportunity_card(opp, on_complete)
 
 
 @app.on_connect
@@ -58,7 +58,7 @@ def get_status_classes(status: Literal["pending", "rejected", "ongoing", "comple
         return "bg-red-100 text-red-800"
 
 
-def render_opportunity_card(opportunity: models.AppliedOpportunity):
+def render_opportunity_card(opportunity: models.AppliedOpportunity, on_complete=None):
     def remove_opportunity():
         storage.remove_applied_opportunity(opportunity.id)
         render_my_opportunities.refresh()
@@ -68,6 +68,8 @@ def render_opportunity_card(opportunity: models.AppliedOpportunity):
         storage.set_applied_status(opportunity.id, status)
         status_select.classes(replace=f"w-50 {get_status_classes(status)} rounded-full px-4 border-none")
         ui.notify(f"Status updated to {status.title()}")
+        if status == "completed":
+            on_complete()
 
     def set_notes():
         storage.set_notes(opportunity.id, notes_input.value)
@@ -122,7 +124,7 @@ def render_opportunity_card(opportunity: models.AppliedOpportunity):
 
 
 @ui.page("/my_opportunities")
-def my_opportunities(app_state_) -> None:
+def my_opportunities(app_state_, on_complete=None) -> None:
     global app_state
     app_state = app_state_
-    render_my_opportunities()
+    render_my_opportunities(on_complete)

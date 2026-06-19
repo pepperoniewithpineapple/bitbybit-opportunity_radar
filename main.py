@@ -92,11 +92,16 @@ def create_profile_dialog(student_profile: models.Student) -> ui.dialog:
             "Interests", placeholder="Enter your interests (comma-separated, e.g. artificial intelligence, design, cybersecurity)",
             value=", ".join(student_profile.interests)
         ).classes("w-full").props("outlined dense color=brown")
+        career_goals_input = ui.input(
+            "Career Goals", placeholder="Enter your career goals (comma-separated, e.g. software engineer, data analyst)",
+            value=", ".join(student_profile.career_goals)
+        ).classes("w-full").props("outlined dense color=brown")
 
         def save_profile():
             student_profile.name = name_input.value
             student_profile.level = level_select.value
             student_profile.interests = [i.strip() for i in interests_input.value.split(",") if i.strip()]
+            student_profile.career_goals = [i.strip() for i in career_goals_input.value.split(",") if i.strip()]
             storage.save_student(student_profile)
             dialog.close()
             ui.notify("Profile updated", type="positive")
@@ -149,6 +154,7 @@ def main() -> None:
                 ui.button(f"Profile: {profile.name or 'Not set'}", icon="person", on_click=profile_modal.open).props("flat color=brown").classes("font-bold")
                 ui.html(f"- <b>Academic Level</b>: {profile.level or 'Not set'}").classes(f"text-sm text-[{SUBTEXT}] ml-6")
                 ui.html(f"- <b>Interests</b>: {', '.join(profile.interests) or 'Not set'}").classes(f"text-sm text-[{SUBTEXT}] ml-6")
+                ui.html(f"- <b>Career Goals</b>: {', '.join(profile.career_goals) or 'Not set'}").classes(f"text-sm text-[{SUBTEXT}] ml-6")
 
     with ui.tab_panels(tabs, value="explore").classes("w-full"):
         with ui.tab_panel("explore").classes("w-full"):
@@ -156,7 +162,7 @@ def main() -> None:
             explore(app_state, on_apply_change=render_my_opportunities.refresh)
         with ui.tab_panel("tracker").classes("w-full"):
             render_my_opportunities.refresh()
-            my_opportunities(app_state)
+            my_opportunities(app_state, on_complete=render_portfolio.refresh)
         with ui.tab_panel("portfolio").classes("w-full"):
             render_portfolio.refresh()
             portfolio(app_state)
@@ -174,4 +180,4 @@ def index_page() -> None:
 
 
 if __name__ in {"__main__", "__mp_main__"}:
-    ui.run(title="Opportunity Radar", native=True, window_size=(1920, 1080))
+    ui.run(title="Opportunity Radar")
