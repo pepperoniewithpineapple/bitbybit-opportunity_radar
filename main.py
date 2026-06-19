@@ -1,13 +1,13 @@
 import asyncio
-import utils
-import models
-import storage
 
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal
 
 from nicegui import ui, app
+
+import models
+import storage
 
 from webscrapers.cordy import scrape_cordy
 from webscrapers.devpost import scrape_devpost
@@ -85,7 +85,7 @@ def create_profile_dialog(student_profile: models.Student) -> ui.dialog:
             value=student_profile.name
         ).classes("w-full").props("outlined dense color=brown")
         level_select = ui.select(
-            options=list(utils.ACADEMIC_LEVELS), label="Academic Level",
+            options=list(models.ACADEMIC_LEVELS), label="Academic Level",
             value=student_profile.level
         ).classes("w-full").props("outlined dense color=brown")
         interests_input = ui.input(

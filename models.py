@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 from typing import Literal, Optional
 
-from utils import ACADEMIC_LEVELS
-
-
+ACADEMIC_LEVELS: tuple[str] = ("Secondary", "JC", "Poly", "University")
 AcademicLevel = Literal[*ACADEMIC_LEVELS]
 
 

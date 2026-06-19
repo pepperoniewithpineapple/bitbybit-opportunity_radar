@@ -1,8 +1,7 @@
+import re
 import math
-import sqlite3
 
 from models import Opportunity, Student
-from utils import normalise, tokenise
 
 
 CAREER_PATHS = {
@@ -19,6 +18,16 @@ CAREER_PATHS = {
         "research": 1.3, "business": 1.2, "public good": 0.8,
     }
 }
+
+
+def normalise(text: str) -> str:
+    """Lowercase, strip, and sanitize string tokens."""
+    return text.strip().lower()
+
+
+def tokenise(text: str) -> list[str]:
+    """Regex split text into alphabetic search terms."""
+    return [t for t in re.findall(r'[a-z0-9]+', text.lower()) if len(t) > 1]
 
 
 def search_opportunities(query: str, opportunities: list[Opportunity]) -> list[dict]:
