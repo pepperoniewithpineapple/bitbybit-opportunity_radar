@@ -1,5 +1,6 @@
 import os
 import uuid
+import asyncio
 
 from typing import Literal
 from datetime import datetime
@@ -17,7 +18,10 @@ from typing import Callable, Optional
 SEARCH_DEBOUNCE = 400 #  milliseconds
 SORT_OPTIONS = ("Latest", "Alphabetical (A-Z)", "Type")
 SortOptions = Literal[*SORT_OPTIONS]
-CERTIFICATES_PATH = os.path.join(os.path.dirname(__file__), "data", "certificates")
+CERTIFICATES_PATH = os.path.join(os.path.dirname(__file__), "../data", "certificates")
+
+
+app.add_static_files("/certificates", CERTIFICATES_PATH)
 
 
 class SearchState:
@@ -104,10 +108,9 @@ def ensure_date_format(s: str) -> tuple[None | str, str]:
     return dates[0].strip(), dates[1].strip()
 
 def render_item_card(item: models.PortfolioItem):
-    def upload_certificate(e) -> None:
+    async def upload_certificate(e) -> None:
         destination = os.path.join(CERTIFICATES_PATH, e.file.name)
-        with open(destination, "wb") as f:
-            f.write(e.content.read())
+        await e.file.save(destination)
 
         abs_path = os.path.abspath(destination)
         storage.edit_portfolio_item(item.id, "certificate_path", abs_path)
@@ -174,7 +177,14 @@ def render_item_card(item: models.PortfolioItem):
                 if item.certificate_path is None:
                     ui.upload(label="Upload", on_upload=upload_certificate, auto_upload=True).classes("max-w-full")
                 else:
-                    ui.link("View", item.certificate_path).classes(f"text-sm text-[{TITLE_TEXT}]")
+                    filename = os.path.basename(item.certificate_path)
+                    cert_url = f"/certificates/{filename}"
+
+                    with ui.dialog() as cert_dialog, ui.card().classes("p-4 items-center"):
+                        ui.image(cert_url).classes("w-96 max-h-[80vh] object-contain rounded-lg")
+                        ui.button("Close", on_click=cert_dialog.close).props("flat color=brown").classes("mt-2")
+
+                    ui.button("View", on_click=cert_dialog.open).props("flat dense color=brown").classes("text-sm p-0 justify-start text-left")
 
 
 def add_empty_item():
