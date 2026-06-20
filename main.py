@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal
 
-from nicegui import ui, app
+from nicegui import ui
 
 import models
 import storage

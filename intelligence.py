@@ -62,23 +62,3 @@ def search_opportunities(query: str, opportunities: list[Opportunity]) -> list[d
             results.append({"opportunity": opportunity, "score": score, "engine": "TF-IDF Scorer"})
             
     return sorted(results, key=lambda x: x["score"], reverse=True)
-
-
-#  DELETE THIS
-def calculate_match_score(opportunity: Opportunity, student: Student) -> float:
-    """Calculates personalized affinity between user interests, goals, and opportunities."""
-    score = 0.0
-    
-    # Target path weights
-    goal = normalise(student.career_goal)
-    weights = CAREER_PATHS.get(goal, {})
-    
-    # Intersection vectors
-    for interest in opportunity.interests:
-        norm_int = normalise(interest)
-        if norm_int in [normalise(si) for si in student.interests]:
-            score += 2.0
-        if norm_int in weights:
-            score += weights[norm_int]
-            
-    return round(min(10.0, score) / 10.0, 2)

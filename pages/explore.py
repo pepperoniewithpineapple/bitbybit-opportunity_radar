@@ -41,7 +41,6 @@ async def pull_opportunities() -> list[models.Opportunity]:
 SEARCH_DEBOUNCE = 400 #  milliseconds
 SORT_OPTIONS = ("Recommended", "Deadline (Soonest)", "Alphabetical (A-Z)", "Type")
 SortOptions = Literal[*SORT_OPTIONS]
-CACHE_EXPIRATION_HOURS = 12 #  When to run scrapers automatically
 
 
 class SearchState:
@@ -83,29 +82,6 @@ def render_opportunities(on_apply_change: Optional[Callable] = None):
     with ui.row().classes("w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2"):
         for opp in opportunities:
             render_opportunity_card(opp, on_apply_change=on_apply_change)
-
-
-@app.on_connect
-def apply_custom_styles():
-    #  Inject system-wide design specs matching your theme.py layer
-    ui.add_head_html("""
-        <style>
-            body {{ 
-                background-color: {canvas}; 
-                font-family: 'DM Sans', sans-serif;
-            }}
-            .opp-card {{
-                background-color: {card};
-                border: 1px solid {card_border};
-                border-radius: 12px;
-                transition: transform 0.2s, box-shadow 0.2s;
-            }}
-            .opp-card:hover {{
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(140, 123, 105, 0.1);
-            }}
-        </style>
-    """.format(canvas=CANVAS, card=CARD, card_border=CARD_BORDER))
 
 
 def view_details(opportunity: models.Opportunity) -> None:
